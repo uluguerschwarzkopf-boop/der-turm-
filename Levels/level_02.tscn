@@ -27,7 +27,7 @@ size = Vector2(962, 519)
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_6mfy8"]
 load_path = "res://.godot/imported/tile set gebiet 1.png-f8ee755df8c8f53170cde761a73b8dd7.ctex"
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2hyf4"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1s8wc"]
 texture = SubResource("CompressedTexture2D_6mfy8")
 2:0/0 = 0
 2:1/0 = 0
@@ -202,7 +202,7 @@ texture = SubResource("CompressedTexture2D_6mfy8")
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_1s8wc"]
 load_path = "res://.godot/imported/tile set gebiet 1.png-f8ee755df8c8f53170cde761a73b8dd7.ctex"
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hkur5"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b8jdh"]
 texture = SubResource("CompressedTexture2D_1s8wc")
 9:7/0 = 0
 8:7/0 = 0
@@ -363,7 +363,7 @@ texture = SubResource("CompressedTexture2D_1s8wc")
 10:0/0 = 0
 11:0/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t7xqb"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hkur5"]
 texture = ExtResource("2_n6voa")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -1524,9 +1524,9 @@ texture = ExtResource("2_n6voa")
 
 [sub_resource type="TileSet" id="TileSet_hv8fo"]
 physics_layer_0/collision_layer = 1
-sources/1 = SubResource("TileSetAtlasSource_hkur5")
-sources/0 = SubResource("TileSetAtlasSource_2hyf4")
-sources/2 = SubResource("TileSetAtlasSource_t7xqb")
+sources/1 = SubResource("TileSetAtlasSource_b8jdh")
+sources/0 = SubResource("TileSetAtlasSource_1s8wc")
+sources/2 = SubResource("TileSetAtlasSource_hkur5")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pyqa7"]
 texture = SubResource("CompressedTexture2D_6mfy8")
