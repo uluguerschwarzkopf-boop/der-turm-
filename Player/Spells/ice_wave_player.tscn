@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dtdegsdfe20o6"]
+
+[ext_resource type="Script" uid="uid://gsg5rbuy5cao" path="res://Player/Spells/ice_wave_player.gd" id="1_txsh4"]
+[ext_resource type="PackedScene" uid="uid://w5ahpeteceun" path="res://Player/Spells/ice_crystal_player.tscn" id="2_svtqn"]
+
+[node name="Ice_Wave_Player" type="Node2D" unique_id=1385234785]
+script = ExtResource("1_txsh4")
+ice_crystal_scene = ExtResource("2_svtqn")
+first_crystal_distance = 19.0
+distance_between_crystals = 19.0

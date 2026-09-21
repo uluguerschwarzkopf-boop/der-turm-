@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Objects/vordergrund_idle_sway.gd" id="1_sway"]
+[ext_resource type="Script" path="res://Objects/vordergrund_variant_picker.gd" id="2_variant"]
+
+[node name="Vordergrund Element" type="Parallax2D"]
+script = ExtResource("2_variant")
+scroll_scale = Vector2(1.18, 1.03)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+script = ExtResource("1_sway")

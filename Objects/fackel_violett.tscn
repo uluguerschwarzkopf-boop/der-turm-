@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://Objects/Fackel-Sheet-Violett.png" id="1_8npnt"]
+[ext_resource type="Script" uid="uid://o7wfprdefr1l" path="res://Objects/fackel.gd" id="2_1thoq"]
+[ext_resource type="Texture2D" path="res://Objects/Fakel licht-Violett.png" id="2_jylrq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jylrq"]
+atlas = ExtResource("1_8npnt")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1thoq"]
+atlas = ExtResource("1_8npnt")
+region = Rect2(16, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_arcxk"]
+atlas = ExtResource("1_8npnt")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r6163"]
+atlas = ExtResource("1_8npnt")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2r5sd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jylrq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1thoq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_arcxk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r6163")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[node name="Fackel_Violett" type="AnimatedSprite2D"]
+z_index = -1
+sprite_frames = SubResource("SpriteFrames_2r5sd")
+frame_progress = 0.17943104
+script = ExtResource("2_1thoq")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(0, -1)
+energy = 1.5
+texture = ExtResource("2_jylrq")
+texture_scale = 1.2

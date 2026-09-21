@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dm41oa4kkia3p"
+path="res://.godot/imported/echo twr2.mp3-6cf671f79cfc7ec68e0724e5b93175e2.mp3str"
+
+[deps]
+
+source_file="res://Musik/Hauptmenü/echo twr2.mp3"
+dest_files=["res://.godot/imported/echo twr2.mp3-6cf671f79cfc7ec68e0724e5b93175e2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://b1b48crkn27j7"]
+
+[ext_resource type="Texture2D" uid="uid://b80qumwse3on2" path="res://Bosse/Gebiet_1/Phase 2/Projektile/Steinsplitter/Steinsplitter Land-Sheet.png" id="1_qg8uj"]
+[ext_resource type="Script" uid="uid://4wfwubpxack7" path="res://Bosse/Gebiet_1/Phase 2/Projektile/Steinsplitter/lava_shard.gd" id="1_xt4ao"]
+[ext_resource type="Texture2D" uid="uid://cmc61ncfmb0ue" path="res://Bosse/Gebiet_1/Phase 2/Projektile/Steinsplitter/Steinsplitter Loop-Sheet.png" id="2_xt4ao"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k0w7t"]
+atlas = ExtResource("1_qg8uj")
+region = Rect2(0, 0, 40, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5beaq"]
+atlas = ExtResource("1_qg8uj")
+region = Rect2(40, 0, 40, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sihsh"]
+atlas = ExtResource("1_qg8uj")
+region = Rect2(80, 0, 40, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_18tis"]
+atlas = ExtResource("1_qg8uj")
+region = Rect2(120, 0, 40, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xenbk"]
+atlas = ExtResource("2_xt4ao")
+region = Rect2(0, 0, 40, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0qkeb"]
+atlas = ExtResource("2_xt4ao")
+region = Rect2(40, 0, 40, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b4tr1"]
+atlas = ExtResource("2_xt4ao")
+region = Rect2(80, 0, 40, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f6qgq"]
+atlas = ExtResource("2_xt4ao")
+region = Rect2(120, 0, 40, 20)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_w7q71"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k0w7t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5beaq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sihsh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_18tis")
+}],
+"loop": false,
+"name": &"impact",
+"speed": 7.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xenbk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0qkeb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b4tr1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f6qgq")
+}],
+"loop": true,
+"name": &"loop",
+"speed": 9.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fsln5"]
+radius = 3.0
+
+[node name="LavaShard" type="Area2D" unique_id=1149936850]
+script = ExtResource("1_xt4ao")
+lifetime = 5.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=292748932]
+sprite_frames = SubResource("SpriteFrames_w7q71")
+animation = &"loop"
+frame_progress = 0.6041664
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=756845663]
+position = Vector2(-6, 0)
+shape = SubResource("CircleShape2D_fsln5")

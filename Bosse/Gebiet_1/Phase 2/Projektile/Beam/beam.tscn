@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://be3h0028yrpao"]
+
+[ext_resource type="Script" uid="uid://pl6tiq8w3fy6" path="res://Bosse/Gebiet_1/Phase 2/Projektile/Beam/beam.gd" id="1_itjj2"]
+[ext_resource type="Texture2D" uid="uid://dvpf7m64wxj30" path="res://Bosse/Gebiet_1/Phase 2/Projektile/Beam/Projectile BEAM END -Sheet.png" id="1_jyoor"]
+[ext_resource type="Texture2D" uid="uid://bf365gget4omm" path="res://Bosse/Gebiet_1/Phase 2/Projektile/Beam/Projectile BEAM Segment -Sheet.png" id="2_itjj2"]
+[ext_resource type="Texture2D" uid="uid://c6wqy4pu4q6vf" path="res://Bosse/Gebiet_1/Phase 2/Projektile/Beam/Projectile BEAM origin-Sheet.png" id="3_whp85"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1f53"]
+atlas = ExtResource("1_jyoor")
+region = Rect2(0, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_812py"]
+atlas = ExtResource("1_jyoor")
+region = Rect2(224, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0i6ny"]
+atlas = ExtResource("1_jyoor")
+region = Rect2(448, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qymq7"]
+atlas = ExtResource("1_jyoor")
+region = Rect2(672, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4l23t"]
+atlas = ExtResource("1_jyoor")
+region = Rect2(896, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t7xcr"]
+atlas = ExtResource("2_itjj2")
+region = Rect2(0, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f78n4"]
+atlas = ExtResource("2_itjj2")
+region = Rect2(224, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_apwtf"]
+atlas = ExtResource("2_itjj2")
+region = Rect2(448, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_acrg8"]
+atlas = ExtResource("2_itjj2")
+region = Rect2(672, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pwoqh"]
+atlas = ExtResource("3_whp85")
+region = Rect2(0, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q7b3a"]
+atlas = ExtResource("3_whp85")
+region = Rect2(224, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cr1md"]
+atlas = ExtResource("3_whp85")
+region = Rect2(448, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_503hx"]
+atlas = ExtResource("3_whp85")
+region = Rect2(672, 0, 224, 124)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3qxxx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s1f53")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_812py")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0i6ny")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qymq7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4l23t")
+}],
+"loop": false,
+"name": &"End",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t7xcr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f78n4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_apwtf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_acrg8")
+}],
+"loop": true,
+"name": &"Segment",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pwoqh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q7b3a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cr1md")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_503hx")
+}],
+"loop": true,
+"name": &"Start",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obe1c"]
+size = Vector2(32, 30.5)
+
+[node name="Beam" type="Area2D" unique_id=1125345466]
+z_index = 100
+script = ExtResource("1_itjj2")
+damage_tick_time = 2.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1260461874]
+z_index = 10
+sprite_frames = SubResource("SpriteFrames_3qxxx")
+animation = &"Segment"
+frame_progress = 0.40271097
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=829872157]
+position = Vector2(-32, 35)
+shape = SubResource("RectangleShape2D_obe1c")

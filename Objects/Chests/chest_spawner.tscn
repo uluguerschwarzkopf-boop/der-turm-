@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://daw5ga3gqn6dp"]
+
+[ext_resource type="Script" uid="uid://dnknlexv7bob" path="res://Objects/Chests/chest_spawner.gd" id="1_spawner"]
+
+[node name="ChestSpawner" type="Marker2D" unique_id=2124758726]
+script = ExtResource("1_spawner")
+silver_weight = 40.0
+gold_weight = 20.0

@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://cs731cj65tiv0"]
+
+[ext_resource type="Texture2D" uid="uid://ceh5odfqs7sw2" path="res://Objects/Kerzenständer-Sheet.png" id="1_kitfg"]
+[ext_resource type="Script" uid="uid://o7wfprdefr1l" path="res://Objects/fackel.gd" id="2_0o1ve"]
+[ext_resource type="Texture2D" uid="uid://dbmg5cyvc16of" path="res://Objects/Fakel licht.png" id="2_ebbg8"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0o1ve"]
+atlas = ExtResource("1_kitfg")
+region = Rect2(0, 0, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_87kxl"]
+atlas = ExtResource("1_kitfg")
+region = Rect2(32, 0, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_thq8j"]
+atlas = ExtResource("1_kitfg")
+region = Rect2(64, 0, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qlawc"]
+atlas = ExtResource("1_kitfg")
+region = Rect2(96, 0, 32, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bkocj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0o1ve")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_87kxl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_thq8j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qlawc")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Kerzenständer" type="AnimatedSprite2D" unique_id=1794686110]
+z_index = -1
+sprite_frames = SubResource("SpriteFrames_bkocj")
+frame_progress = 0.301733
+script = ExtResource("2_0o1ve")
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=896086435]
+texture_filter = 2
+position = Vector2(0, 4)
+energy = 0.6
+texture = ExtResource("2_ebbg8")
+texture_scale = 0.28
+
+[node name="PointLight2D2" type="PointLight2D" parent="." unique_id=1686577942]
+texture_filter = 2
+position = Vector2(-7, 4)
+energy = 0.6
+texture = ExtResource("2_ebbg8")
+texture_scale = 0.28
+
+[node name="PointLight2D3" type="PointLight2D" parent="." unique_id=1855324884]
+texture_filter = 2
+position = Vector2(7, 4)
+energy = 0.6
+texture = ExtResource("2_ebbg8")
+texture_scale = 0.28

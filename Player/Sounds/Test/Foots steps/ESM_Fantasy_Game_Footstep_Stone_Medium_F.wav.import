@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bqvb8bds38hwd"
+path="res://.godot/imported/ESM_Fantasy_Game_Footstep_Stone_Medium_F.wav-6f3626d9612ba0662d6f2e8556216e12.sample"
+
+[deps]
+
+source_file="res://Player/Sounds/Test/Foots steps/ESM_Fantasy_Game_Footstep_Stone_Medium_F.wav"
+dest_files=["res://.godot/imported/ESM_Fantasy_Game_Footstep_Stone_Medium_F.wav-6f3626d9612ba0662d6f2e8556216e12.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://c8yxfunjj38mg"]
+
+[ext_resource type="Texture2D" uid="uid://cswkj2pkw88e" path="res://details/Gebiet 1/Kleines Zeug/Spinnen Zeug/Sprite-0010.png" id="1_k6aht"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5cskn"]
+atlas = ExtResource("1_k6aht")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8cmvj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5cskn")
+}],
+"loop": true,
+"name": &"Spinnnenetz 1",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"new_animation",
+"speed": 5.0
+}]
+
+[node name="Details" type="AnimatedSprite2D" unique_id=1890338840]
+sprite_frames = SubResource("SpriteFrames_8cmvj")
+animation = &"new_animation"
+frame_progress = 0.17361112

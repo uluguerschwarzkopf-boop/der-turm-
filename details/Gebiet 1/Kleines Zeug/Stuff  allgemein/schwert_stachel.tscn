@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://b3smekatwn7w2"]
+
+[ext_resource type="Texture2D" uid="uid://eqf2wcvo7hp2" path="res://details/Gebiet 1/Kleines Zeug/Stuff  allgemein/Sprite-0012-Sheet.png" id="1_ylwjr"]
+[ext_resource type="Script" uid="uid://b77wa884if4oa" path="res://details/Gebiet 1/Kleines Zeug/Stuff  allgemein/schwert_stachel.gd" id="2_loop"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ndrj8"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oo0q5"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_14e5u"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bqwkg"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a402n"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_slnho"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jav1n"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q0wxp"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(448, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cj6pv"]
+atlas = ExtResource("1_ylwjr")
+region = Rect2(512, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_obtpr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ndrj8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oo0q5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_14e5u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bqwkg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a402n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_slnho")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jav1n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q0wxp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cj6pv")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Schwert Stachel" type="AnimatedSprite2D" unique_id=569526354]
+sprite_frames = SubResource("SpriteFrames_obtpr")
+frame_progress = 0.9845733
+script = ExtResource("2_loop")

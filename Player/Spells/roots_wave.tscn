@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://bp5fpai28ncxp"]
+
+[ext_resource type="Texture2D" uid="uid://b3rov2ksjnimf" path="res://Player/Sheets/Spells/Projectile/Roots end-Sheet.png" id="1_6j3xg"]
+[ext_resource type="Script" uid="uid://8mxb0yju58tu" path="res://Player/Spells/roots_wave.gd" id="1_g1s7v"]
+[ext_resource type="Texture2D" uid="uid://c8x3t154i6143" path="res://Player/Sheets/Spells/Projectile/Roots move-Sheet.png" id="2_h2jg7"]
+[ext_resource type="PackedScene" uid="uid://dkpxqars5h0pk" path="res://Player/Spells/roots_hold.tscn" id="2_snsmn"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h2jg7"]
+atlas = ExtResource("1_6j3xg")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g1s7v"]
+atlas = ExtResource("1_6j3xg")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_snsmn"]
+atlas = ExtResource("1_6j3xg")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ved8p"]
+atlas = ExtResource("1_6j3xg")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_30efi"]
+atlas = ExtResource("1_6j3xg")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ydkve"]
+atlas = ExtResource("1_6j3xg")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cqcrc"]
+atlas = ExtResource("2_h2jg7")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_csicc"]
+atlas = ExtResource("2_h2jg7")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vm833"]
+atlas = ExtResource("2_h2jg7")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hkuci"]
+atlas = ExtResource("2_h2jg7")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y7w4b"]
+atlas = ExtResource("2_h2jg7")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pxy6h"]
+atlas = ExtResource("2_h2jg7")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_demga"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h2jg7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g1s7v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_snsmn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ved8p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_30efi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ydkve")
+}],
+"loop": false,
+"name": &"End",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cqcrc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_csicc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vm833")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hkuci")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y7w4b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pxy6h")
+}],
+"loop": true,
+"name": &"Move",
+"speed": 11.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6j3xg"]
+size = Vector2(28, 9)
+
+[node name="Roots_Wave" type="Area2D" unique_id=801892917]
+script = ExtResource("1_g1s7v")
+speed = 45.0
+roots_hold_scene = ExtResource("2_snsmn")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=780106815]
+sprite_frames = SubResource("SpriteFrames_demga")
+animation = &"Move"
+frame_progress = 0.7873249
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=419258391]
+position = Vector2(0, -4.5)
+shape = SubResource("RectangleShape2D_6j3xg")

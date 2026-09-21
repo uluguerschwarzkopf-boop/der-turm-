@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://dfrhq4j1eknhg"]
+
+[ext_resource type="Script" uid="uid://cc68fknkan84k" path="res://Objects/Traps/Pfeilfalle/arrow_trap.gd" id="1_dt24g"]
+[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Skellete/Archer/arrow.tscn" id="2_kuhvw"]
+[ext_resource type="Texture2D" uid="uid://blymrnbybndk7" path="res://Objects/Traps/Pfeilfalle/mossy links.png" id="3_85lml"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7oo14"]
+atlas = ExtResource("3_85lml")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_axhns"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7oo14")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="mossy_arrow_trap_left" type="Node2D" unique_id=137356064]
+script = ExtResource("1_dt24g")
+arrow_scene = ExtResource("2_kuhvw")
+direction = -1.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=493992949]
+sprite_frames = SubResource("SpriteFrames_axhns")
+
+[node name="RayCast2D" type="RayCast2D" parent="." unique_id=410233971]
+target_position = Vector2(-114, 0)
+
+[node name="ShootPoint" type="Marker2D" parent="." unique_id=1607446666]
+position = Vector2(-7, 0)

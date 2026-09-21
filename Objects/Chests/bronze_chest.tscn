@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://d2op3lfj8nw4u"]
+
+[ext_resource type="Script" uid="uid://co5ed0wr1mrdh" path="res://Objects/Chests/chest.gd" id="1_sdlcc"]
+[ext_resource type="Texture2D" uid="uid://crjef6afsaywr" path="res://Objects/Chests/PNG/bronze Truhe.png" id="1_ubm4p"]
+[ext_resource type="Texture2D" uid="uid://bb63750usjbav" path="res://Objects/Chests/PNG/bronze Truhe offen.png" id="2_sdlcc"]
+[ext_resource type="Texture2D" uid="uid://o60mjjiynraj" path="res://Objects/Chests/PNG/bronze Truhe Aufschlagen-Sheet.png" id="3_ofh30"]
+[ext_resource type="Texture2D" uid="uid://cmu5bx6wgg55v" path="res://Objects/Fenster/Fenster Licht-Weiss.png" id="4_chestlight"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jgyv7"]
+atlas = ExtResource("1_ubm4p")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f0iqs"]
+atlas = ExtResource("2_sdlcc")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sjj8f"]
+atlas = ExtResource("3_ofh30")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jc3qj"]
+atlas = ExtResource("3_ofh30")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2fdo6"]
+atlas = ExtResource("3_ofh30")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jlkbi"]
+atlas = ExtResource("3_ofh30")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x3qhl"]
+atlas = ExtResource("3_ofh30")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0trrv"]
+atlas = ExtResource("3_ofh30")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_t746i"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jgyv7")
+}],
+"loop": true,
+"name": &"Closed",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f0iqs")
+}],
+"loop": true,
+"name": &"Opened",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sjj8f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jc3qj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2fdo6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jlkbi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x3qhl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0trrv")
+}],
+"loop": false,
+"name": &"Opening",
+"speed": 7.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ubm4p"]
+size = Vector2(14, 13)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sdlcc"]
+size = Vector2(16, 14)
+
+[node name="BronzeChest" type="Area2D" unique_id=1604495661]
+z_index = -1
+script = ExtResource("1_sdlcc")
+bronze_gold_max = 8
+silver_gold_min = 10
+silver_gold_max = 15
+silver_arrow_min = 3
+silver_arrow_max = 5
+silver_arrows_weight = 15.0
+gold_chest_gold_min = 15
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=602458268]
+position = Vector2(0, -16)
+sprite_frames = SubResource("SpriteFrames_t746i")
+animation = &"Closed"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1869094694]
+position = Vector2(0, -6.5)
+shape = SubResource("RectangleShape2D_ubm4p")
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=336705263]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=333386795]
+position = Vector2(0, -7)
+shape = SubResource("RectangleShape2D_sdlcc")
+
+[node name="ChestLight" type="PointLight2D" parent="." unique_id=2001002001]
+position = Vector2(0, -6)
+scale = Vector2(0.4, 0.4)
+color = Color(1, 0.72, 0.42, 1)
+energy = 0.3
+texture = ExtResource("4_chestlight")

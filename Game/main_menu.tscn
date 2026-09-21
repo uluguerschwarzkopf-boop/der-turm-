@@ -1,0 +1,62 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://Game/main_menu.gd" id="1_mainmenu"]
+[ext_resource type="Texture2D" path="res://Hauptseite/a6b48d44-2c15-4874-93cc-21028413b238.png" id="2_bgtex"]
+[ext_resource type="Texture2D" path="res://Hauptseite/banner_tower.png" id="3_bannertower"]
+[ext_resource type="Texture2D" path="res://Hauptseite/banner_left.png" id="4_bannerleft"]
+[ext_resource type="Texture2D" path="res://Hauptseite/banner_middle.png" id="5_bannermiddle"]
+[ext_resource type="Texture2D" path="res://Hauptseite/banner_right.png" id="6_bannerright"]
+[ext_resource type="Texture2D" path="res://Hauptseite/title_logo.png" id="7_titlelogo"]
+[ext_resource type="Texture2D" path="res://Hauptseite/spielstand_waehlen_logo.png" id="8_slotstitlelogo"]
+[ext_resource type="Texture2D" path="res://Hauptseite/select_save_logo.png" id="9_slotstitlelogoen"]
+[ext_resource type="Texture2D" path="res://Hauptseite/slot_frame.png" id="10_slotframe"]
+[ext_resource type="Texture2D" path="res://Hauptseite/settings_title_logo.png" id="11_settingstitlelogo"]
+[ext_resource type="Texture2D" path="res://Hauptseite/settings_title_logo_en.png" id="12_settingstitlelogoen"]
+
+[node name="MainMenu" type="Control"]
+script = ExtResource("1_mainmenu")
+background_texture = ExtResource("2_bgtex")
+title_texture = ExtResource("7_titlelogo")
+slots_title_texture = ExtResource("8_slotstitlelogo")
+slots_title_texture_en = ExtResource("9_slotstitlelogoen")
+slot_frame_texture = ExtResource("10_slotframe")
+settings_title_texture = ExtResource("11_settingstitlelogo")
+settings_title_texture_en = ExtResource("12_settingstitlelogoen")
+
+[node name="BackgroundTexture" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("2_bgtex")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TorchMarker1" type="Marker2D" parent="BackgroundTexture"]
+position = Vector2(1155, 894)
+
+[node name="TorchMarker2" type="Marker2D" parent="BackgroundTexture"]
+position = Vector2(1336, 889)
+
+[node name="BannerTower" type="Sprite2D" parent="BackgroundTexture" groups=["wind_banners"]]
+position = Vector2(1328.7, 352.5)
+texture = ExtResource("3_bannertower")
+centered = false
+offset = Vector2(-132.97, -42.0)
+
+[node name="BannerLeft" type="Sprite2D" parent="BackgroundTexture" groups=["wind_banners"]]
+position = Vector2(276.25, 986.25)
+texture = ExtResource("4_bannerleft")
+centered = false
+offset = Vector2(-91.0, -279.0)
+
+[node name="BannerMiddle" type="Sprite2D" parent="BackgroundTexture" groups=["wind_banners"]]
+position = Vector2(804.4, 1003.75)
+texture = ExtResource("5_bannermiddle")
+centered = false
+offset = Vector2(-83.53, -123.0)
+
+[node name="BannerRight" type="Sprite2D" parent="BackgroundTexture" groups=["wind_banners"]]
+position = Vector2(1565.8, 1011.25)
+texture = ExtResource("6_bannerright")
+centered = false
+offset = Vector2(-62.67, -199.0)

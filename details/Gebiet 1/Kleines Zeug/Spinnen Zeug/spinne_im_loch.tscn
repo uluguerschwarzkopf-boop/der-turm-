@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://q6j4541x61mc"]
+
+[ext_resource type="Texture2D" uid="uid://frhgeyjq37iq" path="res://details/Gebiet 1/Kleines Zeug/Spinnen Zeug/Sprite-0008-Sheet.png" id="1_quj0k"]
+[ext_resource type="Script" path="res://details/Gebiet 1/Kleines Zeug/Spinnen Zeug/spinne_im_loch.gd" id="2_loop"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_77pti"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2s76w"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uod5l"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_77cew"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3dn04"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rdyor"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s5ab0"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iu6e1"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_urcb3"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(1024, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lrfhu"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(1152, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v27i4"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(1280, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uxd6r"]
+atlas = ExtResource("1_quj0k")
+region = Rect2(1408, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lk47r"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_77pti")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2s76w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uod5l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_77cew")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3dn04")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rdyor")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s5ab0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iu6e1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_urcb3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lrfhu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v27i4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uxd6r")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
+
+[node name="Spinne im loch" type="AnimatedSprite2D" unique_id=1504225860]
+script = ExtResource("2_loop")
+sprite_frames = SubResource("SpriteFrames_lk47r")
+animation = &"default"
+frame_progress = 0.03888076

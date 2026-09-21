@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://dce3mjed1pa"]
+
+[ext_resource type="Texture2D" uid="uid://beciqeebycyne" path="res://Objects/Flaggen/Rote Flagge.png" id="1_vg7mc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oxthw"]
+atlas = ExtResource("1_vg7mc")
+region = Rect2(0, 0, 17, 51)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nvk88"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oxthw")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Rote Flagge" type="Node2D" unique_id=86776998]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=903972951]
+sprite_frames = SubResource("SpriteFrames_nvk88")

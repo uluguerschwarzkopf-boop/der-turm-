@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://b6h5u1pe5kjde"]
+
+[ext_resource type="Script" uid="uid://bn8yxjqgb4k60" path="res://Objects/Spikes/spike.gd" id="1_88hf8"]
+[ext_resource type="Texture2D" uid="uid://ct4hkhqeexly0" path="res://Objects/Spikes/Mossy normal.png" id="2_88hf8"]
+[ext_resource type="Texture2D" uid="uid://bggk2ocs8d0ac" path="res://Objects/Spikes/Mossy small.png" id="3_vo5mi"]
+[ext_resource type="Texture2D" uid="uid://ccs3n2s3tnd36" path="res://Objects/Spikes/Stein normal.png" id="4_sqplk"]
+[ext_resource type="Texture2D" uid="uid://deybp1u4x467n" path="res://Objects/Spikes/Stein small.png" id="5_0eb6m"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_18k3c"]
+size = Vector2(16, 10)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3x43v"]
+atlas = ExtResource("2_88hf8")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ktxjs"]
+atlas = ExtResource("3_vo5mi")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_esakf"]
+atlas = ExtResource("4_sqplk")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5fdns"]
+atlas = ExtResource("5_0eb6m")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_p3lbk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3x43v")
+}],
+"loop": true,
+"name": &"mossy",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ktxjs")
+}],
+"loop": true,
+"name": &"mossy small",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_esakf")
+}],
+"loop": true,
+"name": &"stone",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5fdns")
+}],
+"loop": true,
+"name": &"stone small",
+"speed": 5.0
+}]
+
+[node name="Spike" type="Area2D" unique_id=876921554]
+script = ExtResource("1_88hf8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1429914054]
+position = Vector2(0, 3)
+shape = SubResource("RectangleShape2D_18k3c")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2043180745]
+sprite_frames = SubResource("SpriteFrames_p3lbk")
+animation = &"stone small"

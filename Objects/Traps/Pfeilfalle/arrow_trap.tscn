@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://ghtdebk1bg5g"]
+
+[ext_resource type="Script" uid="uid://cc68fknkan84k" path="res://Objects/Traps/Pfeilfalle/arrow_trap.gd" id="1_7rthd"]
+[ext_resource type="Texture2D" uid="uid://g0cy7gy86jfl" path="res://Objects/Traps/Pfeilfalle/Pfeilfalle.png" id="1_c2ej1"]
+[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Skellete/Archer/arrow.tscn" id="2_s35xg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7rthd"]
+atlas = ExtResource("1_c2ej1")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_s35xg"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7rthd")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="ArrowTrap" type="Node2D" unique_id=595298373]
+script = ExtResource("1_7rthd")
+arrow_scene = ExtResource("2_s35xg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1473357713]
+sprite_frames = SubResource("SpriteFrames_s35xg")
+
+[node name="RayCast2D" type="RayCast2D" parent="." unique_id=397581717]
+target_position = Vector2(127, 0)
+
+[node name="ShootPoint" type="Marker2D" parent="." unique_id=591925408]
+position = Vector2(7, 0)

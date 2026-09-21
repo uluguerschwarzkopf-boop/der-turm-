@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://ctxwibv8efg17"]
+
+[ext_resource type="Texture2D" uid="uid://djy4h6efv2x2u" path="res://Objects/Flaggen/blaue Flagge.png" id="1_nmatl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ohmg6"]
+atlas = ExtResource("1_nmatl")
+region = Rect2(0, 0, 17, 51)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lmfd4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ohmg6")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="blaue flagge" type="Node2D" unique_id=930336001]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1086199764]
+sprite_frames = SubResource("SpriteFrames_lmfd4")

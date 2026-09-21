@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c3465wdg5fgev"
+path="res://.godot/imported/clsoe.mp3-8885581285e50a69a93241773ef147d6.mp3str"
+
+[deps]
+
+source_file="res://Player/Sounds/Test/Door open und close/clsoe.mp3"
+dest_files=["res://.godot/imported/clsoe.mp3-8885581285e50a69a93241773ef147d6.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://6gcd1uphsl0s"
+path="res://.godot/imported/untitled (1).mp3-f2739da4946391b12415fdb7f1a89158.mp3str"
+
+[deps]
+
+source_file="res://Player/Sounds/fertig/Footstep/untitled (1).mp3"
+dest_files=["res://.godot/imported/untitled (1).mp3-f2739da4946391b12415fdb7f1a89158.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

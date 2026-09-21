@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://d1yo7xc8qsca6"]
+
+[ext_resource type="Texture2D" uid="uid://clclqm65gxa4w" path="res://details/Gebiet 1/Vordergrund/Ranken/Ranke 1.png" id="1_4udjy"]
+[ext_resource type="Texture2D" uid="uid://cm4gshs2kyfgf" path="res://details/Gebiet 1/Vordergrund/Ranken/Ranke 2.png" id="2_bwu1w"]
+[ext_resource type="Script" uid="uid://c0bx751jx7x7b" path="res://details/Gebiet 1/Vordergrund/Ranken/ranken_parallax.gd" id="3_parallax"]
+[ext_resource type="Script" uid="uid://dl7eydfcwo7is" path="res://Objects/vordergrund_variant_picker.gd" id="4_variant"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ujnhc"]
+atlas = ExtResource("1_4udjy")
+region = Rect2(0, 0, 44, 165)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mkati"]
+atlas = ExtResource("2_bwu1w")
+region = Rect2(0, 0, 80, 152)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_81erb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ujnhc")
+}],
+"loop": true,
+"name": &"Ranke 1",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mkati")
+}],
+"loop": true,
+"name": &"Rnake 2",
+"speed": 5.0
+}]
+
+[node name="Ranken VOR_" type="Parallax2D" unique_id=1967414109]
+z_index = 5
+scroll_scale = Vector2(1.18, 1.03)
+script = ExtResource("4_variant")
+variant = "Ranke 1"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=588939705]
+sprite_frames = SubResource("SpriteFrames_81erb")
+animation = &"Ranke 1"
+frame_progress = 0.26641577
+script = ExtResource("3_parallax")

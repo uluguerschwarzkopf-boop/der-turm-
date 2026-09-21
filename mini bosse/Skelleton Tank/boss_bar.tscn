@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://c4udbeot2g8qd"]
+
+[ext_resource type="Script" uid="uid://cax6hiwxbd8c1" path="res://mini bosse/Skelleton Tank/boss_bar.gd" id="1_e0lr4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bu6ku"]
+bg_color = Color(0.12955844, 0.12955847, 0.12955844, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0lr4"]
+bg_color = Color(0.85490197, 0, 0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="BossBar" type="CanvasLayer" unique_id=955541983]
+script = ExtResource("1_e0lr4")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1511057922]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -51.0
+offset_right = 250.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1259686116]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -51.0
+offset_right = 250.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=79032666]
+layout_mode = 2
+text = "Skeleton Tank"
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1431146501]
+custom_minimum_size = Vector2(500, 24)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bu6ku")
+theme_override_styles/fill = SubResource("StyleBoxFlat_e0lr4")
+value = 100.0
+show_percentage = false

@@ -1,0 +1,151 @@
+[gd_scene format=3 uid="uid://cquwktqlacnsa"]
+
+[ext_resource type="Texture2D" uid="uid://bnwx2hjkb0rli" path="res://Bosse/Gebiet_1/Phase 1/Projektile/Flammensäule-Sheet.png" id="1_qgjua"]
+[ext_resource type="Script" uid="uid://dlybrl61csv7q" path="res://Bosse/Gebiet_1/Phase 1/Projektile/fire_pillar.gd" id="1_u71cc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u71cc"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(0, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iwg8l"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(124, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mvawp"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(248, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_trf23"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(372, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a0a70"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(496, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5av3p"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(620, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j412w"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(744, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_03263"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(868, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iw0qq"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(992, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fvjuc"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1116, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cipmj"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1240, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ettuo"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1364, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c1ixu"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1488, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pc60r"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1612, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_acyin"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1736, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ldr0v"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1860, 0, 124, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qxnm3"]
+atlas = ExtResource("1_qgjua")
+region = Rect2(1984, 0, 124, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rt1lp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u71cc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iwg8l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mvawp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_trf23")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a0a70")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5av3p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j412w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_03263")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iw0qq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fvjuc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cipmj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ettuo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c1ixu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pc60r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_acyin")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ldr0v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qxnm3")
+}],
+"loop": false,
+"name": &"FirePillar",
+"speed": 6.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1dt1a"]
+radius = 9.0
+height = 60.0
+
+[node name="FirePillar" type="Area2D" unique_id=702076189]
+script = ExtResource("1_u71cc")
+damage_start_frame = 6
+damage_end_frame = 12
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2028222004]
+position = Vector2(-3, -32)
+sprite_frames = SubResource("SpriteFrames_rt1lp")
+animation = &"FirePillar"
+frame = 16
+frame_progress = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=602140553]
+position = Vector2(2, -30)
+shape = SubResource("CapsuleShape2D_1dt1a")

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://c7ranke0v1nes"]
+
+[ext_resource type="Script" path="res://Objects/Ranken/ranke.gd" id="1_ranke"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ranke"]
+size = Vector2(16, 32)
+
+[node name="Ranke" type="Node2D"]
+script = ExtResource("1_ranke")
+tile_height = 2
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="TriggerArea" type="Area2D" parent="."]
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TriggerArea"]
+position = Vector2(8, 16)
+shape = SubResource("RectangleShape2D_ranke")

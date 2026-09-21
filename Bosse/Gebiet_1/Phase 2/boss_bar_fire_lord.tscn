@@ -1,0 +1,224 @@
+[gd_scene format=3 uid="uid://dxboo5o2iiytd"]
+
+[ext_resource type="Texture2D" uid="uid://dy0tqetrcrjp8" path="res://Bosse/Gebiet_1/Phase 1/Boss bar/Boss bar Phase 1 Brennend Death-Sheet.png" id="1_ktgbp"]
+[ext_resource type="Script" uid="uid://cgp7imdwiaynd" path="res://Bosse/Gebiet_1/Phase 2/boss_bar_fire_lord.gd" id="1_nhb73"]
+[ext_resource type="Texture2D" uid="uid://dfy1vs66tuw3s" path="res://Bosse/Gebiet_1/Phase 1/Boss bar/Boss bar Phase 1 Brennend-Sheet.png" id="2_nhb73"]
+[ext_resource type="Texture2D" uid="uid://ccy6u0js5uxh1" path="res://Bosse/Gebiet_1/Phase 1/Boss bar/Boss bar Phase 1 Brennend Spawn-Sheet.png" id="3_s1v6g"]
+[ext_resource type="Texture2D" uid="uid://yvq2ecgvp02j" path="res://Bosse/Gebiet_1/Phase 1/Boss bar/Boss bar Phase 1 normal.png" id="4_5s068"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nhb73"]
+bg_color = Color(0.12955844, 0.12955847, 0.12955844, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s1v6g"]
+bg_color = Color(0.85490197, 0, 0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_45m8q"]
+atlas = ExtResource("1_ktgbp")
+region = Rect2(0, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n5hdn"]
+atlas = ExtResource("1_ktgbp")
+region = Rect2(1000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ptnot"]
+atlas = ExtResource("1_ktgbp")
+region = Rect2(2000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kw31f"]
+atlas = ExtResource("1_ktgbp")
+region = Rect2(3000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t5slm"]
+atlas = ExtResource("1_ktgbp")
+region = Rect2(4000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_assic"]
+atlas = ExtResource("2_nhb73")
+region = Rect2(0, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uvj8f"]
+atlas = ExtResource("2_nhb73")
+region = Rect2(1000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nygir"]
+atlas = ExtResource("2_nhb73")
+region = Rect2(2000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tcon5"]
+atlas = ExtResource("2_nhb73")
+region = Rect2(3000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4267r"]
+atlas = ExtResource("3_s1v6g")
+region = Rect2(0, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jfx5i"]
+atlas = ExtResource("3_s1v6g")
+region = Rect2(1000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ikuv4"]
+atlas = ExtResource("3_s1v6g")
+region = Rect2(2000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ybkt"]
+atlas = ExtResource("3_s1v6g")
+region = Rect2(3000, 0, 1000, 250)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ap8t4"]
+atlas = ExtResource("4_5s068")
+region = Rect2(0, 0, 1000, 250)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5lur0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_45m8q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n5hdn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ptnot")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kw31f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t5slm")
+}],
+"loop": false,
+"name": &"Fire_End",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_assic")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uvj8f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nygir")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tcon5")
+}],
+"loop": true,
+"name": &"Fire_Loop",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4267r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jfx5i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ikuv4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2ybkt")
+}],
+"loop": false,
+"name": &"Fire_Start",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ap8t4")
+}],
+"loop": false,
+"name": &"normal",
+"speed": 5.0
+}]
+
+[sub_resource type="Gradient" id="Gradient_s1v6g"]
+
+[node name="Boss bar Fire Lord" type="CanvasLayer" unique_id=2037819220]
+script = ExtResource("1_nhb73")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1652977762]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=95065588]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_right = 250.0
+offset_bottom = 101.0
+grow_horizontal = 2
+
+[node name="LabelGlow" type="Label" parent="VBoxContainer" unique_id=437805230]
+modulate = Color(1, 1, 1, 0.011764706)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.41568628, 0, 1)
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=1677065091]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.99607843, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = "
+
+The Burning Core
+
+
+
+
+
+
+
+"
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/Label" unique_id=1197450349]
+custom_minimum_size = Vector2(500, 24)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 22.0
+offset_right = 503.0
+offset_bottom = 46.0
+theme_override_styles/background = SubResource("StyleBoxFlat_nhb73")
+theme_override_styles/fill = SubResource("StyleBoxFlat_s1v6g")
+value = 100.0
+show_percentage = false
+
+[node name="BarHolder" type="Control" parent="VBoxContainer/Label" unique_id=1726836398]
+custom_minimum_size = Vector2(520, 32)
+anchors_preset = 0
+offset_left = -326.0
+offset_top = -597.0
+offset_right = -286.0
+offset_bottom = -557.0
+
+[node name="Border" type="AnimatedSprite2D" parent="VBoxContainer/Label/BarHolder" unique_id=2009635861]
+visible = false
+position = Vector2(533, 648)
+sprite_frames = SubResource("SpriteFrames_5lur0")
+animation = &"Fire_End"
+
+[node name="FireParticles" type="CPUParticles2D" parent="." unique_id=1348391946]
+position = Vector2(578, 41)
+amount = 40
+emission_shape = 3
+emission_rect_extents = Vector2(250, 2)
+direction = Vector2(0, -1)
+spread = 20.0
+gravity = Vector2(0, -10)
+initial_velocity_min = 12.0
+initial_velocity_max = 25.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(0.80784315, 0, 0, 1)
+color_ramp = SubResource("Gradient_s1v6g")
+anim_speed_min = 1.0
+anim_speed_max = 2.0

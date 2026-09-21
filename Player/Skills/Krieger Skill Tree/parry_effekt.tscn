@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://bqy0gkswe77q6"]
+
+[ext_resource type="Texture2D" uid="uid://dnglki4x4tpkq" path="res://Player/Skills/Krieger Skill Tree/Parry effekt-Sheet.png" id="1_rhhc6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kukmp"]
+atlas = ExtResource("1_rhhc6")
+region = Rect2(0, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ddhnf"]
+atlas = ExtResource("1_rhhc6")
+region = Rect2(150, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5olir"]
+atlas = ExtResource("1_rhhc6")
+region = Rect2(300, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_83vhk"]
+atlas = ExtResource("1_rhhc6")
+region = Rect2(450, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_364wc"]
+atlas = ExtResource("1_rhhc6")
+region = Rect2(600, 0, 150, 100)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hhrlq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kukmp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ddhnf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5olir")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_83vhk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_364wc")
+}],
+"loop": false,
+"name": &"default",
+"speed": 7.0
+}]
+
+[node name="Parry_effekt" type="AnimatedSprite2D" unique_id=1191033371]
+sprite_frames = SubResource("SpriteFrames_hhrlq")
+frame = 4
+frame_progress = 1.0

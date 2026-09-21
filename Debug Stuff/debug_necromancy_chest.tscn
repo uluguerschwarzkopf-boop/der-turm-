@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://ud4hfa708wyw"]
+
+[ext_resource type="Texture2D" uid="uid://dlne76mpx0hkh" path="res://icon.svg" id="1_4c11w"]
+[ext_resource type="Script" uid="uid://bpgvgi38te6c2" path="res://Debug Stuff/debug_necromancy_chest.gd" id="1_ose0y"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4c11w"]
+size = Vector2(12, 14)
+
+[node name="DebugNecromancyChest" type="Area2D" unique_id=1394896131]
+script = ExtResource("1_ose0y")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1826967596]
+position = Vector2(0.0859371, -6.695313)
+scale = Vector2(0.09240723, 0.10461426)
+texture = ExtResource("1_4c11w")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1160799145]
+position = Vector2(0, -7)
+shape = SubResource("RectangleShape2D_4c11w")

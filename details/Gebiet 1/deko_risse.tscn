@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://xslqdc2fa60f"]
+
+[ext_resource type="Texture2D" uid="uid://dehx2hto03sc7" path="res://details/Gebiet 1/Risse/Neue Risse/Riss 1.png" id="1_031d2"]
+[ext_resource type="Texture2D" uid="uid://iawceq41bkq" path="res://details/Gebiet 1/Risse/Neue Risse/Riss 2.png" id="2_flx0i"]
+[ext_resource type="Texture2D" uid="uid://calmbuvv2tj3t" path="res://details/Gebiet 1/Risse/Neue Risse/Riss 3.png" id="3_t10gy"]
+[ext_resource type="Texture2D" uid="uid://d3hhrn572hi4j" path="res://details/Gebiet 1/Risse/Neue Risse/Riss 4.png" id="4_y4puq"]
+[ext_resource type="Texture2D" uid="uid://dt82ptwxvcw3g" path="res://details/Gebiet 1/Risse/Neue Risse/Riss 5.png" id="5_vhu3e"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n6w6r"]
+atlas = ExtResource("1_031d2")
+region = Rect2(0, 0, 31, 42)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t10gy"]
+atlas = ExtResource("2_flx0i")
+region = Rect2(0, 0, 20, 36)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o05bm"]
+atlas = ExtResource("3_t10gy")
+region = Rect2(0, 0, 14, 19)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7y4jl"]
+atlas = ExtResource("4_y4puq")
+region = Rect2(0, 0, 13, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qogvr"]
+atlas = ExtResource("5_vhu3e")
+region = Rect2(0, 0, 12, 28)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ctfh3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n6w6r")
+}],
+"loop": true,
+"name": &"Riss 1",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t10gy")
+}],
+"loop": true,
+"name": &"Riss 2",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o05bm")
+}],
+"loop": true,
+"name": &"Riss 3",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7y4jl")
+}],
+"loop": true,
+"name": &"Riss 4",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qogvr")
+}],
+"loop": true,
+"name": &"Riss 5",
+"speed": 5.0
+}]
+
+[node name="Deko_Risse" type="AnimatedSprite2D" unique_id=1737324685]
+z_index = -1
+sprite_frames = SubResource("SpriteFrames_ctfh3")
+animation = &"Riss 5"

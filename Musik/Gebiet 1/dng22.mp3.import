@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b8ubmp217loqk"
+path="res://.godot/imported/dng22.mp3-ee8426475166437dae21446711b953b3.mp3str"
+
+[deps]
+
+source_file="res://Musik/Gebiet 1/dng22.mp3"
+dest_files=["res://.godot/imported/dng22.mp3-ee8426475166437dae21446711b953b3.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

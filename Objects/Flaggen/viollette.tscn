@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://xf5xut5e73ne"]
+
+[ext_resource type="Texture2D" uid="uid://78i1f73gevxn" path="res://Objects/Flaggen/Viollete Flagge.png" id="1_ax118"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5dpl1"]
+atlas = ExtResource("1_ax118")
+region = Rect2(0, 0, 17, 51)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ore23"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5dpl1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="viollette" type="Node2D" unique_id=1989841721]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=717367887]
+sprite_frames = SubResource("SpriteFrames_ore23")

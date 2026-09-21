@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://cdko6oukbvjqr"]
+
+[ext_resource type="Texture2D" uid="uid://has23jtt6k03" path="res://Objects/Dark platform.png" id="1_gbr32"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_68e11"]
+size = Vector2(16, 5)
+
+[node name="Dark platform" type="StaticBody2D" unique_id=1540202155 groups=["one_way_platforms"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=735684604]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_68e11")
+one_way_collision = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=871773588]
+texture = ExtResource("1_gbr32")

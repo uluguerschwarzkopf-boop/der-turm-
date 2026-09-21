@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://dpucph1abc5nd"]
+
+[ext_resource type="Script" uid="uid://b768mwv65u4ot" path="res://Händler/Gebiet 1/händler_1.gd" id="1_eesr2"]
+[ext_resource type="Texture2D" uid="uid://cleh2of4xy3gb" path="res://Händler/Gebiet 1/Händler Idle-Sheet.png" id="1_hfy0e"]
+[ext_resource type="Script" uid="uid://bqpqh65gvu2mv" path="res://Player/interaction_prompt.gd" id="2_promptscript"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eesr2"]
+atlas = ExtResource("1_hfy0e")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5stpy"]
+atlas = ExtResource("1_hfy0e")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_13j8p"]
+atlas = ExtResource("1_hfy0e")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ctor"]
+atlas = ExtResource("1_hfy0e")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_f7ipn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eesr2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5stpy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_13j8p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ctor")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 3.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eesr2"]
+size = Vector2(48, 43)
+
+[node name="Händler_1" type="Node2D" unique_id=1810040017]
+z_index = -1
+script = ExtResource("1_eesr2")
+prompt_font_size = 16
+prompt_vertical_offset = -54.0
+prompt_wave_height = 2.0
+shop_panel_scale = 2.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1865960662]
+position = Vector2(0, -32)
+sprite_frames = SubResource("SpriteFrames_f7ipn")
+animation = &"Idle"
+frame_progress = 0.6883685
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=146269960]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=405773770]
+position = Vector2(0, -21.5)
+shape = SubResource("RectangleShape2D_eesr2")
+
+[node name="PromptLabel" type="Node2D" parent="InteractionArea" unique_id=699659877]
+script = ExtResource("2_promptscript")
+wave_height = 2.0
+vertical_offset = -120.0

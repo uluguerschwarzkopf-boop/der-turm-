@@ -1,0 +1,143 @@
+[gd_scene format=3 uid="uid://bhfrnyxut00xa"]
+
+[ext_resource type="Texture2D" uid="uid://bcovrmrutegio" path="res://Objects/Traps/Speerfalle/Speerfalle-Sheet.png" id="1_ko78u"]
+[ext_resource type="Script" uid="uid://b50wbbxo1u7j4" path="res://Objects/Traps/Speerfalle/spear_trap.gd" id="1_xiafb"]
+[ext_resource type="Texture2D" uid="uid://c1ns3mkwhj0o0" path="res://Objects/Traps/Speerfalle/idle.png" id="2_xiafb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1da3c"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(0, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wqd1y"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(46, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_odbta"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(92, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s78ox"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(138, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yi0wh"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(184, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nflgg"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(230, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iscak"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(276, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mk8lm"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(322, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a0t5u"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(368, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ofilb"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(414, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hc60p"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(460, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tn0g4"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(506, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gwnrc"]
+atlas = ExtResource("1_ko78u")
+region = Rect2(552, 0, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ggtpl"]
+atlas = ExtResource("2_xiafb")
+region = Rect2(0, 0, 46, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hv4oq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1da3c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wqd1y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_odbta")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s78ox")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yi0wh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nflgg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iscak")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mk8lm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a0t5u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ofilb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hc60p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tn0g4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gwnrc")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ggtpl")
+}],
+"loop": false,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xiafb"]
+size = Vector2(14, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xtvdd"]
+size = Vector2(6, 48)
+
+[node name="SpearTrap" type="Node2D" unique_id=1690512010]
+script = ExtResource("1_xiafb")
+damage_start_frame = 3
+damage_end_frame = 4
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1585572270]
+position = Vector2(-1, 0)
+sprite_frames = SubResource("SpriteFrames_hv4oq")
+animation = &"idle"
+
+[node name="DetectionArea" type="Area2D" parent="." unique_id=2111554981]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=193915745]
+shape = SubResource("RectangleShape2D_xiafb")
+
+[node name="DamageArea" type="Area2D" parent="." unique_id=933744001]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1901455868]
+position = Vector2(0, 8)
+shape = SubResource("RectangleShape2D_xtvdd")

@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://c0ya04xhknrqj"]
+
+[ext_resource type="Texture2D" uid="uid://c1rkjrsxnn6g4" path="res://Objects/Fenster/Rotes fenster.png" id="1_7uacf"]
+[ext_resource type="Texture2D" uid="uid://btia1wxnuljrm" path="res://Objects/Fenster/Fenster Licht-Rot.png" id="2_fensterlicht"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4xdn4"]
+atlas = ExtResource("1_7uacf")
+region = Rect2(0, 0, 53, 82)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xjw3t"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4xdn4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Rotes fenster" type="Node2D" unique_id=1182483333]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1789089614]
+sprite_frames = SubResource("SpriteFrames_xjw3t")
+
+[node name="FensterLicht" type="PointLight2D" parent="." unique_id=1203997507]
+position = Vector2(0, 43)
+energy = 5.0
+texture = ExtResource("2_fensterlicht")
