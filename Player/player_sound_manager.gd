@@ -21,6 +21,8 @@ extends Node
 #      skill_iron_skin
 #      skill_dash_slash
 #      skill_parry
+#      skill_execution        - Execution-Treffer (passiver Skill)
+#      skill_backstep         - Backstep-Treffer (aktiver Skill)
 #      Door Open              - Exit-Tür wird beim Rausgehen berührt
 #      Door Close             - SpawnDoor geht beim Betreten eines
 #                               Raums zu (jeder normale Raumeintritt)

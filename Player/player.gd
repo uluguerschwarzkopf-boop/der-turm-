@@ -184,6 +184,7 @@ func _is_active_skill_busy() -> bool:
 		or _iron_skin_active
 		or _dash_slash_active
 		or _parry_active
+		or _backstep_active
 	)
 
 var scene_is_changing: bool = false
@@ -430,6 +431,55 @@ func _physics_process(delta: float) -> void:
 		if sprite != null and sprite.frame < dash_slash_hit_frame:
 			velocity.x = _dash_slash_direction * dash_slash_speed
 		else:
+			velocity.x = 0
+
+		move_and_slide()
+		return
+
+	# Backstep: dasht wie Dash Slash mit fester Geschwindigkeit, bis der
+	# Spieler wirklich hinter der Kollisions-Hitbox des Ziels
+	# angekommen ist (siehe _backstep_landing_x / _try_start_backstep()
+	# für den Grund und add_collision_exception_with(), warum der
+	# Gegner dabei NICHT im Weg steht) - Nutzer-Wunsch: "wenn man schon
+	# durch ihn durch ist, wird der Dash abgebrochen". backstep_
+	# pass_frame ist dabei nur noch ein Sicherheitsnetz, falls die
+	# Position aus irgendeinem Grund nie erreicht wird (z.B. eine Wand
+	# im Weg). Sobald angekommen, wird exakt auf die Landeposition
+	# geschnappt und der Spieler steht still, während die restliche
+	# Animation (inkl. Treffer-Frame für die eigene Hitbox) fertig
+	# abläuft.
+	if _backstep_active:
+		if not _backstep_passed:
+			var reached_by_position: bool = (
+				(
+					_backstep_direction > 0.0
+					and global_position.x >= _backstep_landing_x
+				)
+				or (
+					_backstep_direction < 0.0
+					and global_position.x <= _backstep_landing_x
+				)
+			)
+			var reached_by_frame_failsafe: bool = (
+				sprite != null and sprite.frame >= backstep_pass_frame
+			)
+
+			if reached_by_position or reached_by_frame_failsafe:
+				_backstep_passed = true
+
+				# Nur bei "echtem" Ankommen exakt auf die Landeposition
+				# schnappen - beim Sicherheitsnetz (z.B. eine Wand hat
+				# den Dash vorher gestoppt) würde das den Spieler durch
+				# die Wand teleportieren, das wollen wir nicht.
+				if reached_by_position:
+					global_position.x = _backstep_landing_x
+
+				if health != null:
+					health.invincible = false
+			else:
+				velocity.x = _backstep_direction * backstep_speed
+
+		if _backstep_passed:
 			velocity.x = 0
 
 		move_and_slide()
@@ -835,6 +885,10 @@ func _use_equipped_skill() -> void:
 
 	if skill_id == DASH_SLASH_SKILL_ID:
 		_try_start_dash_slash()
+		return
+
+	if skill_id == BACKSTEP_SKILL_ID:
+		_try_start_backstep()
 		return
 
 	if skill_id == PARRY_SKILL_ID:
@@ -1383,6 +1437,309 @@ func _end_dash_slash() -> void:
 		sprite.animation_finished.disconnect(
 			_on_dash_slash_animation_finished
 		)
+
+	if not dead:
+		sprite.play("idle")
+
+
+# ============================================================
+# BACKSTEP (PFAD DER STÄRKE, MOBILITÄTS-ZWEIG)
+# ============================================================
+
+# Nutzer-Wunsch: geht nur bei GENAU EINEM Gegner in Reichweite (siehe
+# combat.find_backstep_target()) und nur, wenn hinter dem Ziel fester
+# Boden ist (siehe _has_floor_behind_target() weiter unten, sonst
+# würde der Spieler danach runterfallen). Läuft dann in Blickrichtung
+# durch den Gegner HINDURCH (siehe add_collision_exception_with()
+# unten - nur für dieses eine Ziel, Wände/Boden bleiben ganz normal
+# solide) bis er wirklich HINTER der Kollisions-Hitbox des Gegners
+# angekommen ist (siehe _get_backstep_landing_position() - berechnet
+# aus der tatsächlichen Breite des Gegners, nicht aus einem festen
+# Rate-Wert). Der Dash wird also nicht mehr nach einer festen Anzahl
+# Frames abgebrochen, sondern genau dann, wenn der Spieler diese
+# Position erreicht (bzw. spätestens bei backstep_pass_frame als
+# Sicherheitsnetz, falls z.B. eine Wand im Weg ist) - ab da steht der
+# Spieler und die restliche Animation läuft normal weiter. Während des
+# gesamten Dashs (bis zum Ankommen) ist der Spieler unsterblich (siehe
+# health.invincible). Auf backstep_hit_frame löst die eigene Backstep-
+# Hitbox den Schaden aus (siehe Player/player_combat.gd
+# activate_backstep_hitbox()).
+const BACKSTEP_SKILL_ID: StringName = &"backstep"
+const BACKSTEP_ANIM: StringName = &"backstep"
+
+@export_group("Aktiver Skill - Backstep")
+@export var backstep_speed: float = 500.0
+@export var backstep_damage: int = 2
+@export var backstep_vigor_cost: int = 70
+
+# Sicherheitsnetz: spätestens auf diesem Frame wird der Dash auf
+# jeden Fall beendet, auch falls die Landeposition (siehe unten) aus
+# irgendeinem Grund nie erreicht wird (z.B. eine Wand blockiert).
+@export var backstep_pass_frame: int = 9
+@export var backstep_hit_frame: int = 14
+
+# Zusätzlicher Sicherheitsabstand (in Pixeln) HINTER der tatsächlichen
+# Kollisions-Hitbox des Gegners (siehe _get_target_half_width() unten)
+# - die eigentliche Breite des Gegners wird automatisch ermittelt,
+# das hier ist nur noch der Puffer obendrauf, damit der Spieler nicht
+# direkt an der Kante klebt.
+@export var backstep_land_offset: float = 8.0
+
+var _backstep_active: bool = false
+var _backstep_direction: float = 1.0
+var _backstep_target: Node = null
+
+# Die X-Position, an der der Dash enden soll - genau hinter der
+# Kollisions-Hitbox des Ziels (siehe _get_backstep_landing_position()).
+# Wird beim Start berechnet und dann jeden Physik-Frame geprüft.
+var _backstep_landing_x: float = 0.0
+
+# true, sobald der Spieler diese Position erreicht (oder das
+# Sicherheitsnetz backstep_pass_frame gegriffen) hat - ab dann steht
+# der Spieler still, auch wenn die Animation noch weiterläuft.
+var _backstep_passed: bool = false
+
+
+func _try_start_backstep() -> void:
+	if dead or control_locked or scene_is_changing:
+		return
+
+	if _is_active_skill_busy():
+		return
+
+	if is_rolling or is_drinking:
+		return
+
+	if combat != null and combat.attacking:
+		return
+
+	if sprite == null:
+		return
+
+	if (
+		sprite.sprite_frames == null
+		or not sprite.sprite_frames.has_animation(BACKSTEP_ANIM)
+	):
+		push_warning(
+			"Backstep: Animation '" + String(BACKSTEP_ANIM)
+			+ "' fehlt auf dem Player-Sprite."
+		)
+		return
+
+	if combat == null or not combat.has_method("find_backstep_target"):
+		return
+
+	# Nutzer-Wunsch: "geht nur bei einzelnden Gegnern" - bei keinem
+	# oder mehreren gleichzeitig in Reichweite (z.B. hintereinander
+	# aufgereiht) startet der Skill gar nicht erst.
+	var target: Variant = combat.find_backstep_target()
+
+	if target == null or not (target is Node2D):
+		print("Backstep: kein einzelner Gegner in Reichweite.")
+		return
+
+	if get_node_or_null("/root/RunState") == null:
+		return
+
+	if RunState.current_vigor < backstep_vigor_cost:
+		print(
+			"Backstep: nicht genug Vigor (",
+			RunState.current_vigor,
+			"/",
+			backstep_vigor_cost,
+			" nötig)."
+		)
+		return
+
+	var dash_direction: float = 1.0 if facing_right else -1.0
+
+	# Nutzer-Wunsch: kein Boden hinter dem Ziel (Loch) -> keine
+	# Aktivierung, sonst würde der Spieler nach dem Backstep
+	# runterfallen.
+	if not _has_floor_behind_target(target as Node2D, dash_direction):
+		print("Backstep: kein fester Boden hinter dem Ziel.")
+		return
+
+	RunState.spend_vigor(backstep_vigor_cost)
+
+	_backstep_active = true
+	_backstep_direction = dash_direction
+	_backstep_target = target
+	_backstep_passed = false
+	_backstep_landing_x = _get_backstep_landing_position(
+		target as Node2D,
+		dash_direction
+	).x
+
+	# Nutzer-Wunsch: "während dem Dash bist du unsterblich" - siehe
+	# _on_backstep_frame_changed() weiter unten, wo das ab
+	# backstep_pass_frame wieder ausgeschaltet wird.
+	if health != null:
+		health.invincible = true
+
+	# Nutzer-Wunsch: der Spieler wird zum "Geist" für GENAU dieses eine
+	# Ziel, damit er beim Dash durch den Gegner hindurchgehen kann,
+	# statt daran abgeblockt zu werden - betrifft NUR die Kollision mit
+	# diesem einen Gegner, Wände/Boden bleiben über move_and_slide()
+	# ganz normal solide (siehe _end_backstep() weiter unten, wo das
+	# wieder aufgehoben wird).
+	add_collision_exception_with(target)
+
+	if not sprite.frame_changed.is_connected(_on_backstep_frame_changed):
+		sprite.frame_changed.connect(_on_backstep_frame_changed)
+
+	if not sprite.animation_finished.is_connected(
+		_on_backstep_animation_finished
+	):
+		sprite.animation_finished.connect(
+			_on_backstep_animation_finished
+		)
+
+	sprite.play(BACKSTEP_ANIM)
+
+
+# Liefert die tatsächliche halbe Breite der Kollisions-Hitbox des
+# Ziels (der CharacterBody2D-eigene CollisionShape2D, NICHT Hurtbox/
+# AttackHitbox/WakeArea - das sind eigene Area2D-Kinder und zählen
+# hier nicht mit) - erkennt Rechteck/Kapsel/Kreis-Formen automatisch,
+# damit größere Gegner (Mini-Boss, Boss) automatisch einen weiteren
+# Landepunkt bekommen als z.B. ein normales Skelett. Fällt auf einen
+# Standardwert zurück, wenn die Form nicht erkannt wird.
+func _get_target_half_width(target: Node2D) -> float:
+	const FALLBACK_HALF_WIDTH: float = 16.0
+
+	if not (target is CollisionObject2D):
+		return FALLBACK_HALF_WIDTH
+
+	var body := target as CollisionObject2D
+	var best: float = -1.0
+
+	for owner_id in body.get_shape_owners():
+		var shape_count: int = body.shape_owner_get_shape_count(owner_id)
+
+		for i in range(shape_count):
+			var shape: Shape2D = body.shape_owner_get_shape(owner_id, i)
+
+			if shape == null:
+				continue
+
+			var width: float = -1.0
+
+			if shape is RectangleShape2D:
+				width = (shape as RectangleShape2D).size.x / 2.0
+			elif shape is CapsuleShape2D:
+				width = (shape as CapsuleShape2D).radius
+			elif shape is CircleShape2D:
+				width = (shape as CircleShape2D).radius
+
+			if width > best:
+				best = width
+
+	if best > 0.0:
+		return best
+
+	return FALLBACK_HALF_WIDTH
+
+
+# Nutzer-Wunsch: "immer genau hinter den Mob... hinter die Gegner-
+# Hitbox" - die Landeposition liegt jetzt genau hinter der ECHTEN
+# Kollisions-Hitbox des Ziels (siehe _get_target_half_width() oben),
+# plus einem kleinen Sicherheitsabstand (backstep_land_offset), statt
+# eines pauschalen Rate-Werts. Wird sowohl vom Bodencheck
+# (_has_floor_behind_target()) als auch vom eigentlichen Dash
+# (_try_start_backstep()/_physics_process()) benutzt, damit beide
+# über denselben Punkt reden.
+func _get_backstep_landing_position(
+	target: Node2D,
+	direction: float
+) -> Vector2:
+	var offset: float = _get_target_half_width(target) + backstep_land_offset
+
+	return target.global_position + Vector2(direction * offset, 0)
+
+
+# Prüft per Raycast, ob ETWAS Festes unter der Landeposition hinter
+# dem Ziel ist (siehe _get_backstep_landing_position() oben) - kein
+# Fund heißt Loch/Abgrund, dann startet der Skill gar nicht erst
+# (siehe _try_start_backstep()).
+func _has_floor_behind_target(
+	target: Node2D,
+	direction: float
+) -> bool:
+	var landing_position: Vector2 = _get_backstep_landing_position(
+		target,
+		direction
+	)
+
+	var tree := get_tree()
+
+	if tree == null:
+		return true
+
+	var space_state := get_world_2d().direct_space_state
+
+	if space_state == null:
+		return true
+
+	var query := PhysicsRayQueryParameters2D.create(
+		landing_position + Vector2(0, -16),
+		landing_position + Vector2(0, 16)
+	)
+
+	# exclude erwartet RIDs, keine Nodes.
+	query.exclude = [self.get_rid(), target.get_rid()]
+
+	var result: Dictionary = space_state.intersect_ray(query)
+
+	return not result.is_empty()
+
+
+func _on_backstep_frame_changed() -> void:
+	if not _backstep_active:
+		return
+
+	if sprite == null or sprite.animation != BACKSTEP_ANIM:
+		return
+
+	# Der Dash-Stopp und das Ende der Unsterblichkeit hängen jetzt an
+	# der tatsächlichen Position (siehe _physics_process()), nicht mehr
+	# an einem festen Frame - backstep_pass_frame ist dort nur noch das
+	# Sicherheitsnetz. Hier bleibt nur noch der Treffer-Frame für die
+	# eigene Hitbox übrig.
+	if sprite.frame == backstep_hit_frame and combat != null:
+		combat.activate_backstep_hitbox(backstep_damage)
+		_play_sound(&"skill_backstep")
+
+
+func _on_backstep_animation_finished() -> void:
+	if sprite == null or sprite.animation != BACKSTEP_ANIM:
+		return
+
+	_end_backstep()
+
+
+func _end_backstep() -> void:
+	_backstep_active = false
+	_backstep_passed = false
+
+	if health != null:
+		health.invincible = false
+
+	if _backstep_target != null and is_instance_valid(_backstep_target):
+		remove_collision_exception_with(_backstep_target)
+
+	_backstep_target = null
+
+	if sprite != null:
+		if sprite.frame_changed.is_connected(_on_backstep_frame_changed):
+			sprite.frame_changed.disconnect(_on_backstep_frame_changed)
+
+		if sprite.animation_finished.is_connected(
+			_on_backstep_animation_finished
+		):
+			sprite.animation_finished.disconnect(
+				_on_backstep_animation_finished
+			)
 
 	if not dead:
 		sprite.play("idle")
@@ -2133,6 +2490,31 @@ func _on_died() -> void:
 		):
 			sprite.animation_finished.disconnect(
 				_on_parry_animation_finished
+			)
+
+	# Gleiches Sicherheitsnetz für Backstep - inklusive Aufheben der
+	# Kollisions-Ausnahme (siehe _try_start_backstep()), falls der Tod
+	# mitten im Dash passiert.
+	_backstep_active = false
+	_backstep_passed = false
+
+	if health != null:
+		health.invincible = false
+
+	if _backstep_target != null and is_instance_valid(_backstep_target):
+		remove_collision_exception_with(_backstep_target)
+
+	_backstep_target = null
+
+	if sprite != null:
+		if sprite.frame_changed.is_connected(_on_backstep_frame_changed):
+			sprite.frame_changed.disconnect(_on_backstep_frame_changed)
+
+		if sprite.animation_finished.is_connected(
+			_on_backstep_animation_finished
+		):
+			sprite.animation_finished.disconnect(
+				_on_backstep_animation_finished
 			)
 
 	# Siehe HINWEIS bei roll_timer <= 0.0 in _physics_process() -

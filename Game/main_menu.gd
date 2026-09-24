@@ -1935,6 +1935,15 @@ func _get_dev_room_list() -> Array:
 		"path": "res://Levels/Gebiet 1/skill_tree_room.tscn"
 	})
 
+	# Nutzer-Wunsch: Testraum für Gebiet 2, ebenfalls kein Teil von
+	# room_order - der Spieler spawnt dort über den "PlayerSpawn"-
+	# Marker (Levels/room_manager.gd -> _enter_at_normal_spawn()),
+	# genau wie bei jedem anderen Raum ohne SpawnDoor-Eintritt.
+	rooms.append({
+		"label": "Test Raum Verlies",
+		"path": "res://Levels/Gebiet 2/Test/Raum1.tscn"
+	})
+
 	return rooms
 
 

@@ -1387,18 +1387,21 @@ position = Vector2(88, -167)
 
 [node name="Skeleton" parent="." unique_id=1487100785 instance=ExtResource("20_rp3uj")]
 position = Vector2(171, -48)
+max_health = 8
 
 [node name="Skeleton2" parent="." unique_id=1507027404 instance=ExtResource("20_rp3uj")]
 position = Vector2(213, -48)
 
 [node name="Skeleton3" parent="." unique_id=1794796966 instance=ExtResource("20_rp3uj")]
 position = Vector2(191, -48)
+max_health = 5
 
 [node name="Skeleton4" parent="." unique_id=931350557 instance=ExtResource("20_rp3uj")]
 position = Vector2(226, -48)
 
 [node name="Skeleton5" parent="." unique_id=1100137064 instance=ExtResource("20_rp3uj")]
 position = Vector2(157, -48)
+max_health = 6
 
 [node name="Deko_Risse" parent="." unique_id=1737324685 instance=ExtResource("21_uki8h")]
 position = Vector2(-227, -155)
