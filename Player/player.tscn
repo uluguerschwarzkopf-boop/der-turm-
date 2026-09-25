@@ -33,7 +33,7 @@
 [ext_resource type="Script" uid="uid://cv1cu5mes16bb" path="res://Player/player_bow.gd" id="17_pisgm"]
 [ext_resource type="Texture2D" uid="uid://bw0rlm838pl28" path="res://Player/Sheets/Spells/Summon Animations/Lichtkugel-Sheet.png" id="18_efx54"]
 [ext_resource type="Texture2D" uid="uid://c52qa5wihwo3e" path="res://Player/Sheets/Spells/Summon Animations/Nekromant-Sheet.png" id="19_755ss"]
-[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Skellete/Archer/arrow.tscn" id="19_o28un"]
+[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Gebiet 1/Skellete/Archer/arrow.tscn" id="19_o28un"]
 [ext_resource type="Texture2D" uid="uid://pl7g25khxph7" path="res://Player/Sheets/Spells/Summon Animations/Ranken-Sheet.png" id="20_bbimk"]
 [ext_resource type="Script" uid="uid://bq3nwbgqcl2yk" path="res://Player/playerspells.gd" id="20_n471f"]
 [ext_resource type="Script" uid="uid://vq0lv76q2lpt" path="res://Player/spell_manager.gd" id="21_7emwf"]

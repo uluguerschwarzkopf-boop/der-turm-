@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bpar7ww6y2xlr"]
 
 [ext_resource type="Script" uid="uid://cc68fknkan84k" path="res://Objects/Traps/Pfeilfalle/arrow_trap.gd" id="1_opuuo"]
-[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Skellete/Archer/arrow.tscn" id="2_jyfe1"]
+[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Gebiet 1/Skellete/Archer/arrow.tscn" id="2_jyfe1"]
 [ext_resource type="Texture2D" uid="uid://cdpdjudx3lak1" path="res://Objects/Traps/Pfeilfalle/mossy pfeilfalle.png" id="2_qs362"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jyfe1"]

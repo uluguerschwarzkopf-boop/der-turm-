@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cc68fknkan84k" path="res://Objects/Traps/Pfeilfalle/arrow_trap.gd" id="1_7rthd"]
 [ext_resource type="Texture2D" uid="uid://g0cy7gy86jfl" path="res://Objects/Traps/Pfeilfalle/Pfeilfalle.png" id="1_c2ej1"]
-[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Skellete/Archer/arrow.tscn" id="2_s35xg"]
+[ext_resource type="PackedScene" uid="uid://nom6sq6pxqnf" path="res://Mobs/Gebiet 1/Skellete/Archer/arrow.tscn" id="2_s35xg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7rthd"]
 atlas = ExtResource("1_c2ej1")

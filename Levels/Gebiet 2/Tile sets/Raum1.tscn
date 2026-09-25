@@ -1223,9 +1223,3 @@ position = Vector2(27, -249)
 
 [node name="Gebiet 2 hintergrund 1" parent="." unique_id=1669482670 instance=ExtResource("9_7pist")]
 position = Vector2(14, -245)
-
-[node name="Gebiet 2 hintergrund 2" parent="." unique_id=1444869010 instance=ExtResource("9_7pist")]
-position = Vector2(263, -246)
-
-[node name="Gebiet 2 hintergrund 3" parent="." unique_id=574733409 instance=ExtResource("9_7pist")]
-position = Vector2(490, -242)
