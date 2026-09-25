@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dl04tg14fyd1g"
-path="res://.godot/imported/mapebene2finalextended1.png-0ba620234a260391d6b2eb38cfc3315b.ctex"
+uid="uid://bph20kxolhx4d"
+path="res://.godot/imported/netz 1.png-0eb67bba26e0f3a275dffdc2efc55984.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Levels/Gebiet 2/Test/Hintergrund/mapebene2finalextended1.png"
-dest_files=["res://.godot/imported/mapebene2finalextended1.png-0ba620234a260391d6b2eb38cfc3315b.ctex"]
+source_file="res://Levels/Gebiet 2/Details/PNG/netz 1.png"
+dest_files=["res://.godot/imported/netz 1.png-0eb67bba26e0f3a275dffdc2efc55984.ctex"]
 
 [params]
 

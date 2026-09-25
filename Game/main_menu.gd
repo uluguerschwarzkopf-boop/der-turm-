@@ -1941,7 +1941,7 @@ func _get_dev_room_list() -> Array:
 	# genau wie bei jedem anderen Raum ohne SpawnDoor-Eintritt.
 	rooms.append({
 		"label": "Test Raum Verlies",
-		"path": "res://Levels/Gebiet 2/Test/Raum1.tscn"
+		"path": "res://Levels/Gebiet 2/Tile sets/Raum1.tscn"
 	})
 
 	return rooms

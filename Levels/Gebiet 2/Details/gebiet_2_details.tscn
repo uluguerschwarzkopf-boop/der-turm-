@@ -1,0 +1,213 @@
+[gd_scene format=3 uid="uid://bafnw8y1s73j8"]
+
+[ext_resource type="Texture2D" uid="uid://d076rwxebjo4k" path="res://Levels/Gebiet 2/Details/PNG/Korkor 1-Sheet.png" id="1_7cntn"]
+[ext_resource type="Texture2D" uid="uid://bph20kxolhx4d" path="res://Levels/Gebiet 2/Details/PNG/netz 1.png" id="2_ffu5a"]
+[ext_resource type="Texture2D" uid="uid://fnru5hfq1i8s" path="res://Levels/Gebiet 2/Details/PNG/netz 2.png" id="3_q4c7e"]
+[ext_resource type="Texture2D" uid="uid://7tn3obx3npau" path="res://Levels/Gebiet 2/Details/PNG/netz 3.png" id="4_fvt4w"]
+[ext_resource type="Texture2D" uid="uid://dwm14ak8jm18s" path="res://Levels/Gebiet 2/Details/PNG/netz 4.png" id="5_wqowp"]
+[ext_resource type="Texture2D" uid="uid://dyjxocbwrw4bf" path="res://Levels/Gebiet 2/Details/PNG/netz 5.png" id="6_21uoy"]
+[ext_resource type="Texture2D" uid="uid://du8owaqwhovvb" path="res://Levels/Gebiet 2/Details/PNG/netz 6.png" id="7_vfj2h"]
+[ext_resource type="Texture2D" uid="uid://it7rf7ywlsbw" path="res://Levels/Gebiet 2/Details/PNG/netz 7.png" id="8_ax7fy"]
+[ext_resource type="Texture2D" uid="uid://wlcq2mggjy40" path="res://Levels/Gebiet 2/Details/PNG/netz 8.png" id="9_bcu3a"]
+[ext_resource type="Script" uid="uid://cdtbnqisbi3ud" path="res://Levels/Gebiet 2/Details/gebiet_2_details.gd" id="10_details_script"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xxna8"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(0, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wrdts"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(96, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3a5ql"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(192, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ru6w7"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(288, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2pqdr"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(384, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_36pls"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(480, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6usga"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(576, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qkhyb"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(672, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u5mog"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(768, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4m741"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(864, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_71h2k"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(960, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dkkrh"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(1056, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lo4pw"]
+atlas = ExtResource("1_7cntn")
+region = Rect2(1152, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tr70m"]
+atlas = ExtResource("2_ffu5a")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0f367"]
+atlas = ExtResource("3_q4c7e")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rslct"]
+atlas = ExtResource("4_fvt4w")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mskvj"]
+atlas = ExtResource("5_wqowp")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kqm37"]
+atlas = ExtResource("6_21uoy")
+region = Rect2(0, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_es653"]
+atlas = ExtResource("7_vfj2h")
+region = Rect2(0, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_roqtu"]
+atlas = ExtResource("8_ax7fy")
+region = Rect2(0, 0, 96, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ksvk2"]
+atlas = ExtResource("9_bcu3a")
+region = Rect2(0, 0, 96, 80)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rw7ti"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xxna8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wrdts")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3a5ql")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ru6w7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2pqdr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_36pls")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6usga")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qkhyb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u5mog")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4m741")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_71h2k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dkkrh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lo4pw")
+}],
+"loop": true,
+"name": &"Korkor",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tr70m")
+}],
+"loop": true,
+"name": &"netz_1",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0f367")
+}],
+"loop": true,
+"name": &"netz_2",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rslct")
+}],
+"loop": true,
+"name": &"netz_3",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mskvj")
+}],
+"loop": true,
+"name": &"netz_4",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kqm37")
+}],
+"loop": true,
+"name": &"netz_5",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_es653")
+}],
+"loop": true,
+"name": &"netz_6",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_roqtu")
+}],
+"loop": true,
+"name": &"netz_7",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ksvk2")
+}],
+"loop": true,
+"name": &"netz_8",
+"speed": 5.0
+}]
+
+[node name="Gebiet 2 details" type="AnimatedSprite2D" unique_id=866150079]
+z_index = -1
+sprite_frames = SubResource("SpriteFrames_rw7ti")
+animation = &"Korkor"
+script = ExtResource("10_details_script")

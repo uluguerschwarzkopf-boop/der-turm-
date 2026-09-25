@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://dqgmx84cukeru"]
+
+[ext_resource type="Texture2D" uid="uid://duupod4pq5wbj" path="res://Levels/Gebiet 2/Objekte/Beleuchtung/PNG/fackel 1 wand-Sheet.png" id="1_ili7m"]
+[ext_resource type="Script" uid="uid://o7wfprdefr1l" path="res://Objects/fackel.gd" id="2_fackel_gd"]
+[ext_resource type="Texture2D" path="res://Levels/Gebiet 2/Objekte/Beleuchtung/PNG/Fakel licht-Wand.png" id="3_fakel_licht"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xntkh"]
+atlas = ExtResource("1_ili7m")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_113g4"]
+atlas = ExtResource("1_ili7m")
+region = Rect2(16, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s7ue4"]
+atlas = ExtResource("1_ili7m")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cl1yn"]
+atlas = ExtResource("1_ili7m")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ifyoh"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xntkh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_113g4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s7ue4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cl1yn")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[node name="Wand fackel" type="AnimatedSprite2D" unique_id=1875824784]
+z_index = -1
+sprite_frames = SubResource("SpriteFrames_ifyoh")
+frame_progress = 0.40956697
+script = ExtResource("2_fackel_gd")
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=1051676906]
+texture_filter = 2
+position = Vector2(0, -1)
+energy = 2.5
+texture = ExtResource("3_fakel_licht")
+texture_scale = 0.28

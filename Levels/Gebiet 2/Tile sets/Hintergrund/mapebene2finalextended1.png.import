@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b7lnkaggr4xq"
-path="res://.godot/imported/TileSetEbene2.png-de4f27a2afe6df7c2b13f684e7386826.ctex"
+uid="uid://dl04tg14fyd1g"
+path="res://.godot/imported/mapebene2finalextended1.png-023f067e1bacf21cabb9ac2c4801e364.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Levels/Gebiet 2/Test/png/TileSetEbene2.png"
-dest_files=["res://.godot/imported/TileSetEbene2.png-de4f27a2afe6df7c2b13f684e7386826.ctex"]
+source_file="res://Levels/Gebiet 2/Tile sets/Hintergrund/mapebene2finalextended1.png"
+dest_files=["res://.godot/imported/mapebene2finalextended1.png-023f067e1bacf21cabb9ac2c4801e364.ctex"]
 
 [params]
 
