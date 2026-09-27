@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b7a35bue3t6d0" path="res://Levels/Gebiet 1/tile set gebiet 1 Version 3.png" id="1_chl2b"]
 [ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Levels/Gebiet 1/camera_bounds.gd" id="1_hvqvq"]
-[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/room_manager.gd" id="2_62gne"]
+[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/Gebiet 2/shader/room_manager.gd" id="2_62gne"]
 [ext_resource type="PackedScene" uid="uid://b207xmd77deb0" path="res://Objects/Doors/exit_door.tscn" id="3_mi1dj"]
 [ext_resource type="PackedScene" uid="uid://cqyryemlwnxrm" path="res://Objects/Doors/spawn_door.tscn" id="4_512ib"]
 [ext_resource type="PackedScene" uid="uid://dveuxdnhe6qss" path="res://Player/player.tscn" id="7_cmk6v"]

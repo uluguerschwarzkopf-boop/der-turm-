@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://4d68ggr5agg3" path="res://Objects/platform.tscn" id="3_jph2m"]
 [ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Levels/Gebiet 1/camera_bounds.gd" id="4_jph2m"]
 [ext_resource type="PackedScene" uid="uid://b6h5u1pe5kjde" path="res://Objects/spike.tscn" id="5_g646b"]
-[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/room_manager.gd" id="6_w0msx"]
+[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/Gebiet 2/shader/room_manager.gd" id="6_w0msx"]
 [ext_resource type="PackedScene" uid="uid://b207xmd77deb0" path="res://Objects/Doors/exit_door.tscn" id="7_dipv5"]
 [ext_resource type="PackedScene" uid="uid://cqyryemlwnxrm" path="res://Objects/Doors/spawn_door.tscn" id="8_8fyfv"]
 [ext_resource type="PackedScene" uid="uid://wwtf3iayv0sy" path="res://Mobs/Gebiet 1/Skellete/Normal/skeleton.tscn" id="8_dipv5"]

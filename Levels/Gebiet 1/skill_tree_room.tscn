@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://b7a35bue3t6d0" path="res://Levels/Gebiet 1/tile set gebiet 1 Version 3.png" id="1_bhj3u"]
 [ext_resource type="Texture2D" uid="uid://cguoo58mnrm0j" path="res://Händler/Gebiet 1/Händler tile set.png" id="2_jp0hw"]
 [ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Levels/Gebiet 1/camera_bounds.gd" id="3_sgbx1"]
-[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/room_manager.gd" id="4_1t71j"]
+[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/Gebiet 2/shader/room_manager.gd" id="4_1t71j"]
 [ext_resource type="PackedScene" uid="uid://dveuxdnhe6qss" path="res://Player/player.tscn" id="5_f7wlj"]
 [ext_resource type="PackedScene" uid="uid://bnyg8y3lw3cho" path="res://Player/UI/canvas_layer.tscn" id="6_f7wlj"]
 [ext_resource type="PackedScene" uid="uid://c8ubjv0fgfupi" path="res://Objects/Doors/Echo Doors/Flame Echo/flame_echo_door.tscn" id="7_ltlcb"]

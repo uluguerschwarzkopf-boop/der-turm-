@@ -1,18 +1,18 @@
 [gd_scene format=3 uid="uid://cicq4rbebmq52"]
 
-[ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Levels/Gebiet 1/camera_bounds.gd" id="1_ebj33"]
-[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/room_manager.gd" id="2_yf402"]
-[ext_resource type="PackedScene" uid="uid://dveuxdnhe6qss" path="res://Player/player.tscn" id="3_3qtau"]
-[ext_resource type="PackedScene" uid="uid://bnyg8y3lw3cho" path="res://Player/UI/canvas_layer.tscn" id="4_c1a4p"]
-[ext_resource type="Texture2D" uid="uid://c8l0yoh3mgemj" path="res://Levels/Gebiet 2/Tile sets/png/tile set V 2.png" id="5_yf402"]
-[ext_resource type="Texture2D" uid="uid://dl04tg14fyd1g" path="res://Levels/Gebiet 2/Tile sets/Hintergrund/mapebene2finalextended1.png" id="6_osgc0"]
-[ext_resource type="PackedScene" uid="uid://bafnw8y1s73j8" path="res://Levels/Gebiet 2/Details/gebiet_2_details.tscn" id="8_3qtau"]
-[ext_resource type="PackedScene" uid="uid://dqgmx84cukeru" path="res://Levels/Gebiet 2/Objekte/Beleuchtung/wand_fackel.tscn" id="8_yc2nr"]
-[ext_resource type="PackedScene" uid="uid://cxn55if2rdbar" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/gebiet_2_hintergrund_1.tscn" id="9_7pist"]
-[ext_resource type="Script" uid="uid://cd66vubspnpns" path="res://Levels/Gebiet 2/Tile sets/torch_light_flicker.gd" id="9_wfbld"]
-[ext_resource type="Shader" uid="uid://gqr8qf2s740w" path="res://Levels/Gebiet 2/Tile sets/fogdshader.gdshader" id="11_ihmm0"]
-[ext_resource type="PackedScene" uid="uid://dhd47hfpkixxq" path="res://Mobs/Gebiet 2/schatten mutant/schatten_mutant.tscn" id="12_x1x0s"]
-[ext_resource type="Shader" uid="uid://dcgccp4yyjwun" path="res://Levels/Gebiet 2/Tile sets/Partikelshader.gdshader" id="13_q37u3"]
+[ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Levels/Gebiet 1/camera_bounds.gd" id="1_s7sws"]
+[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/Gebiet 2/shader/room_manager.gd" id="2_yljl2"]
+[ext_resource type="PackedScene" uid="uid://dveuxdnhe6qss" path="res://Player/player.tscn" id="3_2j1ie"]
+[ext_resource type="PackedScene" uid="uid://bnyg8y3lw3cho" path="res://Player/UI/canvas_layer.tscn" id="4_ow0by"]
+[ext_resource type="Texture2D" uid="uid://c8l0yoh3mgemj" path="res://Levels/Gebiet 2/Tile sets/png/tile set V 2.png" id="5_ys30b"]
+[ext_resource type="Texture2D" uid="uid://dl04tg14fyd1g" path="res://Levels/Gebiet 2/Tile sets/Hintergrund/mapebene2finalextended1.png" id="6_s7nuo"]
+[ext_resource type="PackedScene" uid="uid://bafnw8y1s73j8" path="res://Levels/Gebiet 2/Details/gebiet_2_details.tscn" id="7_5t0n6"]
+[ext_resource type="PackedScene" uid="uid://dqgmx84cukeru" path="res://Levels/Gebiet 2/Objekte/Beleuchtung/wand_fackel.tscn" id="8_nnb0u"]
+[ext_resource type="Script" uid="uid://cd66vubspnpns" path="res://Levels/Gebiet 2/shader/torch_light_flicker.gd" id="9_xg3xy"]
+[ext_resource type="PackedScene" uid="uid://cxn55if2rdbar" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/gebiet_2_hintergrund_1.tscn" id="10_lefvh"]
+[ext_resource type="Shader" uid="uid://gqr8qf2s740w" path="res://Levels/Gebiet 2/shader/fogdshader.gdshader" id="11_q5k6i"]
+[ext_resource type="PackedScene" uid="uid://dhd47hfpkixxq" path="res://Mobs/Gebiet 2/schatten mutant/schatten_mutant.tscn" id="12_rxtj6"]
+[ext_resource type="Shader" uid="uid://dcgccp4yyjwun" path="res://Levels/Gebiet 2/shader/Partikelshader.gdshader" id="13_6pis5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s7ugx"]
 size = Vector2(864, 177)
@@ -28,7 +28,7 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3qtau"]
-texture = ExtResource("5_yf402")
+texture = ExtResource("5_ys30b")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:0/0 = 0
@@ -1185,7 +1185,7 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cbyeo"]
-shader = ExtResource("11_ihmm0")
+shader = ExtResource("11_q5k6i")
 shader_parameter/fog_color = Color(0.42, 0.5, 0.66, 1)
 shader_parameter/max_alpha = 0.4
 shader_parameter/alpha_steps = 3
@@ -1196,7 +1196,7 @@ shader_parameter/density = 1.0
 shader_parameter/bottom_only = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_abqvh"]
-shader = ExtResource("13_q37u3")
+shader = ExtResource("13_6pis5")
 shader_parameter/glow_color = Color(1, 0.76, 0.4, 1)
 shader_parameter/pixel_size = 1.0
 shader_parameter/dot_radius = 0.45
@@ -1214,17 +1214,17 @@ height = 8
 [node name="Raum 1" type="Node2D" unique_id=2020939489]
 
 [node name="CameraBounds" type="Node2D" parent="." unique_id=1527939154]
-script = ExtResource("1_ebj33")
+script = ExtResource("1_s7sws")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraBounds" unique_id=1646111028]
 position = Vector2(160, -216.5)
 shape = SubResource("RectangleShape2D_s7ugx")
 
 [node name="RoomManager" type="Node" parent="." unique_id=512733831]
-script = ExtResource("2_yf402")
+script = ExtResource("2_yljl2")
 boss_room_path = "uid://b135dvcl4iyjo"
 
-[node name="Player" parent="." unique_id=836242315 instance=ExtResource("3_3qtau")]
+[node name="Player" parent="." unique_id=836242315 instance=ExtResource("3_2j1ie")]
 position = Vector2(-127, -195)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player" unique_id=1851520379]
@@ -1235,7 +1235,7 @@ energy = 0.2
 texture = SubResource("GradientTexture2D_ihmm0")
 texture_scale = 3.8
 
-[node name="CanvasLayer" parent="." unique_id=766876166 instance=ExtResource("4_c1a4p")]
+[node name="CanvasLayer" parent="." unique_id=766876166 instance=ExtResource("4_ow0by")]
 
 [node name="Enemies" type="Node" parent="." unique_id=223321547]
 
@@ -1257,28 +1257,28 @@ layer_0/tile_data = PackedInt32Array(-720910, 196608, 6, -655374, 196608, 7, -58
 light_mask = 0
 z_index = -10
 position = Vector2(245, -535)
-texture = ExtResource("6_osgc0")
+texture = ExtResource("6_s7nuo")
 
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1595105872]
 position = Vector2(-207, -210)
 
-[node name="Gebiet 2 details" parent="." unique_id=866150079 instance=ExtResource("8_3qtau")]
+[node name="Gebiet 2 details" parent="." unique_id=866150079 instance=ExtResource("7_5t0n6")]
 position = Vector2(69, -303)
 frame_progress = 0.9589629
 
-[node name="Gebiet 2 details2" parent="." unique_id=1960692817 instance=ExtResource("8_3qtau")]
+[node name="Gebiet 2 details2" parent="." unique_id=1960692817 instance=ExtResource("7_5t0n6")]
 position = Vector2(-192, -208)
 animation = &"netz_1"
 
-[node name="Gebiet 2 details3" parent="." unique_id=1934969982 instance=ExtResource("8_3qtau")]
+[node name="Gebiet 2 details3" parent="." unique_id=1934969982 instance=ExtResource("7_5t0n6")]
 position = Vector2(239, -216)
 animation = &"netz_5"
 
-[node name="Gebiet 2 details4" parent="." unique_id=736259782 instance=ExtResource("8_3qtau")]
+[node name="Gebiet 2 details4" parent="." unique_id=736259782 instance=ExtResource("7_5t0n6")]
 position = Vector2(512, -288)
 animation = &"netz_3"
 
-[node name="Wand fackel" parent="." unique_id=1875824784 instance=ExtResource("8_yc2nr")]
+[node name="Wand fackel" parent="." unique_id=1875824784 instance=ExtResource("8_nnb0u")]
 position = Vector2(8, -253)
 scale = Vector2(1, 0.96875)
 frame = 2
@@ -1290,9 +1290,9 @@ scale = Vector2(3.3125, 2.376512)
 color = Color(1, 0.7019608, 0.2784314, 1)
 energy = 1.3
 texture = SubResource("GradientTexture2D_26wlk")
-script = ExtResource("9_wfbld")
+script = ExtResource("9_xg3xy")
 
-[node name="Gebiet 2 hintergrund 1" parent="." unique_id=1669482670 instance=ExtResource("9_7pist")]
+[node name="Gebiet 2 hintergrund 1" parent="." unique_id=1669482670 instance=ExtResource("10_lefvh")]
 position = Vector2(-89, -243)
 
 [node name="ParallaxLayer" type="ParallaxLayer" parent="." unique_id=2020022854]
@@ -1309,10 +1309,10 @@ offset_bottom = -182.0
 layer = 2
 scroll_ignore_camera_zoom = true
 
-[node name="Schatten mutant" parent="." unique_id=1655272891 instance=ExtResource("12_x1x0s")]
+[node name="Schatten mutant" parent="." unique_id=1655272891 instance=ExtResource("12_rxtj6")]
 position = Vector2(256, -258)
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=291765658]
 material = SubResource("ShaderMaterial_abqvh")
-position = Vector2(374, -265)
+position = Vector2(381, -273)
 texture = SubResource("GradientTexture2D_cbyeo")
