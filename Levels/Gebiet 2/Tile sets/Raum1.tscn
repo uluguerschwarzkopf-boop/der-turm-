@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://cxn55if2rdbar" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/gebiet_2_hintergrund_1.tscn" id="9_7pist"]
 [ext_resource type="Script" uid="uid://cd66vubspnpns" path="res://Levels/Gebiet 2/Tile sets/torch_light_flicker.gd" id="9_wfbld"]
 [ext_resource type="Shader" uid="uid://gqr8qf2s740w" path="res://Levels/Gebiet 2/Tile sets/fogdshader.gdshader" id="11_ihmm0"]
+[ext_resource type="PackedScene" uid="uid://dhd47hfpkixxq" path="res://Mobs/Gebiet 2/schatten mutant/schatten_mutant.tscn" id="12_x1x0s"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s7ugx"]
 size = Vector2(864, 177)
@@ -1282,11 +1283,14 @@ motion_mirroring = Vector2(320, 180)
 
 [node name="ColorRect" type="ColorRect" parent="ParallaxLayer" unique_id=674733434]
 material = SubResource("ShaderMaterial_cbyeo")
-offset_left = 154.0
-offset_top = -308.0
-offset_right = 474.0
-offset_bottom = -189.0
+offset_left = -216.0
+offset_top = -314.0
+offset_right = 536.0
+offset_bottom = -183.0
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=979801427]
 layer = 2
 scroll_ignore_camera_zoom = true
+
+[node name="Schatten mutant" parent="." unique_id=1655272891 instance=ExtResource("12_x1x0s")]
+position = Vector2(276, -258)
