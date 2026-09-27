@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://cd66vubspnpns" path="res://Levels/Gebiet 2/Tile sets/torch_light_flicker.gd" id="9_wfbld"]
 [ext_resource type="Shader" uid="uid://gqr8qf2s740w" path="res://Levels/Gebiet 2/Tile sets/fogdshader.gdshader" id="11_ihmm0"]
 [ext_resource type="PackedScene" uid="uid://dhd47hfpkixxq" path="res://Mobs/Gebiet 2/schatten mutant/schatten_mutant.tscn" id="12_x1x0s"]
+[ext_resource type="Shader" uid="uid://dcgccp4yyjwun" path="res://Levels/Gebiet 2/Tile sets/Partikelshader.gdshader" id="13_q37u3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s7ugx"]
 size = Vector2(864, 177)
@@ -1194,6 +1195,22 @@ shader_parameter/drift = Vector2(0.025, 0.006)
 shader_parameter/density = 1.0
 shader_parameter/bottom_only = 0.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_abqvh"]
+shader = ExtResource("13_q37u3")
+shader_parameter/glow_color = Color(1, 0.76, 0.4, 1)
+shader_parameter/pixel_size = 1.0
+shader_parameter/dot_radius = 0.45
+shader_parameter/alpha_steps = 2
+shader_parameter/flicker = 0.4
+shader_parameter/flicker_speed = 5.0
+
+[sub_resource type="Gradient" id="Gradient_hoaml"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_cbyeo"]
+gradient = SubResource("Gradient_hoaml")
+width = 8
+height = 8
+
 [node name="Raum 1" type="Node2D" unique_id=2020939489]
 
 [node name="CameraBounds" type="Node2D" parent="." unique_id=1527939154]
@@ -1223,7 +1240,7 @@ texture_scale = 3.8
 [node name="Enemies" type="Node" parent="." unique_id=223321547]
 
 [node name="Darkness" type="CanvasModulate" parent="." unique_id=1757969490]
-color = Color(0.101960786, 0.101960786, 0.14117648, 1)
+color = Color(0.15686275, 0.15686275, 0.21960784, 1)
 
 [node name="TileMap2" type="TileMap" parent="." unique_id=26708281]
 tile_set = SubResource("TileSet_y7dxo")
@@ -1284,13 +1301,18 @@ motion_mirroring = Vector2(320, 180)
 [node name="ColorRect" type="ColorRect" parent="ParallaxLayer" unique_id=674733434]
 material = SubResource("ShaderMaterial_cbyeo")
 offset_left = -216.0
-offset_top = -314.0
-offset_right = 536.0
-offset_bottom = -183.0
+offset_top = -313.0
+offset_right = 544.0
+offset_bottom = -182.0
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=979801427]
 layer = 2
 scroll_ignore_camera_zoom = true
 
 [node name="Schatten mutant" parent="." unique_id=1655272891 instance=ExtResource("12_x1x0s")]
-position = Vector2(276, -258)
+position = Vector2(256, -258)
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=291765658]
+material = SubResource("ShaderMaterial_abqvh")
+position = Vector2(374, -265)
+texture = SubResource("GradientTexture2D_cbyeo")
