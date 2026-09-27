@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cx1tn504xwprx"
+path="res://.godot/imported/prisonbreak.mp3-c95b397c5457aae91f7f5dc0515e8ca4.mp3str"
+
+[deps]
+
+source_file="res://Musik/Gebiet 2/prisonbreak.mp3"
+dest_files=["res://.godot/imported/prisonbreak.mp3-c95b397c5457aae91f7f5dc0515e8ca4.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0.0
+bpm=0.0
+beat_count=0
+bar_beats=4
