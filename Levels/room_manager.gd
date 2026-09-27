@@ -113,10 +113,70 @@ var phase_1_return_room_path: String = ""
 @export var room_music_id: StringName = &""
 
 
+@export_group("Raum-Kamerafahrt")
+
+# Name der AnimationPlayer-Animation (im Kind-Node "CutsceneAnimation",
+# siehe cutscene_animation_player unten), die beim normalen Betreten
+# dieses Raums als kleine Cutscene abgespielt werden soll - braucht
+# dafür einen AnimationPlayer-Kind-Node "CutsceneAnimation" UND einen
+# Camera2D-Kind-Node "CutsceneCamera" direkt am Raum (siehe z.B.
+# skill_tree_room.tscn). Spieler bleibt dabei gesperrt (ist an dieser
+# Stelle im Ablauf ohnehin schon gesperrt), HUD wird über den
+# CutsceneManager-Autoload ausgeblendet und oben/unten kommt ein
+# schwarzer Balken, siehe _maybe_play_room_camera_cutscene() unten.
+# Leer lassen (Standard), wenn der Raum keine eigene Kamerafahrt hat.
+@export var room_cutscene_animation_name: StringName = &""
+
+# Eindeutiger Schlüssel für RunState.shown_narrations, falls die
+# Kamerafahrt nur EINMAL pro Lauf laufen soll (wie die Void-
+# Erzählung/Gedanken-Sprechblase oben) - leer lassen (Standard) =
+# spielt bei JEDEM normalen Betreten des Raums erneut ab.
+@export var room_cutscene_once_id: StringName = &""
+
+@export_group("Raum-Kamerafahrt Balken")
+
+# Höhe je Balken, als Anteil der Bildschirmhöhe (0.12 = 12%) - genau
+# dasselbe Balken-Aussehen wie bei der Miniboss-Aufwach-Cutscene
+# (siehe mini bosse/Skelleton Tank/mini_boss_wake_cutscene.gd).
+@export var room_cutscene_bar_height_ratio: float = 0.12
+@export var room_cutscene_bar_color: Color = Color(0.0, 0.0, 0.0, 1.0)
+@export var room_cutscene_bar_fade_time: float = 0.35
+
+
 @onready var player: CharacterBody2D = (
 	get_tree().get_first_node_in_group("player")
 	as CharacterBody2D
 )
+
+# Optionale Kamerafahrt-Nodes direkt am Raum (Geschwister von
+# RoomManager) - siehe room_cutscene_animation_name oben. Fehlen sie
+# (normaler Raum ohne eigene Kamerafahrt), bleiben beide null und
+# _maybe_play_room_camera_cutscene() tut einfach nichts.
+@onready var cutscene_animation_player: AnimationPlayer = (
+	get_node_or_null("../CutsceneAnimation") as AnimationPlayer
+)
+
+@onready var cutscene_camera: Camera2D = (
+	get_node_or_null("../CutsceneCamera") as Camera2D
+)
+
+# CameraBounds (siehe Levels/Gebiet 1/camera_bounds.gd) zwingt in
+# ihrem eigenen _process() JEDEN Frame die Spieler-Kamera wieder zur
+# aktiven Kamera zurück (keep_player_camera_active), solange sie
+# nicht abgeschaltet wird - sonst würde das cutscene_camera.make_
+# current() unten in _maybe_play_room_camera_cutscene() sofort im
+# nächsten Frame wieder rückgängig gemacht und die Kamerafahrt bliebe
+# unsichtbar. Bewusst nur Node (kein class_name auf camera_bounds.gd),
+# Zugriff unten über get()/set().
+@onready var camera_bounds: Node = get_node_or_null("../CameraBounds")
+
+# Von _prepare_room_camera_cutscene() gesetzt, von _maybe_play_room_
+# camera_cutscene() am Ende wieder zurückgestellt (siehe dort) -
+# gehört als Feld hierher statt als lokale Variable, weil beide
+# Funktionen zeitlich auseinanderliegen (Kamera-Umschalten passiert
+# früh in _enter_at_normal_spawn(), die eigentliche Fahrt erst
+# später, siehe dort).
+var _room_cutscene_camera_bounds_was_active: bool = true
 
 @onready var spawn_door: Node = get_node_or_null(
 	"../SpawnDoor"
@@ -469,7 +529,19 @@ func _enter_at_normal_spawn() -> void:
 			player.global_position
 		)
 
-	_reset_player_camera()
+	# Hat der Raum eine eigene Kamerafahrt (siehe room_cutscene_
+	# animation_name oben), gleich auf deren Kamera umschalten statt
+	# auf die normale Spieler-Kamera - sonst sieht man beim Betreten
+	# erst kurz die Spieler-Kamera und es ruckelt sichtbar, sobald
+	# später auf die Kamerafahrt umgeschaltet wird (Nutzer-Feedback).
+	# Die eigentliche Fahrt (Balken/HUD/Animation) startet weiterhin
+	# erst später unten bei _maybe_play_room_camera_cutscene().
+	var room_camera_cutscene_prepared: bool = _has_room_camera_cutscene()
+
+	if room_camera_cutscene_prepared:
+		_prepare_room_camera_cutscene()
+	else:
+		_reset_player_camera()
 
 	player.visible = false
 
@@ -496,6 +568,8 @@ func _enter_at_normal_spawn() -> void:
 
 	await _maybe_play_void_narration()
 
+	await _maybe_play_room_camera_cutscene()
+
 	if player.has_method("unlock_control"):
 		player.unlock_control()
 
@@ -506,7 +580,9 @@ func _enter_at_normal_spawn() -> void:
 	# Bewusst NICHT awaited - die Gedanken-Sprechblase wartet selbst
 	# 2 Sekunden und läuft dann im Hintergrund weiter, ohne dass der
 	# Spieler dafür stillstehen oder die Steuerung gesperrt werden
-	# müsste (anders als die Void-Erzählung oben).
+	# müsste (anders als die Kamerafahrt/Void-Erzählung oben). Bewusst
+	# ERST NACH der Kamerafahrt ausgelöst (Nutzer-Wunsch), damit sie
+	# nicht mitten in der Cutscene über dem Spieler auftaucht.
 	_maybe_show_room_thought_bubble()
 
 
@@ -591,6 +667,222 @@ func _maybe_play_void_narration() -> void:
 	await narration.play_lines(void_intro_lines)
 
 	RunState.mark_narration_shown(void_intro_id)
+
+
+# ============================================================
+# RAUM-KAMERAFAHRT (CUTSCENE BEIM BETRETEN)
+# ============================================================
+
+# Prüft nur (ohne Nebenwirkungen), ob dieser Raum gerade eine eigene
+# Kamerafahrt zeigen soll - von _enter_at_normal_spawn() (früh, um
+# ggf. _prepare_room_camera_cutscene() statt _reset_player_camera()
+# zu rufen) UND von _maybe_play_room_camera_cutscene() (spät, um die
+# eigentliche Fahrt abzuspielen) benutzt.
+func _has_room_camera_cutscene() -> bool:
+	if cutscene_animation_player == null or cutscene_camera == null:
+		return false
+
+	if room_cutscene_animation_name == &"":
+		return false
+
+	if not cutscene_animation_player.has_animation(
+		room_cutscene_animation_name
+	):
+		return false
+
+	if room_cutscene_once_id != &"":
+		if get_node_or_null("/root/RunState") != null:
+			if RunState.has_shown_narration(room_cutscene_once_id):
+				return false
+
+	return true
+
+
+# Schaltet GLEICH BEIM RAUMBETRETEN (vor der Tür-Animation, siehe
+# _enter_at_normal_spawn() oben) schon auf cutscene_camera um, statt
+# erst später bei _maybe_play_room_camera_cutscene() - sonst sieht
+# man beim Reinkommen erst kurz die normale Spieler-Kamera, bevor auf
+# die Kamerafahrt-Kamera umgeschaltet wird, was als sichtbarer
+# Ruckler auffällt (Nutzer-Feedback). cutscene_camera steht dabei
+# einfach nur auf ihrer festen Startposition (siehe skill_tree_
+# room.tscn) - abgespielt wird die eigentliche Fahrt weiterhin erst
+# später.
+func _prepare_room_camera_cutscene() -> void:
+	if camera_bounds != null and is_instance_valid(camera_bounds):
+		_room_cutscene_camera_bounds_was_active = camera_bounds.get(
+			"keep_player_camera_active"
+		)
+		camera_bounds.set("keep_player_camera_active", false)
+
+	cutscene_camera.enabled = true
+	cutscene_camera.make_current()
+
+
+# Spielt (falls dieser Raum eigene "CutsceneAnimation"/"CutsceneCamera"-
+# Kinder hat, siehe cutscene_animation_player/cutscene_camera oben -
+# z.B. skill_tree_room.tscn) beim normalen Betreten eine Kamerafahrt
+# ab: sperrt dafür extra die Spielersteuerung (siehe player.lock_
+# control() unten - NICHT mehr über die Sperre aus enter_room()
+# verlassen, die wird kurz danach schon wieder durch player.revive_
+# for_room() aufgehoben, siehe player.gd), HUD wird über den
+# CutsceneManager-Autoload ausgeblendet und oben/unten kommt ein
+# schwarzer Balken - danach alles wieder wie vorher. Kamera steht zu
+# diesem Zeitpunkt schon auf cutscene_camera (siehe _prepare_room_
+# camera_cutscene() oben), hier wird also nur noch die eigentliche
+# Fahrt abgespielt. Kein CutsceneAnimation/CutsceneCamera-Kind = Raum
+# ohne eigene Kamerafahrt, tut einfach nichts.
+func _maybe_play_room_camera_cutscene() -> void:
+	if not _has_room_camera_cutscene():
+		return
+
+	if player != null and is_instance_valid(player):
+		if player.has_method("lock_control"):
+			player.lock_control()
+
+		if player.has_method("force_idle"):
+			player.force_idle()
+
+	var bars: CanvasLayer = _build_room_cutscene_bars()
+
+	if get_node_or_null("/root/CutsceneManager") != null:
+		CutsceneManager.begin_cutscene()
+
+	await _fade_room_cutscene_bars(bars, true)
+
+	if not is_instance_valid(self):
+		return
+
+	var previous_camera: Camera2D = null
+
+	if player != null and is_instance_valid(player):
+		previous_camera = player.get_node_or_null(
+			"Camera2D"
+		) as Camera2D
+
+	cutscene_animation_player.play(room_cutscene_animation_name)
+
+	await cutscene_animation_player.animation_finished
+
+	if previous_camera != null and is_instance_valid(previous_camera):
+		previous_camera.enabled = true
+		previous_camera.make_current()
+		previous_camera.reset_smoothing()
+		previous_camera.force_update_scroll()
+
+	if camera_bounds != null and is_instance_valid(camera_bounds):
+		camera_bounds.set(
+			"keep_player_camera_active",
+			_room_cutscene_camera_bounds_was_active
+		)
+
+	await _fade_room_cutscene_bars(bars, false)
+
+	if bars != null and is_instance_valid(bars):
+		bars.queue_free()
+
+	if get_node_or_null("/root/CutsceneManager") != null:
+		CutsceneManager.end_cutscene()
+
+	if room_cutscene_once_id != &"":
+		if get_node_or_null("/root/RunState") != null:
+			RunState.mark_narration_shown(room_cutscene_once_id)
+
+	# Eigene Sperre von oben wieder aufheben - die äußere unlock_
+	# control() in _enter_at_normal_spawn() direkt nach dem Aufruf
+	# hier greift zwar auch noch, aber erst NACHDEM diese Funktion
+	# fertig ist, also nach dem kompletten Balken-Ausblenden. Ohne
+	# diese Zeile bliebe der Spieler bis dahin unnötig gesperrt.
+	if player != null and is_instance_valid(player):
+		if player.has_method("unlock_control"):
+			player.unlock_control()
+
+
+# Baut die schwarzen Balken oben/unten auf einem eigenen CanvasLayer
+# (layer = 65, deutlich über dem HUD - genau wie bei EchoBanner/
+# VoidNarration/der Miniboss-Aufwach-Cutscene). Startet unsichtbar,
+# _fade_room_cutscene_bars() blendet sie danach ein bzw. aus.
+func _build_room_cutscene_bars() -> CanvasLayer:
+	var canvas_layer := CanvasLayer.new()
+	canvas_layer.layer = 65
+
+	get_tree().current_scene.add_child(canvas_layer)
+
+	var screen_size: Vector2 = get_viewport().get_visible_rect().size
+	var bar_height_px: float = (
+		screen_size.y * room_cutscene_bar_height_ratio
+	)
+
+	var top_bar := _make_room_cutscene_bar()
+	top_bar.anchor_left = 0.0
+	top_bar.anchor_right = 1.0
+	top_bar.anchor_top = 0.0
+	top_bar.anchor_bottom = 0.0
+	top_bar.offset_left = 0.0
+	top_bar.offset_right = 0.0
+	top_bar.offset_top = 0.0
+	top_bar.offset_bottom = bar_height_px
+	top_bar.name = "TopBar"
+	canvas_layer.add_child(top_bar)
+
+	var bottom_bar := _make_room_cutscene_bar()
+	bottom_bar.anchor_left = 0.0
+	bottom_bar.anchor_right = 1.0
+	bottom_bar.anchor_top = 1.0
+	bottom_bar.anchor_bottom = 1.0
+	bottom_bar.offset_left = 0.0
+	bottom_bar.offset_right = 0.0
+	bottom_bar.offset_top = -bar_height_px
+	bottom_bar.offset_bottom = 0.0
+	bottom_bar.name = "BottomBar"
+	canvas_layer.add_child(bottom_bar)
+
+	return canvas_layer
+
+
+func _make_room_cutscene_bar() -> ColorRect:
+	var bar := ColorRect.new()
+
+	bar.color = room_cutscene_bar_color
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.modulate.a = 0.0
+
+	return bar
+
+
+func _fade_room_cutscene_bars(
+	canvas_layer: CanvasLayer, showing: bool
+) -> void:
+	if canvas_layer == null or not is_instance_valid(canvas_layer):
+		return
+
+	var top_bar: ColorRect = canvas_layer.get_node_or_null(
+		"TopBar"
+	) as ColorRect
+
+	var bottom_bar: ColorRect = canvas_layer.get_node_or_null(
+		"BottomBar"
+	) as ColorRect
+
+	if top_bar == null or bottom_bar == null:
+		return
+
+	var target_alpha: float = 1.0 if showing else 0.0
+	var ease_type: Tween.EaseType = (
+		Tween.EASE_OUT if showing else Tween.EASE_IN
+	)
+
+	var tween: Tween = create_tween()
+	tween.set_parallel(true)
+
+	tween.tween_property(
+		top_bar, "modulate:a", target_alpha, room_cutscene_bar_fade_time
+	).set_trans(Tween.TRANS_SINE).set_ease(ease_type)
+
+	tween.tween_property(
+		bottom_bar, "modulate:a", target_alpha, room_cutscene_bar_fade_time
+	).set_trans(Tween.TRANS_SINE).set_ease(ease_type)
+
+	await tween.finished
 
 
 # Zeigt den Gebiets-Titel ("GEBIET 1 - DIE EINGANGSHALLEN") NUR,

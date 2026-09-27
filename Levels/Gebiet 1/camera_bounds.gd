@@ -28,7 +28,9 @@ func _ready() -> void:
 		push_error("CameraBounds: Player-Camera2D wurde nicht gefunden.")
 		return
 
-	_activate_player_camera()
+	if keep_player_camera_active:
+		_activate_player_camera()
+
 	_apply_camera_limits()
 
 

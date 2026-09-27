@@ -1284,6 +1284,67 @@ sources/1 = SubResource("TileSetAtlasSource_f7wlj")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_as52s"]
 size = Vector2(720, 89)
 
+[sub_resource type="Animation" id="Animation_6y2cu"]
+length = 7.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CutsceneCamera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5, 7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-225, -50), Vector2(0, -59), Vector2(0, -59)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CutsceneCamera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 5, 7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(5.5, 5.5), Vector2(5, 5), Vector2(5, 5)]
+}
+
+[sub_resource type="Animation" id="Animation_uqyw2"]
+resource_name = "camera_cutscene"
+length = 7.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CutsceneCamera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5, 7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-222, -49), Vector2(1, -71), Vector2(1, -71)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CutsceneCamera:zoom")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 5, 7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(5.5, 5.5), Vector2(4.5, 4.5), Vector2(4.5, 4.5)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_4gnlb"]
+_data = {
+&"RESET": SubResource("Animation_6y2cu"),
+&"camera_cutscene": SubResource("Animation_uqyw2")
+}
+
 [node name="SkillTreeRoom" type="Node2D" unique_id=1995004706]
 
 [node name="Darkness" type="CanvasModulate" parent="." unique_id=1712036457]
@@ -1312,6 +1373,8 @@ shape = SubResource("RectangleShape2D_as52s")
 script = ExtResource("4_1t71j")
 thought_bubble_id = &"skill_tree_room_reaction"
 thought_bubble_lines = Array[String](["thought.skill_tree_line_1", "thought.skill_tree_line_2"])
+room_cutscene_animation_name = &"camera_cutscene"
+room_cutscene_once_id = &"skill_tree_room_camera_cutscene"
 
 [node name="Player" parent="." unique_id=836242315 instance=ExtResource("5_f7wlj")]
 position = Vector2(-315, -49)
@@ -1416,3 +1479,11 @@ position = Vector2(-147, -46)
 
 [node name="ExitDoor" parent="." unique_id=95013058 instance=ExtResource("22_6y2cu")]
 position = Vector2(256, -64)
+
+[node name="CutsceneAnimation" type="AnimationPlayer" parent="." unique_id=385324866]
+libraries/ = SubResource("AnimationLibrary_4gnlb")
+
+[node name="CutsceneCamera" type="Camera2D" parent="." unique_id=1889699252]
+position = Vector2(-225, -50)
+offset = Vector2(0, -50)
+zoom = Vector2(5.5, 5.5)

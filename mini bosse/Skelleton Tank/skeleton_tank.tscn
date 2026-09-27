@@ -13,6 +13,9 @@
 [ext_resource type="Texture2D" uid="uid://du8bqai2d85xv" path="res://mini bosse/Skelleton Tank/laufen-Sheet.png" id="9_1jo4p"]
 [ext_resource type="Script" uid="uid://bcgoag13ki2bd" path="res://Mobs/gold_drop.gd" id="12_hw0vk"]
 [ext_resource type="Script" uid="uid://ctd4vvwxdujk2" path="res://Player/enemy_spell_effects.gd" id="13_xbvwv"]
+[ext_resource type="Script" uid="uid://b0gqhkia1u1cm" path="res://mini bosse/Skelleton Tank/mini_boss_wake_cutscene.gd" id="14_wakecutscene"]
+[ext_resource type="AudioStream" uid="uid://c0tevkfcvegaq" path="res://mini bosse/Skelleton Tank/Sounds/Cut scene/chain_shatter.mp3" id="15_chainsound"]
+[ext_resource type="AudioStream" uid="uid://c20s0mx2lqwe4" path="res://mini bosse/Skelleton Tank/Sounds/Cut scene/bosstalk1.mp3" id="16_bosstalk1_TEST"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5k87j"]
 atlas = ExtResource("1_mess8")
@@ -798,17 +801,17 @@ height = 36.0
 
 [node name="SkeletonTank" type="CharacterBody2D" unique_id=175628798]
 script = ExtResource("1_hw0vk")
-max_health = 1
+max_health = 10
 move_speed = 11.0
 attack_range = 40.0
 attack_cooldown = 1.5
+walk_pause_duration = 0.15
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1441308611]
 position = Vector2(0, -32)
 sprite_frames = SubResource("SpriteFrames_4paok")
-animation = &"Block_Hittet"
-frame = 2
-frame_progress = 1.0
+animation = &"Walk"
+frame_progress = 0.37969643
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=117097006]
 position = Vector2(4, -32)
@@ -843,3 +846,12 @@ gold_reward = 1000000
 
 [node name="enemy_spell_effects" type="Node2D" parent="." unique_id=1283679976]
 script = ExtResource("13_xbvwv")
+
+[node name="Cut Scene" type="Node" parent="." unique_id=1405111610]
+script = ExtResource("14_wakecutscene")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1132015901]
+stream = ExtResource("15_chainsound")
+
+[node name="BossTalkPlayer_TEST" type="AudioStreamPlayer2D" parent="." unique_id=774455213]
+stream = ExtResource("16_bosstalk1_TEST")
