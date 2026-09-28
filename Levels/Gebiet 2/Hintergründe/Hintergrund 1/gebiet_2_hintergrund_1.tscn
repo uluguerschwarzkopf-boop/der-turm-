@@ -8,6 +8,81 @@
 [ext_resource type="Texture2D" uid="uid://s3iylll0v5c5" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/ebene 0.png" id="6_80siy"]
 [ext_resource type="Texture2D" uid="uid://dxerph71vgrko" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/ebene -1.png" id="7_7ldjr"]
 [ext_resource type="Script" uid="uid://6roj827j2iwr" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/gebiet_2_hintergrund_1.gd" id="8_hg_script"]
+[ext_resource type="Shader" uid="uid://djjj52214706k" path="res://Levels/Gebiet 2/shader/ebene_look.gdshader" id="9_ebene_look"]
+[ext_resource type="Texture2D" uid="uid://ce3okds34gru8" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/kaefig_gross.png" id="10_kaefig_gross"]
+[ext_resource type="Texture2D" uid="uid://ylq2i3wuo0b0" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/kaefig_klein.png" id="11_kaefig_klein"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_1"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 2.9
+shader_parameter/saturation = 0.35
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.4
+shader_parameter/blur_radius = 0.0
+shader_parameter/blur_mix = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_2"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 3.4
+shader_parameter/saturation = 0.45
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.3
+shader_parameter/blur_radius = 2.0
+shader_parameter/blur_mix = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_3"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 3.6
+shader_parameter/saturation = 0.55
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.2
+shader_parameter/blur_radius = 2.0
+shader_parameter/blur_mix = 0.75
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_4"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 2.7
+shader_parameter/saturation = 0.7
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.1
+shader_parameter/blur_radius = 1.0
+shader_parameter/blur_mix = 0.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_5"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 2.4
+shader_parameter/saturation = 0.85
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.0
+shader_parameter/blur_radius = 1.0
+shader_parameter/blur_mix = 0.3
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_6"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 1.7
+shader_parameter/saturation = 1.0
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.0
+shader_parameter/blur_radius = 0.0
+shader_parameter/blur_mix = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_7"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 1.0
+shader_parameter/saturation = 1.0
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.0
+shader_parameter/blur_radius = 0.0
+shader_parameter/blur_mix = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kaefige"]
+shader = ExtResource("9_ebene_look")
+shader_parameter/brightness = 1.2
+shader_parameter/saturation = 0.8
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.0
+shader_parameter/blur_radius = 1.0
+shader_parameter/blur_mix = 0.4
 
 [node name="Gebiet 2 hintergrund 1" type="Node2D" unique_id=1669482670]
 script = ExtResource("8_hg_script")
@@ -18,7 +93,12 @@ scroll_scale = Vector2(0.88, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 1" unique_id=785619490]
 light_mask = 0
+material = SubResource("ShaderMaterial_ebene_1")
 texture = ExtResource("1_65pm8")
+
+[node name="Architektur fern" type="Parallax2D" parent="." unique_id=1284470163]
+z_index = -8
+scroll_scale = Vector2(0.84, 0)
 
 [node name="Ebene 2" type="Parallax2D" parent="." unique_id=1752744050]
 z_index = -7
@@ -26,6 +106,9 @@ scroll_scale = Vector2(0.9, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 2" unique_id=970324224]
 light_mask = 0
+texture_filter = 2
+material = SubResource("ShaderMaterial_ebene_2")
+position = Vector2(0, -1)
 texture = ExtResource("2_6dy5t")
 
 [node name="Ebene 3" type="Parallax2D" parent="." unique_id=1218745038]
@@ -34,6 +117,10 @@ scroll_scale = Vector2(0.92, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 3" unique_id=289970142]
 light_mask = 0
+texture_filter = 2
+material = SubResource("ShaderMaterial_ebene_3")
+position = Vector2(-50, -7.5)
+scale = Vector2(1, 1.1171875)
 texture = ExtResource("3_573ai")
 
 [node name="Ebene 4" type="Parallax2D" parent="." unique_id=1729055697]
@@ -42,6 +129,9 @@ scroll_scale = Vector2(0.95, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 4" unique_id=917237301]
 light_mask = 0
+texture_filter = 2
+material = SubResource("ShaderMaterial_ebene_4")
+position = Vector2(-1, 0)
 texture = ExtResource("4_6oy10")
 
 [node name="Ebene 5" type="Parallax2D" parent="." unique_id=448978522]
@@ -50,6 +140,9 @@ scroll_scale = Vector2(0.96, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 5" unique_id=1934614497]
 light_mask = 0
+material = SubResource("ShaderMaterial_ebene_5")
+position = Vector2(1, -1)
+scale = Vector2(1.0078125, 1.0117188)
 texture = ExtResource("5_etytd")
 
 [node name="Ebene 6" type="Parallax2D" parent="." unique_id=352614366]
@@ -58,6 +151,7 @@ scroll_scale = Vector2(0.98, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 6" unique_id=23793720]
 light_mask = 0
+material = SubResource("ShaderMaterial_ebene_6")
 texture = ExtResource("6_80siy")
 
 [node name="Ebene 7" type="Parallax2D" parent="." unique_id=380854757]
@@ -67,4 +161,25 @@ scroll_scale = Vector2(1, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 7" unique_id=875624550]
 light_mask = 0
+material = SubResource("ShaderMaterial_ebene_7")
 texture = ExtResource("7_7ldjr")
+
+[node name="Vordergrund Kaefige" type="Parallax2D" parent="." unique_id=1046623871]
+z_index = 5
+scroll_scale = Vector2(1.08, 0)
+
+[node name="Kaefig gross" type="Sprite2D" parent="Vordergrund Kaefige" unique_id=1906231447]
+light_mask = 0
+texture_filter = 2
+material = SubResource("ShaderMaterial_kaefige")
+position = Vector2(-7, -50)
+scale = Vector2(1.4473684, 1.4195403)
+texture = ExtResource("10_kaefig_gross")
+
+[node name="Kaefig klein" type="Sprite2D" parent="Vordergrund Kaefige" unique_id=213388509]
+light_mask = 0
+texture_filter = 2
+material = SubResource("ShaderMaterial_kaefige")
+position = Vector2(87, -33)
+scale = Vector2(1.5769231, 1.6527777)
+texture = ExtResource("11_kaefig_klein")

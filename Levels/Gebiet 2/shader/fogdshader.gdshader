@@ -2,6 +2,9 @@ shader_type canvas_item;
 
 // --- Aussehen ---
 uniform vec4 fog_color : source_color = vec4(0.42, 0.50, 0.66, 1.0);
+// Hebt die Farbe an, um die Abdunklung durch das CanvasModulate auszugleichen.
+// 1.0 = wie bisher, 3.0 = gut sichtbar trotz dunklem Raum.
+uniform float brightness : hint_range(0.0, 8.0) = 1.0;
 uniform float max_alpha : hint_range(0.0, 1.0) = 0.40;
 uniform int alpha_steps : hint_range(1, 8) = 3;
 
@@ -60,5 +63,5 @@ void fragment() {
 	float s = float(alpha_steps);
 	a = floor(a * s) / s;
 
-	COLOR = vec4(fog_color.rgb, a * max_alpha);
+	COLOR = vec4(fog_color.rgb * brightness, a * max_alpha);
 }
