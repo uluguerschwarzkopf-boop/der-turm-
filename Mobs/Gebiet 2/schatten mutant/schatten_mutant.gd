@@ -74,8 +74,15 @@ enum State {
 
 @export var hurt_time: float = 0.35
 
-# Weißer Trefferblitz während eines laufenden Angriffs.
-@export var attack_hit_flash_time: float = 0.07
+# Trefferblitz: so lange bleibt er voll hell ...
+@export var attack_hit_flash_time: float = 0.05
+# ... und blendet dann so lange weich aus.
+@export var hit_flash_fade_time: float = 0.16
+# Farbe des Blitzes: kaltes, leicht milchiges Weiß.
+@export var hit_flash_color: Color = Color(0.82, 0.9, 1.0)
+# Gleicht die Abdunklung durch den dunklen Raum (CanvasModulate) aus.
+# Ohne das wäre der Blitz nur ein dunkles Grau. Höher = greller.
+@export var hit_flash_boost: float = 5.0
 
 # Verhindert mehrfachen Schaden durch dieselbe aktive Hitbox.
 @export var damage_hit_lock_time: float = 0.12
@@ -211,6 +218,7 @@ var can_take_damage: bool = false
 
 var flash_generation: int = 0
 var hit_flash_material: ShaderMaterial = null
+var _flash_tween: Tween = null
 
 # Ziel-Blickrichtung, die nach Ende der "umdrehen"-Animation
 # übernommen wird (siehe _turn_to_face()).
@@ -1153,6 +1161,9 @@ func take_damage(
 		_die()
 		return
 
+	# Trefferblitz bei jedem Treffer (vorher nur waehrend eines Angriffs).
+	_flash_white()
+
 	# Nutzer-Wunsch: die "hittet"-Animation soll NUR unterbrechen,
 	# wenn gerade die Lauf-Animation läuft (Idle zeigt ja ebenfalls
 	# "laufen", siehe anim_idle). Läuft gerade irgendeine andere
@@ -1160,7 +1171,6 @@ func take_damage(
 	# stattdessen blitzt er nur kurz weiß auf, die laufende
 	# Animation spielt normal weiter.
 	if sprite.animation != anim_walk and sprite.animation != anim_idle:
-		_flash_white()
 		return
 
 	_start_hurt()
@@ -1219,13 +1229,15 @@ func _setup_hit_flash_shader() -> void:
 shader_type canvas_item;
 
 uniform float flash_amount : hint_range(0.0, 1.0) = 0.0;
+uniform vec3 flash_color = vec3(0.82, 0.9, 1.0);
+uniform float flash_boost = 5.0;
 
 void fragment() {
 	vec4 source = texture(TEXTURE, UV);
 
 	vec3 final_color = mix(
 		source.rgb,
-		vec3(1.0, 1.0, 1.0),
+		flash_color * flash_boost,
 		flash_amount
 	);
 
@@ -1243,6 +1255,14 @@ void fragment() {
 		"flash_amount",
 		0.0
 	)
+	hit_flash_material.set_shader_parameter(
+		"flash_color",
+		Vector3(hit_flash_color.r, hit_flash_color.g, hit_flash_color.b)
+	)
+	hit_flash_material.set_shader_parameter(
+		"flash_boost",
+		hit_flash_boost
+	)
 
 	sprite.material = hit_flash_material
 
@@ -1253,36 +1273,36 @@ func _flash_white() -> void:
 
 	flash_generation += 1
 
-	var this_generation: int = flash_generation
+	if _flash_tween != null and _flash_tween.is_valid():
+		_flash_tween.kill()
 
-	hit_flash_material.set_shader_parameter(
-		"flash_amount",
-		1.0
+	_set_flash_amount(1.0)
+
+	_flash_tween = create_tween()
+	_flash_tween.tween_interval(max(attack_hit_flash_time, 0.01))
+	_flash_tween.tween_method(
+		_set_flash_amount,
+		1.0,
+		0.0,
+		max(hit_flash_fade_time, 0.01)
 	)
 
-	var tree := get_tree()
 
-	if tree == null:
-		return
-
-	await tree.create_timer(
-		max(attack_hit_flash_time, 0.01)
-	).timeout
-
-	if this_generation != flash_generation:
-		return
-
+func _set_flash_amount(value: float) -> void:
 	if hit_flash_material == null:
 		return
 
 	hit_flash_material.set_shader_parameter(
 		"flash_amount",
-		0.0
+		value
 	)
 
 
 func _reset_hit_flash() -> void:
 	flash_generation += 1
+
+	if _flash_tween != null and _flash_tween.is_valid():
+		_flash_tween.kill()
 
 	if hit_flash_material != null:
 		hit_flash_material.set_shader_parameter(
