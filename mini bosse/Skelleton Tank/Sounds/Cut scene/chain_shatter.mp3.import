@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c0tevkfcvegaq"
+path="res://.godot/imported/chain_shatter.mp3-088f9c728c61129895087bb92a730f07.mp3str"
+
+[deps]
+
+source_file="res://mini bosse/Skelleton Tank/Sounds/Cut scene/chain_shatter.mp3"
+dest_files=["res://.godot/imported/chain_shatter.mp3-088f9c728c61129895087bb92a730f07.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

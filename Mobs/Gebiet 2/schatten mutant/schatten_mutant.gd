@@ -104,11 +104,12 @@ enum State {
 @export_group("Zurücksetzen")
 
 # Nutzer-Wunsch: verliert er den Spieler aus den Augen (kein Ziel
-# in Reichweite) und bleibt so lange im Idle, legt er sich wieder
-# hin - dafür spielt die Aufwach-Animation einmal rückwärts, bis er
-# wieder in der Liege-Animation ist, und sein Leben wird komplett
-# zurückgesetzt (siehe _start_reset() / _finish_reset()).
-@export var reset_after_idle_time: float = 2.0
+# in Reichweite), legt er sich wieder hin - dafür spielt die
+# Aufwach-Animation einmal rückwärts, bis er wieder in der
+# Liege-Animation ist, und sein Leben wird komplett zurückgesetzt
+# (siehe _start_reset() / _finish_reset()). 0 = sofort, ohne vorher
+# noch auf der Stelle zu laufen/stehen.
+@export var reset_after_idle_time: float = 0.0
 
 
 # ============================================================

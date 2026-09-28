@@ -4,6 +4,13 @@ extends CharacterBody2D
 signal miniboss_died
 signal boss_started
 
+# Wird ausgelöst, sobald der Miniboss zu erwachen beginnt (Start der
+# Aufwach-Animation, siehe _wake_up_for_target() unten) - noch VOR
+# boss_started, das erst nach Ende der Animation kommt. Dient der
+# "Cut Scene"-Node (siehe Kind-Node am SkeletonTank-Root) als Signal
+# zum Sperren der Spielersteuerung + Einblenden der schwarzen Balken.
+signal wake_up_started
+
 
 enum State {
 	SLEEP,
@@ -126,6 +133,35 @@ var front_hits_before_block: int = 2
 
 
 # ============================================================
+# LAUF-PAUSE
+# ============================================================
+
+@export_group("Lauf-Pause")
+
+# Die Lauf-Animation besteht aus einzelnen Schritten hintereinander
+# (Schritt, Schritt, Schritt, ...) - damit sich das wie ein echter
+# Schritt-Rhythmus anfühlt, hält der Miniboss nach jedem komplett
+# abgespielten Laufzyklus kurz an, bevor er weiterläuft. Steuert
+# gleichzeitig auch die Frame-Pausen unten (walk_pause_frames).
+#
+# Standardmäßig AUS, weil es beim Testen komisch aussah - einfach
+# hier im Inspector anhaken, um es wieder einzuschalten.
+@export var walk_pause_after_cycle: bool = false
+
+# Wie lange jede einzelne Pause dauert (sowohl am Ende eines
+# Laufzyklus als auch auf den Frames unten in walk_pause_frames).
+@export var walk_pause_duration: float = 0.2
+
+# Zusätzliche Frames MITTEN in der Lauf-Animation, auf denen der
+# Miniboss ebenfalls kurz anhält (z.B. wenn ein Fuß aufsetzt) -
+# unabhängig von der Pause am Ende des Zyklus oben. Frame 0 ist
+# absichtlich mit dabei, auch wenn der Zyklus dort sowieso schon
+# über animation_looped pausiert (_on_animation_looped()) - doppelt
+# hält hier aber nicht besser, das überschneidet sich nur harmlos.
+@export var walk_pause_frames: Array[int] = [0, 1, 4, 5]
+
+
+# ============================================================
 # NODES
 # ============================================================
 
@@ -177,6 +213,10 @@ var block_resume_frame: int = 0
 var flash_generation: int = 0
 var hit_flash_material: ShaderMaterial = null
 
+# Zählt die Lauf-Pause zwischen zwei Laufzyklen runter - siehe
+# _on_animation_finished() und _physics_process().
+var _walk_pause_time_left: float = 0.0
+
 
 # ============================================================
 # START
@@ -221,6 +261,17 @@ func _ready() -> void:
 	):
 		sprite.animation_finished.connect(
 			_on_animation_finished
+		)
+
+	# WICHTIG: Bei einer loopenden Animation (z.B. Walk) feuert
+	# NICHT animation_finished, sondern animation_looped - dafür
+	# gibt's dieses eigene Signal/Handler (siehe _on_animation_
+	# looped() weiter unten, Lauf-Pause).
+	if not sprite.animation_looped.is_connected(
+		_on_animation_looped
+	):
+		sprite.animation_looped.connect(
+			_on_animation_looped
 		)
 
 	attack_hitbox.monitoring = true
@@ -295,7 +346,16 @@ func _physics_process(delta: float) -> void:
 			_chase_logic()
 
 		State.WALK:
-			_chase_logic()
+			if _walk_pause_time_left > 0.0:
+				_walk_pause_time_left -= delta
+				velocity.x = 0
+
+				# Pause gerade zu Ende - Lauf-Animation wieder
+				# freigeben, sonst bleibt sie für immer angehalten.
+				if _walk_pause_time_left <= 0.0:
+					sprite.play(anim_walk)
+			else:
+				_chase_logic()
 
 		State.ATTACK:
 			velocity.x = 0
@@ -511,6 +571,27 @@ func _start_attack() -> void:
 func _on_frame_changed() -> void:
 	if state == State.ATTACK:
 		_check_attack_damage()
+
+	if state == State.WALK:
+		_check_walk_pause_frame()
+
+
+# Zusätzliche Lauf-Pause MITTEN in der Animation (siehe
+# walk_pause_frames) - getrennt von der Pause am Ende des ganzen
+# Laufzyklus, die über animation_looped läuft (_on_animation_looped()).
+func _check_walk_pause_frame() -> void:
+	if not walk_pause_after_cycle:
+		return
+
+	if sprite.animation != anim_walk:
+		return
+
+	if not walk_pause_frames.has(sprite.frame):
+		return
+
+	_walk_pause_time_left = max(walk_pause_duration, 0.0)
+	velocity.x = 0
+	sprite.pause()
 
 
 func _check_attack_damage() -> void:
@@ -979,6 +1060,7 @@ func _on_animation_finished() -> void:
 
 		can_attack = true
 		state = State.WALK
+		_walk_pause_time_left = 0.0
 
 		sprite.play(anim_walk)
 		return
@@ -1019,6 +1101,7 @@ func _on_animation_finished() -> void:
 
 		can_attack = true
 		state = State.WALK
+		_walk_pause_time_left = 0.0
 
 		sprite.play(anim_walk)
 		return
@@ -1037,6 +1120,22 @@ func _on_animation_finished() -> void:
 		)
 
 		return
+
+
+# ============================================================
+# LAUF-PAUSE (LOOPENDE ANIMATIONEN FEUERN animation_looped,
+# NICHT animation_finished)
+# ============================================================
+
+func _on_animation_looped() -> void:
+	if (
+		state == State.WALK
+		and sprite.animation == anim_walk
+		and walk_pause_after_cycle
+	):
+		_walk_pause_time_left = max(walk_pause_duration, 0.0)
+		velocity.x = 0
+		sprite.pause()
 
 
 # ============================================================
@@ -1145,6 +1244,8 @@ func _wake_up_for_target(target: Node2D) -> void:
 
 	if direction != 0.0:
 		_set_facing(direction)
+
+	wake_up_started.emit()
 
 	_play_animation_force(anim_awake)
 

@@ -22,7 +22,7 @@ const START_ROOM_INDEX: int = 0
 
 const NORMAL_ROOM_PATHS: Array[String] = [
 	"res://Levels/Gebiet 1/level_01.tscn",
-	"res://Levels/level_02.tscn",
+	"res://Levels/Gebiet 1/level_02.tscn",
 	"res://Levels/Gebiet 1/level_03.tscn",
 	"res://Levels/Gebiet 1/level_4.tscn",
 	"res://Levels/Gebiet 1/level_5.tscn",

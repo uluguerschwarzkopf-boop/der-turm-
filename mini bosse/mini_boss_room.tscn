@@ -19,7 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://c7ranke0v1nes" path="res://Objects/Ranken/ranke.tscn" id="9100_rankenscene"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ptrw8"]
-size = Vector2(992, 173.75)
+size = Vector2(992, 155.75)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_6mfy8"]
 load_path = "res://.godot/imported/tile set gebiet 1.png-f8ee755df8c8f53170cde761a73b8dd7.ctex"
@@ -1305,7 +1305,7 @@ color = Color(0.51050425, 0.5793883, 0.60097057, 1)
 script = ExtResource("1_3dv60")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraBounds" unique_id=2131277702]
-position = Vector2(-1, -84.125)
+position = Vector2(-1, -75.125)
 shape = SubResource("RectangleShape2D_ptrw8")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=681317752]
@@ -1370,10 +1370,10 @@ frame_progress = 0.57164776
 [node name="Enemies" type="Node" parent="." unique_id=613816916]
 
 [node name="Skeleton" parent="Enemies" unique_id=1487100785 instance=ExtResource("17_c6cs8")]
-position = Vector2(-161, -64)
+position = Vector2(-211, -64)
 
 [node name="skeleton_sword" parent="Enemies" unique_id=712944137 instance=ExtResource("18_d5110")]
-position = Vector2(-72, -64)
+position = Vector2(-149, -64)
 
 [node name="skeleton_sword2" parent="Enemies" unique_id=172448567 instance=ExtResource("18_d5110")]
 position = Vector2(145, -64)
@@ -1450,7 +1450,7 @@ position = Vector2(-307, -138)
 animation = &"Riss 2"
 
 [node name="Ranken VOR_" parent="." unique_id=1967414109 instance=ExtResource("17_dwx0w")]
-scroll_offset = Vector2(-235, -185)
+scroll_offset = Vector2(-374, -187)
 
 [node name="Ranken VOR_2" parent="." unique_id=362740752 instance=ExtResource("17_dwx0w")]
-scroll_offset = Vector2(226, -184)
+scroll_offset = Vector2(155, -186)

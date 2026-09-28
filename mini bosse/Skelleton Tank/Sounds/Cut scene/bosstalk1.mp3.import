@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c20s0mx2lqwe4"
+path="res://.godot/imported/bosstalk1.mp3-0b1a7cdf185401e90c62310a5e6f197c.mp3str"
+
+[deps]
+
+source_file="res://mini bosse/Skelleton Tank/Sounds/Cut scene/bosstalk1.mp3"
+dest_files=["res://.godot/imported/bosstalk1.mp3-0b1a7cdf185401e90c62310a5e6f197c.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
