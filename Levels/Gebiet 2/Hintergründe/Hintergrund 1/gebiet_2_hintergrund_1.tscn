@@ -11,6 +11,7 @@
 [ext_resource type="Shader" uid="uid://djjj52214706k" path="res://Levels/Gebiet 2/shader/ebene_look.gdshader" id="9_ebene_look"]
 [ext_resource type="Texture2D" uid="uid://ce3okds34gru8" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/kaefig_gross.png" id="10_kaefig_gross"]
 [ext_resource type="Texture2D" uid="uid://ylq2i3wuo0b0" path="res://Levels/Gebiet 2/Hintergründe/Hintergrund 1/kaefig_klein.png" id="11_kaefig_klein"]
+[ext_resource type="PackedScene" uid="uid://bm7q1j3g687yd" path="res://details/Gebiet 2/Vordergrund/vordergrund.tscn" id="12_vordergrund"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ebene_1"]
 shader = ExtResource("9_ebene_look")
@@ -94,6 +95,7 @@ scroll_scale = Vector2(0.88, 0)
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 1" unique_id=785619490]
 light_mask = 0
 material = SubResource("ShaderMaterial_ebene_1")
+position = Vector2(2, 0)
 texture = ExtResource("1_65pm8")
 
 [node name="Architektur fern" type="Parallax2D" parent="." unique_id=1284470163]
@@ -141,7 +143,7 @@ scroll_scale = Vector2(0.96, 0)
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 5" unique_id=1934614497]
 light_mask = 0
 material = SubResource("ShaderMaterial_ebene_5")
-position = Vector2(1, -1)
+position = Vector2(1, 0)
 scale = Vector2(1.0078125, 1.0117188)
 texture = ExtResource("5_etytd")
 
@@ -152,6 +154,7 @@ scroll_scale = Vector2(0.98, 0)
 [node name="Sprite2D" type="Sprite2D" parent="Ebene 6" unique_id=23793720]
 light_mask = 0
 material = SubResource("ShaderMaterial_ebene_6")
+position = Vector2(9, 0)
 texture = ExtResource("6_80siy")
 
 [node name="Ebene 7" type="Parallax2D" parent="." unique_id=380854757]
@@ -172,14 +175,17 @@ scroll_scale = Vector2(1.08, 0)
 light_mask = 0
 texture_filter = 2
 material = SubResource("ShaderMaterial_kaefige")
-position = Vector2(-7, -50)
-scale = Vector2(1.4473684, 1.4195403)
+position = Vector2(-8.999999, -42)
+scale = Vector2(1.6184212, 1.4195403)
 texture = ExtResource("10_kaefig_gross")
 
 [node name="Kaefig klein" type="Sprite2D" parent="Vordergrund Kaefige" unique_id=213388509]
 light_mask = 0
 texture_filter = 2
 material = SubResource("ShaderMaterial_kaefige")
-position = Vector2(87, -33)
+position = Vector2(23.000002, -64.99999)
 scale = Vector2(1.5769231, 1.6527777)
 texture = ExtResource("11_kaefig_klein")
+
+[node name="Vordergrund" parent="." unique_id=1907417962 instance=ExtResource("12_vordergrund")]
+scroll_offset = Vector2(-20, -69)
