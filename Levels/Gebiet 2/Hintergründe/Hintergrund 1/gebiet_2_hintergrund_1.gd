@@ -35,7 +35,10 @@ func _enter_tree() -> void:
 	for child in get_children():
 		if child is Parallax2D:
 			_layers.append(child)
-			_base.append(position + child.position)
+			# scroll_offset mitnehmen: damit verschiebt man eine Parallax2D-Ebene
+			# im Editor. Da dieses Skript die Position selbst setzt, wuerde
+			# scroll_offset sonst im Spiel ignoriert.
+			_base.append(position + child.position + child.scroll_offset)
 
 func _ready() -> void:
 	# Container selbst auf 0, die Platzierung steckt jetzt in _base.

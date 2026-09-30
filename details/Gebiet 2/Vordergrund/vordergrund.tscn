@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bm7q1j3g687yd"]
+
+[ext_resource type="Texture2D" uid="uid://dfqnihv4r6lhc" path="res://Levels/Gebiet 2/Tile sets/Hintergrund/Sprite-0002.png" id="1_0gwnp"]
+[ext_resource type="Shader" uid="uid://djjj52214706k" path="res://Levels/Gebiet 2/shader/ebene_look.gdshader" id="2_ebene_look"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gelaender"]
+shader = ExtResource("2_ebene_look")
+shader_parameter/brightness = 1.0
+shader_parameter/saturation = 0.6
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.0
+shader_parameter/blur_radius = 2.0
+shader_parameter/blur_mix = 0.7
+
+[node name="Vordergrund" type="Parallax2D" unique_id=1907417962]
+z_index = 10
+scroll_scale = Vector2(1.15, 0)
+
+[node name="Geländer" type="Sprite2D" parent="." unique_id=1846771477]
+light_mask = 0
+texture_filter = 2
+texture_repeat = 2
+material = SubResource("ShaderMaterial_gelaender")
+position = Vector2(-329, 90)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("1_0gwnp")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 88, 768, 28)
