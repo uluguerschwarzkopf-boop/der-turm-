@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://dhd47hfpkixxq"]
 
 [ext_resource type="Texture2D" uid="uid://bjnya2np4goa" path="res://Mobs/Gebiet 2/schatten mutant/Attack 1-Sheet.png" id="1_efxcc"]
-[ext_resource type="Texture2D" uid="uid://o4m7efqlp7pm" path="res://Mobs/Gebiet 2/schatten mutant/Aufwachen-Sheet.png" id="2_fqsip"]
+[ext_resource type="Texture2D" uid="uid://b8dlvp0cn0oap" path="res://Mobs/Gebiet 2/schatten mutant/Aufwachen-Sheet.png" id="3_c0afx"]
 [ext_resource type="Texture2D" uid="uid://dnvqrvoqxngjw" path="res://Mobs/Gebiet 2/schatten mutant/hittet-Sheet.png" id="3_j1pvi"]
 [ext_resource type="Texture2D" uid="uid://b6ywrapqlk47c" path="res://Mobs/Gebiet 2/schatten mutant/laufen-Sheet.png" id="4_c0afx"]
 [ext_resource type="Texture2D" uid="uid://bed0iifppx736" path="res://Mobs/Gebiet 2/schatten mutant/DA liegend-Sheet.png" id="5_igxon"]
-[ext_resource type="Texture2D" uid="uid://dlw0otcb0bfuj" path="res://Mobs/Gebiet 2/schatten mutant/Tot-Sheet.png" id="6_xksvm"]
 [ext_resource type="Script" uid="uid://bcgoag13ki2bd" path="res://Mobs/gold_drop.gd" id="7_aeao1"]
+[ext_resource type="Texture2D" uid="uid://ul235pbinoab" path="res://Mobs/Gebiet 2/schatten mutant/Tot-Sheet.png" id="7_igxon"]
 [ext_resource type="Texture2D" uid="uid://0mjvhv4ef8ak" path="res://Mobs/Gebiet 2/schatten mutant/Umdrehen-Sheet.png" id="8_j1pvi"]
 [ext_resource type="Script" uid="uid://ctd4vvwxdujk2" path="res://Player/enemy_spell_effects.gd" id="8_us1iq"]
 [ext_resource type="Script" uid="uid://dhnv6bklgts52" path="res://Mobs/Gebiet 2/schatten mutant/schatten_mutant.gd" id="9_smscript"]
@@ -60,31 +60,31 @@ atlas = ExtResource("1_efxcc")
 region = Rect2(1364, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kvwdf"]
-atlas = ExtResource("2_fqsip")
+atlas = ExtResource("3_c0afx")
 region = Rect2(0, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_06u5f"]
-atlas = ExtResource("2_fqsip")
+atlas = ExtResource("3_c0afx")
 region = Rect2(124, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kfitj"]
-atlas = ExtResource("2_fqsip")
+atlas = ExtResource("3_c0afx")
 region = Rect2(248, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_loxu6"]
-atlas = ExtResource("2_fqsip")
+atlas = ExtResource("3_c0afx")
 region = Rect2(372, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r3t2e"]
-atlas = ExtResource("2_fqsip")
+atlas = ExtResource("3_c0afx")
 region = Rect2(496, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hjb71"]
-atlas = ExtResource("2_fqsip")
+atlas = ExtResource("3_c0afx")
 region = Rect2(620, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7667b"]
-atlas = ExtResource("2_fqsip")
+atlas = ExtResource("3_c0afx")
 region = Rect2(744, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pid15"]
@@ -168,39 +168,39 @@ atlas = ExtResource("5_igxon")
 region = Rect2(868, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1k58x"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(0, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hpptc"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(124, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_u0uc8"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(248, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ab0re"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(372, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m4c57"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(496, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mr0ex"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(620, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pxcmu"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(744, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mvma3"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(868, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jydwx"]
-atlas = ExtResource("6_xksvm")
+atlas = ExtResource("7_igxon")
 region = Rect2(992, 0, 124, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c0afx"]
@@ -270,7 +270,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_e4wb1")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Attack",
 "speed": 6.0
 }, {
@@ -296,7 +296,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_7667b")
 }],
-"loop": false,
+"loop": 0,
 "name": &"aufwachen",
 "speed": 5.0
 }, {
@@ -313,7 +313,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_lrcyf")
 }],
-"loop": false,
+"loop": 0,
 "name": &"hittet",
 "speed": 9.0
 }, {
@@ -342,7 +342,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_pnoyg")
 }],
-"loop": true,
+"loop": 1,
 "name": &"laufen",
 "speed": 5.0
 }, {
@@ -371,7 +371,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_r2e4b")
 }],
-"loop": true,
+"loop": 1,
 "name": &"rumliegen",
 "speed": 5.0
 }, {
@@ -403,7 +403,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_jydwx")
 }],
-"loop": false,
+"loop": 0,
 "name": &"tot",
 "speed": 7.0
 }, {
@@ -429,7 +429,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ktoic")
 }],
-"loop": false,
+"loop": 0,
 "name": &"umdrehen",
 "speed": 8.0
 }]
@@ -445,7 +445,7 @@ size = Vector2(14, 29)
 
 [node name="Schatten mutant" type="CharacterBody2D" unique_id=1655272891]
 script = ExtResource("9_smscript")
-max_health = 4
+max_health = 6
 move_speed = 20.0
 attack_cooldown = 1.5
 attack_damage_frame = 6
@@ -453,8 +453,9 @@ attack_damage_frame = 6
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1583790580]
 position = Vector2(1, -18)
 sprite_frames = SubResource("SpriteFrames_yjykm")
-animation = &"Attack"
-frame = 6
+animation = &"tot"
+frame = 8
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1333911879]
 position = Vector2(0, -14.5)

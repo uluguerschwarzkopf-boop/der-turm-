@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b8dlvp0cn0oap"
-path="res://.godot/imported/Aufwachen-Sheet.png-823fcd713cfe62ea0de3f8a39ac2912b.ctex"
+uid="uid://cmmfdrasmvijn"
+path="res://.godot/imported/schlüpfen-Sheet.png-dba9de54be5850d6902e7c8dc54204fb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Mobs/Gebiet 2/schatten mutant/Aufwachen-Sheet.png"
-dest_files=["res://.godot/imported/Aufwachen-Sheet.png-823fcd713cfe62ea0de3f8a39ac2912b.ctex"]
+source_file="res://Mobs/Gebiet 2/Fledermaus gros/schlüpfen-Sheet.png"
+dest_files=["res://.godot/imported/schlüpfen-Sheet.png-dba9de54be5850d6902e7c8dc54204fb.ctex"]
 
 [params]
 

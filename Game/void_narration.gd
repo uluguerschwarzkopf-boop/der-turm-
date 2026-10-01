@@ -291,6 +291,7 @@ func play_lines(translation_keys: Array) -> void:
 	await vignette_in.finished
 
 	if not is_instance_valid(self):
+		_force_unlock_player()
 		return
 
 	for key in translation_keys:
@@ -302,6 +303,7 @@ func play_lines(translation_keys: Array) -> void:
 		await _play_line(line_text)
 
 		if not is_instance_valid(self):
+			_force_unlock_player()
 			return
 
 		await get_tree().create_timer(line_gap_time).timeout
@@ -326,6 +328,26 @@ func play_lines(translation_keys: Array) -> void:
 
 	if is_instance_valid(self):
 		queue_free()
+
+
+# BUGFIX (Nutzer-Report: "kann mich im Bossraum nach der Cutscene mit
+# der Leere nicht mehr bewegen"): play_lines() hat an mehreren Stellen
+# "if not is_instance_valid(self): return" als Sicherheitsnetz, falls
+# dieser Node (z.B. durch einen Szenenwechsel mitten in der Erzählung -
+# etwa weil der Spieler währenddessen stirbt, control_locked verhindert
+# das Schadennehmen absichtlich NICHT, siehe player.gd take_damage())
+# vorzeitig ungültig wird. Diese frühen Returns sind VOR dem
+# abschließenden player.unlock_control() ganz am Ende von play_lines() -
+# sie haben also genau diesen Aufruf übersprungen und den Spieler
+# dauerhaft gesperrt zurückgelassen. Jetzt wird an jeder dieser Stellen
+# zusätzlich (unabhängig von "self") noch schnell entsperrt, bevor
+# zurückgekehrt wird.
+func _force_unlock_player() -> void:
+	if _player == null or not is_instance_valid(_player):
+		return
+
+	if _player.has_method("unlock_control"):
+		_player.unlock_control()
 
 
 # ============================================================

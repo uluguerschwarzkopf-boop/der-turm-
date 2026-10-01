@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b8dlvp0cn0oap"
-path="res://.godot/imported/Aufwachen-Sheet.png-823fcd713cfe62ea0de3f8a39ac2912b.ctex"
+uid="uid://0tp7duo5vcq5"
+path="res://.godot/imported/schlafen-Sheet.png-5157174937aa95d2199f0b62b9498dce.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Mobs/Gebiet 2/schatten mutant/Aufwachen-Sheet.png"
-dest_files=["res://.godot/imported/Aufwachen-Sheet.png-823fcd713cfe62ea0de3f8a39ac2912b.ctex"]
+source_file="res://Mobs/Gebiet 2/schatten mutant/schlafen-Sheet.png"
+dest_files=["res://.godot/imported/schlafen-Sheet.png-5157174937aa95d2199f0b62b9498dce.ctex"]
 
 [params]
 

@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://daw5ga3gqn6dp" path="res://Objects/Chests/chest_spawner.tscn" id="12_2r7j5"]
 [ext_resource type="PackedScene" uid="uid://d1yo7xc8qsca6" path="res://details/Gebiet 1/Vordergrund/Ranken/ranken_vor_.tscn" id="17_2x4dn"]
 [ext_resource type="PackedScene" uid="uid://xslqdc2fa60f" path="res://details/Gebiet 1/deko_risse.tscn" id="18_g7lyc"]
+[ext_resource type="PackedScene" uid="uid://tt1wfvwesc3e" path="res://Mobs/Gebiet 2/Fledermaus gros/fledermaus_gros.tscn" id="19_h0sqo"]
 [ext_resource type="Texture2D" uid="uid://cmu5bx6wgg55v" path="res://Objects/Fenster/Fenster Licht-Weiss.png" id="9001_fensterlichtweiss"]
 [ext_resource type="PackedScene" uid="uid://c7ranke0v1nes" path="res://Objects/Ranken/ranke.tscn" id="9100_rankenscene"]
 
@@ -2302,6 +2303,8 @@ sources/0 = SubResource("TileSetAtlasSource_v0oxe")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g646b"]
 size = Vector2(564, 375.5)
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_nav01"]
+
 [node name="Level_01" type="Node2D" unique_id=1690731510]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=483095733]
@@ -2538,3 +2541,9 @@ animation = &"Riss 4"
 [node name="Deko_Risse6" parent="." unique_id=716627352 instance=ExtResource("18_g7lyc")]
 position = Vector2(-268, -319)
 animation = &"Riss 3"
+
+[node name="Fledermaus_gros" parent="." unique_id=837671149 instance=ExtResource("19_h0sqo")]
+position = Vector2(22, -128)
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=305817264]
+navigation_polygon = SubResource("NavigationPolygon_nav01")

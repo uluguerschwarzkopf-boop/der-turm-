@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b8dlvp0cn0oap"
-path="res://.godot/imported/Aufwachen-Sheet.png-823fcd713cfe62ea0de3f8a39ac2912b.ctex"
+uid="uid://iqr5sa5cuahk"
+path="res://.godot/imported/hittet-Sheet.png-1b0aad12962fc2175e5697be505b8914.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Mobs/Gebiet 2/schatten mutant/Aufwachen-Sheet.png"
-dest_files=["res://.godot/imported/Aufwachen-Sheet.png-823fcd713cfe62ea0de3f8a39ac2912b.ctex"]
+source_file="res://Mobs/Gebiet 2/Fledermaus gros/hittet-Sheet.png"
+dest_files=["res://.godot/imported/hittet-Sheet.png-1b0aad12962fc2175e5697be505b8914.ctex"]
 
 [params]
 
