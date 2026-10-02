@@ -501,6 +501,15 @@ func _decide_next_state() -> void:
 		_enter_idle()
 		return
 
+	# Nutzer-Wunsch: steht das Ziel (Spieler/Summon) innerhalb der
+	# Angriffsreichweite - z.B. weil es direkt auf/in der Ratte steht,
+	# die Richtung dabei also 0.0 oder nur leicht hin- und
+	# herflackernd ist - wird SOFORT angegriffen, noch bevor Richtung/
+	# Umdrehen/Laufen überhaupt geprüft werden (siehe
+	# _try_start_attack_if_in_range()).
+	if _try_start_attack_if_in_range():
+		return
+
 	var distance: float = _distance_to_target()
 	var direction: float = _direction_to_target()
 
@@ -512,11 +521,30 @@ func _decide_next_state() -> void:
 		if _turn_to_face(direction):
 			return
 
-	if distance <= attack_range and can_attack:
-		_start_attack()
-		return
-
 	_enter_walk()
+
+
+# Siehe Kommentar in _decide_next_state() - wird dort UND in
+# _process_idle()/_process_walk()/_enter_walk() als allererste Prüfung
+# aufgerufen, damit ein Ziel innerhalb der Angriffsreichweite (auch
+# bei Richtung 0.0, also genau auf der Ratte stehend) IMMER sofort
+# einen Angriff auslöst, statt erst noch durch Umdrehen/Idle/Laufen
+# verzögert zu werden.
+func _try_start_attack_if_in_range() -> bool:
+	if dead:
+		return false
+
+	if not can_attack:
+		return false
+
+	if not _target_is_available():
+		return false
+
+	if _distance_to_target() > attack_range:
+		return false
+
+	_start_attack()
+	return true
 
 
 # ============================================================
@@ -647,6 +675,9 @@ func _process_idle(delta: float) -> void:
 		_accumulate_idle_reset_timer(delta)
 		return
 
+	if _try_start_attack_if_in_range():
+		return
+
 	var distance: float = _distance_to_target()
 
 	if distance > chase_range:
@@ -692,6 +723,9 @@ func _process_walk() -> void:
 		_enter_idle()
 		return
 
+	if _try_start_attack_if_in_range():
+		return
+
 	var distance: float = _distance_to_target()
 
 	if distance > chase_range:
@@ -701,23 +735,10 @@ func _process_walk() -> void:
 	var direction: float = _direction_to_target()
 
 	if direction == 0.0:
-		# Nutzer-Wunsch: steht das Ziel exakt auf der Ratte (z.B. weil
-		# der Spieler einfach stehen bleibt und durch sie hindurch-
-		# läuft), ist die Richtung 0.0 - vorher wechselte sie dann nur
-		# ins Idle und griff nie an. Jetzt wird zuerst noch geprüft,
-		# ob das Ziel nah genug für einen Angriff ist.
-		if distance <= attack_range and can_attack:
-			_start_attack()
-			return
-
 		_enter_idle()
 		return
 
 	if _turn_to_face(direction):
-		return
-
-	if distance <= attack_range and can_attack:
-		_start_attack()
 		return
 
 	if _is_rooted():
@@ -747,6 +768,9 @@ func _enter_walk() -> void:
 		_enter_idle()
 		return
 
+	if _try_start_attack_if_in_range():
+		return
+
 	var distance: float = _distance_to_target()
 
 	if distance > chase_range:
@@ -756,12 +780,6 @@ func _enter_walk() -> void:
 	var direction: float = _direction_to_target()
 
 	if direction == 0.0:
-		# Siehe Kommentar in _process_walk() - exakt auf Position des
-		# Ziels trotzdem direkt angreifen statt ins Idle zu wechseln.
-		if distance <= attack_range and can_attack:
-			_start_attack()
-			return
-
 		_enter_idle()
 		return
 

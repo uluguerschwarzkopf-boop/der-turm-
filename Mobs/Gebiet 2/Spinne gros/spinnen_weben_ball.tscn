@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://bkk0bf3104n4a"]
+
+[ext_resource type="Texture2D" uid="uid://d2i5uh24jfukp" path="res://Mobs/Gebiet 2/Spinne gros/Fliegen-Sheet.png" id="1_edldw"]
+[ext_resource type="Texture2D" uid="uid://nt63tcaibxrr" path="res://Mobs/Gebiet 2/Spinne gros/hittet-Sheet.png" id="2_q8dlw"]
+[ext_resource type="Script" uid="uid://ddoaru3g1urxq" path="res://Mobs/Gebiet 2/Spinne gros/spinnen_weben_ball.gd" id="3_webball"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q8dlw"]
+atlas = ExtResource("1_edldw")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gtgjk"]
+atlas = ExtResource("1_edldw")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_unn84"]
+atlas = ExtResource("1_edldw")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m27oh"]
+atlas = ExtResource("1_edldw")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6acad"]
+atlas = ExtResource("2_q8dlw")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tbdcc"]
+atlas = ExtResource("2_q8dlw")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qa4ns"]
+atlas = ExtResource("2_q8dlw")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_u3w0b"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q8dlw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gtgjk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_unn84")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m27oh")
+}],
+"loop": 1,
+"name": &"Fly",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6acad")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tbdcc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qa4ns")
+}],
+"loop": 0,
+"name": &"Hit",
+"speed": 8.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6acad"]
+size = Vector2(6, 5)
+
+[node name="SpinnenWebenBall" type="Area2D" unique_id=2052016733]
+script = ExtResource("3_webball")
+lifetime = 5.0
+web_wrap_duration = 1.4
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1240757522]
+sprite_frames = SubResource("SpriteFrames_u3w0b")
+animation = &"Hit"
+frame = 2
+frame_progress = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=701150813]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_6acad")

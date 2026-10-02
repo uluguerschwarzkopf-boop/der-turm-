@@ -20,6 +20,7 @@
 [ext_resource type="PackedScene" uid="uid://d1yo7xc8qsca6" path="res://details/Gebiet 1/Vordergrund/Ranken/ranken_vor_.tscn" id="18_qhirt"]
 [ext_resource type="PackedScene" uid="uid://xslqdc2fa60f" path="res://details/Gebiet 1/deko_risse.tscn" id="19_xom7m"]
 [ext_resource type="PackedScene" uid="uid://b3smekatwn7w2" path="res://details/Gebiet 1/Kleines Zeug/Stuff  allgemein/schwert_stachel.tscn" id="20_6lcei"]
+[ext_resource type="PackedScene" uid="uid://2np58bgpmc5s" path="res://Mobs/Gebiet 2/Spinne gros/spinne_gros.tscn" id="21_3h7cn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d3ajd"]
 size = Vector2(962, 519)
@@ -1726,7 +1727,7 @@ boss_room_path = "uid://b135dvcl4iyjo"
 [node name="Enemies" type="Node" parent="." unique_id=1984829639]
 
 [node name="Skeleton" parent="Enemies" unique_id=1487100785 instance=ExtResource("10_w4dqn")]
-position = Vector2(43, -112)
+position = Vector2(-44, -192)
 
 [node name="Skeleton2" parent="Enemies" unique_id=879850894 instance=ExtResource("10_w4dqn")]
 position = Vector2(496, -399)
@@ -1735,7 +1736,7 @@ position = Vector2(496, -399)
 position = Vector2(19, -192)
 
 [node name="skeleton_sword2" parent="Enemies" unique_id=124578451 instance=ExtResource("11_0bmir")]
-position = Vector2(232, -112)
+position = Vector2(297, -111)
 
 [node name="skeleton_archer" parent="Enemies" unique_id=209684129 instance=ExtResource("12_k8f0m")]
 position = Vector2(259, -239)
@@ -1892,7 +1893,7 @@ z_index = -1
 position = Vector2(384, -496)
 
 [node name="Bush_Mob" parent="." unique_id=653443273 instance=ExtResource("17_1t40m")]
-position = Vector2(168, -112)
+position = Vector2(311, -112)
 
 [node name="Ranken VOR_2" parent="." unique_id=2008939516 instance=ExtResource("18_qhirt")]
 scroll_offset = Vector2(222, -528)
@@ -1941,3 +1942,6 @@ animation = &"Riss 3"
 
 [node name="Schwert Stachel" parent="." unique_id=569526354 instance=ExtResource("20_6lcei")]
 position = Vector2(152, -392)
+
+[node name="Spinne Gros" parent="." unique_id=1833721472 instance=ExtResource("21_3h7cn")]
+position = Vector2(144, -112)

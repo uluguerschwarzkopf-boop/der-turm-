@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://bcrfj3w1gkufq" path="res://Player/Sheets/jump-Sheet.png" id="7_pisgm"]
 [ext_resource type="Texture2D" uid="uid://cx84yctx4rqb" path="res://Player/Sheets/land-Sheet.png" id="8_b1ygp"]
 [ext_resource type="Texture2D" uid="uid://dussbxeqarifq" path="res://Player/Skills/Krieger Skill Tree/Parry-Sheet.png" id="8_ie76m"]
+[ext_resource type="Texture2D" uid="uid://6q3xxr2fmnju" path="res://Mobs/Gebiet 2/Spinne gros/spieler eingespinnt.png" id="9_c4i3b"]
 [ext_resource type="Texture2D" uid="uid://cejvfxa66sahg" path="res://Player/Skills/Krieger Skill Tree/Warlord-Sheet.png" id="9_gvnt1"]
 [ext_resource type="Texture2D" uid="uid://gh0ninf8p0pv" path="res://Player/Sheets/roll-Sheet.png" id="9_o28un"]
 [ext_resource type="Texture2D" uid="uid://neie358os5x7" path="res://Player/Sheets/run-Sheet.png" id="10_5htga"]
@@ -42,6 +43,7 @@
 [ext_resource type="PackedScene" uid="uid://dtdegsdfe20o6" path="res://Player/Spells/ice_wave_player.tscn" id="30_755ss"]
 [ext_resource type="PackedScene" uid="uid://bp5fpai28ncxp" path="res://Player/Spells/roots_wave.tscn" id="31_bbimk"]
 [ext_resource type="PackedScene" uid="uid://dx0wevtthcbi6" path="res://Player/Spells/light_orb_player.tscn" id="32_m0h3t"]
+[ext_resource type="Texture2D" uid="uid://gfnajjh77clj" path="res://Mobs/Gebiet 2/Spinne gros/spieler eingespinnt aufbrechen-Sheet.png" id="32_uvbbp"]
 [ext_resource type="Script" uid="uid://m6gugl367jrh" path="res://Player/player_summons.gd" id="33_i4o1l"]
 [ext_resource type="PackedScene" uid="uid://bqdqlpmwmpil5" path="res://Player/Spells/player_skeleton.tscn" id="34_j2n6q"]
 [ext_resource type="Script" uid="uid://cjs124eunbn4a" path="res://Player/player_spell_effects.gd" id="35_c6x0f"]
@@ -526,6 +528,10 @@ region = Rect2(450, 0, 150, 100)
 [sub_resource type="AtlasTexture" id="AtlasTexture_vekmy"]
 atlas = ExtResource("8_ie76m")
 region = Rect2(600, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2pcct"]
+atlas = ExtResource("9_c4i3b")
+region = Rect2(0, 0, 150, 100)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sxp6t"]
 atlas = ExtResource("9_gvnt1")
@@ -1335,6 +1341,34 @@ region = Rect2(1500, 0, 150, 100)
 atlas = ExtResource("20_bbimk")
 region = Rect2(1650, 0, 150, 100)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_tm5qo"]
+atlas = ExtResource("32_uvbbp")
+region = Rect2(0, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jrm86"]
+atlas = ExtResource("32_uvbbp")
+region = Rect2(150, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e5ayb"]
+atlas = ExtResource("32_uvbbp")
+region = Rect2(300, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c4s41"]
+atlas = ExtResource("32_uvbbp")
+region = Rect2(450, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dmeq1"]
+atlas = ExtResource("32_uvbbp")
+region = Rect2(600, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i072m"]
+atlas = ExtResource("32_uvbbp")
+region = Rect2(750, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8v5gq"]
+atlas = ExtResource("32_uvbbp")
+region = Rect2(900, 0, 150, 100)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_gwnis"]
 animations = [{
 "frames": [{
@@ -1725,6 +1759,14 @@ animations = [{
 "loop": 0,
 "name": &"Parry",
 "speed": 16.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2pcct")
+}],
+"loop": 0,
+"name": &"Spieler eingespinnt",
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2441,6 +2483,32 @@ animations = [{
 "loop": 0,
 "name": &"spell_roots",
 "speed": 7.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tm5qo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jrm86")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e5ayb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c4s41")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dmeq1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i072m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8v5gq")
+}],
+"loop": 0,
+"name": &"spieler eingespinnt brechen",
+"speed": 10.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wvbyc"]
@@ -2485,8 +2553,8 @@ script = ExtResource("1_l8h54")
 speed = 40.0
 jump_velocity = -230.0
 gravity = 800.0
-roll_speed = 65.0
-roll_time = 0.9
+roll_speed = 80.0
+roll_time = 0.8
 dash_slash_speed = 70.0
 backstep_speed = 90.0
 
@@ -2502,9 +2570,7 @@ position_smoothing_enabled = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=48907117]
 position = Vector2(-1, 1)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"Warlord"
-frame = 12
-frame_progress = 1.0
+animation = &"spieler eingespinnt brechen"
 offset = Vector2(1, 0)
 
 [node name="Hitboxes" type="Node2D" parent="." unique_id=174370340]

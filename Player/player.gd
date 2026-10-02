@@ -43,6 +43,24 @@ extends CharacterBody2D
 var _footstep_timer: float = 0.0
 
 
+@export_group("Eingesponnen (Spinnenwebenball)")
+
+# Nutzer-Wunsch: trifft der Spinnenwebenball der Spinne Gros (siehe
+# Mobs/Gebiet 2/Spinne gros/spinnen_weben_ball.gd) den Spieler, wird
+# er für diese Zeit (Sekunden) eingesponnen - komplett bewegungs- und
+# angriffsunfähig (siehe start_web_wrap() weiter unten). Kann auch von
+# der Spinne Gros aus überschrieben werden (siehe web_wrap_duration
+# dort), das hier ist nur der Standardwert, falls der Ball mal direkt
+# ohne eigenen Wert benutzt wird.
+@export var web_wrap_duration: float = 2.0
+
+# Name der Animation, die während der eingesponnen-Zeit läuft, und der
+# Animation, die beim Befreien einmalig abgespielt wird (beide bereits
+# im Player-Sprite angelegt, siehe Nutzer-Screenshot).
+@export var anim_web_wrapped: StringName = &"Spieler eingespinnt"
+@export var anim_web_wrap_break: StringName = &"spieler eingespinnt brechen"
+
+
 # ============================================================
 # NODES
 # ============================================================
@@ -156,6 +174,14 @@ var _dash_slash_direction: float = 1.0
 # Gegner wird kurz eingefroren.
 var _parry_active: bool = false
 
+# Eingesponnen (Nutzer-Wunsch, siehe Export-Gruppe "Eingesponnen
+# (Spinnenwebenball)" oben und start_web_wrap() weiter unten) - wie
+# die anderen aktiven Skills hier oben komplett bewegungsunfähig,
+# zusätzlich aber auch von AUSSEN ausgelöst (durch einen Treffer,
+# nicht durch Spieler-Eingabe) und hat deshalb in _physics_process()
+# Vorrang vor JEDER anderen laufenden Aktion.
+var _web_wrapped_active: bool = false
+
 # Schutz gegen sich überlappende Bildschirm-Ruckler (siehe
 # _shake_camera() weiter unten) - z.B. wenn kurz hintereinander zwei
 # Treffer geparried werden.
@@ -185,6 +211,7 @@ func _is_active_skill_busy() -> bool:
 		or _dash_slash_active
 		or _parry_active
 		or _backstep_active
+		or _web_wrapped_active
 	)
 
 var scene_is_changing: bool = false
@@ -350,6 +377,19 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_apply_gravity(delta)
+
+	# Eingesponnen (Nutzer-Wunsch): hat IMMER Vorrang vor jeder anderen
+	# Aktion (Rollen, Trinken, aktive Skills, Angriff, ...) - deshalb
+	# hier ganz vorne, noch vor allem anderen. start_web_wrap() bricht
+	# beim Auslösen alle anderen laufenden Aktionen sauber ab, diese
+	# Prüfung hier sorgt zusätzlich dafür, dass währenddessen auch
+	# keine davon neu reinregieren kann. Die Schwerkraft läuft normal
+	# weiter (siehe _apply_gravity() oben) - nur die waagrechte
+	# Bewegung wird eingefroren, genau wie bei Iron Skin/Parry/...
+	if _web_wrapped_active:
+		velocity.x = 0
+		move_and_slide()
+		return
 
 	if is_rolling:
 		roll_timer -= delta
@@ -2151,6 +2191,128 @@ func take_damage(
 
 
 # ============================================================
+# EINGESPONNEN (SPINNENWEBENBALL-TREFFER)
+# ============================================================
+
+# Nutzer-Wunsch: wird vom Spinnenwebenball der Spinne Gros aufgerufen
+# (siehe Mobs/Gebiet 2/Spinne gros/spinnen_weben_ball.gd ->
+# _hit_target()), sobald er den SPIELER trifft (nicht bei anderen
+# Zielen wie einem beschworenen Skelett). duration < 0 bedeutet "den
+# Standardwert aus web_wrap_duration oben benutzen" - der Ball gibt
+# normalerweise aber seinen eigenen, von der Spinne Gros im Inspector
+# einstellbaren Wert mit.
+#
+# Eingesponnen hat IMMER Vorrang: läuft gerade eine Rolle/ein Trank/
+# ein aktiver Skill, wird das hier sauber abgebrochen (siehe unten) -
+# _physics_process() prüft _web_wrapped_active außerdem ganz vorne
+# (vor allem anderen), kann also während der eingesponnen-Zeit auch
+# nicht von einer dieser Aktionen überschrieben werden.
+func start_web_wrap(duration: float = -1.0) -> void:
+	if dead or scene_is_changing:
+		return
+
+	# Schon eingesponnen - kein erneutes Auslösen/Verlängern durch
+	# einen zweiten Treffer mitten in der aktuellen Wirkzeit.
+	if _web_wrapped_active:
+		return
+
+	if (
+		sprite == null
+		or sprite.sprite_frames == null
+		or not sprite.sprite_frames.has_animation(anim_web_wrapped)
+	):
+		push_warning(
+			"Player: Animation '" + String(anim_web_wrapped)
+			+ "' fehlt auf dem Player-Sprite (eingesponnen) - "
+			+ "Nutzer hat sie laut Screenshot schon angelegt, bitte "
+			+ "die player.tscn-Szene in Godot einmal speichern "
+			+ "(Strg+S), falls die Änderung noch nicht gespeichert "
+			+ "wurde."
+		)
+		return
+
+	var wrap_time: float = (
+		web_wrap_duration if duration < 0.0 else duration
+	)
+
+	_web_wrapped_active = true
+
+	# Laufende Aktionen abbrechen, bevor die eingesponnen-Animation
+	# gestartet wird - sonst würde z.B. eine noch laufende Rolle nach
+	# dem Befreien mit einem veralteten roll_timer weiterlaufen.
+	is_rolling = false
+	is_drinking = false
+	_charge_attack_active = false
+	_ground_slam_falling = false
+	_ground_slam_hitting = false
+	_iron_skin_active = false
+	_dash_slash_active = false
+	_backstep_active = false
+	_parry_active = false
+
+	velocity.x = 0
+
+	sprite.play(anim_web_wrapped)
+
+	var tree := get_tree()
+
+	if tree == null:
+		_finish_web_wrap()
+		return
+
+	if not await _wait_safely(max(wrap_time, 0.01)):
+		_web_wrapped_active = false
+		return
+
+	_finish_web_wrap()
+
+
+# Spielt (falls vorhanden) einmal die Befreien-Animation ab, BEVOR
+# _web_wrapped_active wieder auf false geht - der Spieler bleibt also
+# auch während dieser kurzen Befreien-Animation noch bewegungs- und
+# angriffsunfähig, genau wie beim eigentlichen Einspinnen.
+func _finish_web_wrap() -> void:
+	if not _web_wrapped_active:
+		return
+
+	if dead or scene_is_changing:
+		_web_wrapped_active = false
+		return
+
+	if (
+		sprite != null
+		and sprite.sprite_frames != null
+		and sprite.sprite_frames.has_animation(anim_web_wrap_break)
+	):
+		sprite.play(anim_web_wrap_break)
+
+		if not await _wait_safely_for_animation():
+			_web_wrapped_active = false
+			return
+
+	_web_wrapped_active = false
+
+	if sprite != null and is_instance_valid(sprite) and is_on_floor():
+		sprite.play("idle")
+
+
+# Wie _wait_safely() weiter unten, nur dass statt einer festen Zeit
+# auf das animation_finished-Signal des Sprites gewartet wird (mit
+# derselben scene_is_changing/dead-Absicherung gegen einen Szenen-
+# wechsel mitten im Warten).
+func _wait_safely_for_animation() -> bool:
+	if sprite == null or not is_instance_valid(sprite):
+		return false
+
+	await sprite.animation_finished
+
+	if not is_instance_valid(self) or dead or scene_is_changing:
+		return false
+
+	return true
+
+
+# ============================================================
 # SHOP UND INVENTAR
 # ============================================================
 
@@ -2415,6 +2577,14 @@ func _on_died() -> void:
 	is_drinking = false
 	control_locked = false
 	velocity = Vector2.ZERO
+
+	# Sicherheitsnetz: falls der Tod mitten im Eingesponnen-Sein
+	# passiert (z.B. durch einen zweiten Treffer), soll start_web_wrap()/
+	# _finish_web_wrap() nicht ewig auf dead/scene_is_changing warten -
+	# dead ist oben schon gesetzt, die beiden brechen beim nächsten
+	# Await-Check also sauber ab, das hier verhindert nur, dass
+	# _web_wrapped_active bis dahin fälschlich true bleibt.
+	_web_wrapped_active = false
 
 	# Sicherheitsnetz: falls der Tod mitten in einer Charge-Attack-
 	# Ladung passiert (Skill ist nicht gegen Treffer abgesichert),
