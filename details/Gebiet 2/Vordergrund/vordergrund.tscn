@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bm7q1j3g687yd"]
 
-[ext_resource type="Texture2D" uid="uid://dfqnihv4r6lhc" path="res://Levels/Gebiet 2/Tile sets/Hintergrund/Sprite-0002.png" id="1_0gwnp"]
-[ext_resource type="Shader" uid="uid://djjj52214706k" path="res://Levels/Gebiet 2/shader/ebene_look.gdshader" id="2_ebene_look"]
+[ext_resource type="Texture2D" uid="uid://dfqnihv4r6lhc" path="res://Ebenen/Gebiet 2/Tile sets/Hintergrund/TestRaum/Sprite-0002.png" id="1_0gwnp"]
+[ext_resource type="Shader" uid="uid://djjj52214706k" path="res://Ebenen/Gebiet 2/shader/ebene_look.gdshader" id="2_ebene_look"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_gelaender"]
 shader = ExtResource("2_ebene_look")
