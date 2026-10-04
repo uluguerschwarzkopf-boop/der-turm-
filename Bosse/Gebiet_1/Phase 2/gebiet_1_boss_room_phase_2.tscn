@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://dcmwxsqrd8pav"]
 
 [ext_resource type="Script" uid="uid://c0bhyx2aj5m20" path="res://Bosse/Gebiet_1/Phase 2/gebiet_1_boss_room_phase_2.gd" id="1_7loku"]
-[ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Levels/Gebiet 1/camera_bounds.gd" id="1_g6g80"]
+[ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Ebenen/Gebiet 1/camera_bounds.gd" id="1_g6g80"]
 [ext_resource type="Texture2D" uid="uid://cguoo58mnrm0j" path="res://Händler/Gebiet 1/Händler tile set.png" id="2_kk20w"]
 [ext_resource type="Texture2D" uid="uid://m5sr72hjulnr" path="res://Bosse/Gebiet_1/Phase 2/Map/Tile set.png" id="3_7loku"]
-[ext_resource type="Texture2D" uid="uid://b55yhnm1b1tng" path="res://Levels/Gebiet 1/tile set gebiet 1.png" id="3_ul5kp"]
+[ext_resource type="Texture2D" uid="uid://b55yhnm1b1tng" path="res://Ebenen/Gebiet 1/tile set gebiet 1.png" id="3_ul5kp"]
 [ext_resource type="PackedScene" uid="uid://dveuxdnhe6qss" path="res://Player/player.tscn" id="4_7loku"]
 [ext_resource type="Texture2D" uid="uid://0dnxlejkelkt" path="res://Bosse/Gebiet_1/Phase 2/Map/Background-Sheet-Sheet-export.png" id="8_eplhv"]
 [ext_resource type="PackedScene" uid="uid://bnyg8y3lw3cho" path="res://Player/UI/canvas_layer.tscn" id="11_6m4on"]
-[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/Gebiet 2/shader/room_manager.gd" id="13_w8co4"]
+[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Ebenen/Gebiet 2/shader/room_manager.gd" id="13_w8co4"]
 [ext_resource type="PackedScene" uid="uid://c0pk3at6bqtf0" path="res://Bosse/Gebiet_1/Phase 2/fire_knight_p_2.tscn" id="19_g0cbu"]
 [ext_resource type="PackedScene" uid="uid://dxboo5o2iiytd" path="res://Bosse/Gebiet_1/Phase 2/boss_bar_fire_lord.tscn" id="30_0b3gr"]
 
