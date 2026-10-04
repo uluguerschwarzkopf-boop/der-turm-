@@ -1,17 +1,18 @@
 [gd_scene format=3 uid="uid://cplmtl1x8vdou"]
 
-[ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Levels/Gebiet 1/camera_bounds.gd" id="1_b34vw"]
-[ext_resource type="Texture2D" uid="uid://b7a35bue3t6d0" path="res://Levels/Gebiet 1/tile set gebiet 1 Version 3.png" id="2_55nue"]
+[ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Ebenen/Gebiet 1/camera_bounds.gd" id="1_b34vw"]
+[ext_resource type="Texture2D" uid="uid://b7a35bue3t6d0" path="res://Ebenen/Gebiet 1/tile set gebiet 1 Version 3.png" id="2_55nue"]
 [ext_resource type="PackedScene" uid="uid://buf6qcfjm4vst" path="res://Objects/fackel.tscn" id="3_6efkj"]
 [ext_resource type="PackedScene" uid="uid://4d68ggr5agg3" path="res://Objects/platform.tscn" id="4_ldixw"]
 [ext_resource type="PackedScene" uid="uid://b6h5u1pe5kjde" path="res://Objects/spike.tscn" id="5_cb60t"]
 [ext_resource type="PackedScene" uid="uid://cqyryemlwnxrm" path="res://Objects/Doors/spawn_door.tscn" id="6_jwt8i"]
 [ext_resource type="PackedScene" uid="uid://b207xmd77deb0" path="res://Objects/Doors/exit_door.tscn" id="7_c632n"]
-[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Levels/Gebiet 2/shader/room_manager.gd" id="8_sbnfl"]
+[ext_resource type="Script" uid="uid://ctl4cj8n1txou" path="res://Ebenen/Gebiet 2/shader/room_manager.gd" id="8_sbnfl"]
 [ext_resource type="PackedScene" uid="uid://dveuxdnhe6qss" path="res://Player/player.tscn" id="9_xqd3s"]
 [ext_resource type="PackedScene" uid="uid://wwtf3iayv0sy" path="res://Mobs/Gebiet 1/Skellete/Normal/skeleton.tscn" id="10_w4dqn"]
 [ext_resource type="PackedScene" uid="uid://dq2of6gksx58y" path="res://Mobs/Gebiet 1/Skellete/sword/skeleton_sword.tscn" id="11_0bmir"]
 [ext_resource type="PackedScene" uid="uid://cofi3ygxuqac2" path="res://Mobs/Gebiet 1/Skellete/Archer/skeleton_archer.tscn" id="12_k8f0m"]
+[ext_resource type="PackedScene" uid="uid://b8qvj8cydb6bw" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/krieger_skellet.tscn" id="13_bkajc"]
 [ext_resource type="PackedScene" uid="uid://bnyg8y3lw3cho" path="res://Player/UI/canvas_layer.tscn" id="13_ibmhm"]
 [ext_resource type="PackedScene" uid="uid://daw5ga3gqn6dp" path="res://Objects/Chests/chest_spawner.tscn" id="14_v7ylq"]
 [ext_resource type="Texture2D" uid="uid://cmu5bx6wgg55v" path="res://Objects/Fenster/Fenster Licht-Weiss.png" id="15_ahxsl"]
@@ -1727,19 +1728,22 @@ boss_room_path = "uid://b135dvcl4iyjo"
 [node name="Enemies" type="Node" parent="." unique_id=1984829639]
 
 [node name="Skeleton" parent="Enemies" unique_id=1487100785 instance=ExtResource("10_w4dqn")]
-position = Vector2(-44, -192)
+position = Vector2(397, -191)
 
 [node name="Skeleton2" parent="Enemies" unique_id=879850894 instance=ExtResource("10_w4dqn")]
 position = Vector2(496, -399)
 
 [node name="skeleton_sword" parent="Enemies" unique_id=712944137 instance=ExtResource("11_0bmir")]
-position = Vector2(19, -192)
+position = Vector2(387, -192)
 
 [node name="skeleton_sword2" parent="Enemies" unique_id=124578451 instance=ExtResource("11_0bmir")]
 position = Vector2(297, -111)
 
 [node name="skeleton_archer" parent="Enemies" unique_id=209684129 instance=ExtResource("12_k8f0m")]
 position = Vector2(259, -239)
+
+[node name="Krieger skellet" parent="Enemies" unique_id=1279725451 instance=ExtResource("13_bkajc")]
+position = Vector2(62, -192)
 
 [node name="CanvasLayer" parent="." unique_id=766876166 instance=ExtResource("13_ibmhm")]
 
