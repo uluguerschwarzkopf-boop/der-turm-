@@ -21,9 +21,17 @@ extends Node2D
 
 ## Alle Ebenen bleiben auf konstanter Hoehe, egal wie die Kamera springt.
 @export var lock_vertical: bool = true
+## Nutzer-Korrektur: Bezugspunkt = Kamera beim Spielstart (Spawn) statt
+## Mitte der Camera Bounds. Sonst wandert der Hintergrund mit, sobald man
+## die CollisionShape2D der Bounds verschiebt, und bei breiten Raeumen
+## liegt er weit neben der Kamera. An = Am Spawn sieht es aus wie im Editor.
+@export var anchor_at_camera_start: bool = false
+## Frames warten, bis CameraBounds die Limits gesetzt hat (wartet selbst 2).
+@export var start_wait_frames: int = 3
 
 var _cam: Camera2D = null
 var _anchor: Vector2 = Vector2.ZERO
+var _anchor_set: bool = false
 var _layers: Array[Parallax2D] = []
 var _base: Array[Vector2] = []
 var _armed: bool = false
@@ -45,6 +53,9 @@ func _ready() -> void:
 	position = Vector2.ZERO
 	# Eine Frame warten, damit die Kamera ihre Limits gesetzt hat.
 	await get_tree().process_frame
+	if anchor_at_camera_start:
+		for i in maxi(start_wait_frames - 1, 0):
+			await get_tree().process_frame
 	_grab_camera()
 	_armed = true
 	_apply()
@@ -52,6 +63,13 @@ func _ready() -> void:
 func _grab_camera() -> void:
 	_cam = get_viewport().get_camera_2d()
 	if _cam == null:
+		return
+	if anchor_at_camera_start:
+		# Nur einmal setzen, sonst springt der Hintergrund, falls die Kamera
+		# spaeter neu gesucht wird.
+		if not _anchor_set:
+			_anchor = _cam.get_screen_center_position()
+			_anchor_set = true
 		return
 	var ax: float = _cam.get_screen_center_position().x
 	var ay: float = _cam.get_screen_center_position().y
