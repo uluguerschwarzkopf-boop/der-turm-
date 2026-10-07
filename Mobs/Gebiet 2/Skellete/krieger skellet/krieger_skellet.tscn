@@ -95,6 +95,22 @@ region = Rect2(672, 0, 96, 96)
 atlas = ExtResource("2_id1qf")
 region = Rect2(768, 0, 96, 96)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_tqcyb"]
+atlas = ExtResource("2_id1qf")
+region = Rect2(864, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kmpl5"]
+atlas = ExtResource("2_id1qf")
+region = Rect2(960, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rywnh"]
+atlas = ExtResource("2_id1qf")
+region = Rect2(1056, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4pajv"]
+atlas = ExtResource("2_id1qf")
+region = Rect2(1152, 0, 96, 96)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_gdnvx"]
 atlas = ExtResource("3_x8ivv")
 region = Rect2(0, 0, 96, 96)
@@ -309,6 +325,18 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_upgec")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tqcyb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kmpl5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rywnh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4pajv")
 }],
 "loop": 0,
 "name": &"Attacke 2",
@@ -461,12 +489,13 @@ size = Vector2(14, 29)
 script = ExtResource("8_kriegerscript")
 max_health = 6
 move_speed = 20.0
+attack_2_damage_frame = 7
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=426245958]
 position = Vector2(1, -16)
 sprite_frames = SubResource("SpriteFrames_gdnvx")
 animation = &"Attacke 2"
-frame = 3
+frame = 7
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=183346900]
 position = Vector2(1, -14.5)
