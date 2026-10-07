@@ -1493,8 +1493,8 @@ copy_mode = 2
 [node name="Nebel vorne" type="ColorRect" parent="Nebel" unique_id=1190584477]
 z_index = -1
 material = SubResource("ShaderMaterial_nebel_vorne")
-offset_left = -261.0
-offset_top = -334.0
-offset_right = 564.0
-offset_bottom = -131.0
+offset_left = -341.0
+offset_top = -361.0
+offset_right = 484.0
+offset_bottom = -158.0
 mouse_filter = 2
