@@ -16,6 +16,9 @@ extends Node2D
 @export var interval_max: float = 5.0
 ## So lange haengt der Tropfen sichtbar, bevor er faellt (Sekunden).
 @export var hang_time: float = 0.6
+## Nutzer-Wunsch: an manchen Stellen tropft es mehr. Jeder Tropfen startet
+## zufaellig bis zu so viele Pixel links/rechts versetzt (0 = immer gleiche Stelle).
+@export var x_jitter: float = 0.0
 
 @export_group("Fallen")
 ## Fallbeschleunigung in Pixel pro Sekunde zum Quadrat.
@@ -38,6 +41,7 @@ var _timer: float = 0.0
 var _y: float = 0.0
 var _vel: float = 0.0
 var _floor_y: float = 0.0
+var _x: float = 0.0
 
 @onready var splash: CPUParticles2D = $Spritzer
 
@@ -58,6 +62,7 @@ func _physics_process(delta: float) -> void:
 				_timer = hang_time
 				_y = 0.0
 				_vel = 0.0
+				_x = randf_range(-x_jitter, x_jitter)
 		Phase.HANG:
 			_timer -= delta
 			if _timer <= 0.0:
@@ -78,8 +83,8 @@ func _find_floor() -> float:
 	var space: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
 	# 1 Pixel tiefer starten: Sitzt die Instanz genau auf der Unterkante einer
 	# Plattform, wuerde der Strahl sonst sofort die Plattform selbst treffen.
-	var from: Vector2 = global_position + Vector2(0.0, 1.0)
-	var to: Vector2 = global_position + Vector2(0.0, max_fall)
+	var from: Vector2 = global_position + Vector2(_x, 1.0)
+	var to: Vector2 = global_position + Vector2(_x, max_fall)
 	var query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(from, to, floor_mask)
 	var exclude: Array[RID] = []
 	# Spieler und Gegner ignorieren, sonst "landet" der Tropfen auf einem Kopf,
@@ -97,7 +102,7 @@ func _find_floor() -> float:
 
 
 func _splash_at(y: float) -> void:
-	splash.position = Vector2(0.0, y)
+	splash.position = Vector2(_x, y)
 	splash.restart()
 
 
@@ -107,8 +112,8 @@ func _draw() -> void:
 			# Tropfen bildet sich: wird langsam sichtbar.
 			var c: Color = drop_color
 			c.a *= 1.0 - clampf(_timer / maxf(hang_time, 0.01), 0.0, 1.0)
-			draw_rect(Rect2(-0.5, 0.0, 1.0, drop_length_min), c)
+			draw_rect(Rect2(_x - 0.5, 0.0, 1.0, drop_length_min), c)
 		Phase.FALL:
 			# Je schneller, desto laenger (Bewegungsunschaerfe in Pixel-Form).
 			var length: float = lerpf(drop_length_min, drop_length_max, clampf(_vel / 200.0, 0.0, 1.0))
-			draw_rect(Rect2(-0.5, _y - length, 1.0, length), drop_color)
+			draw_rect(Rect2(_x - 0.5, _y - length, 1.0, length), drop_color)

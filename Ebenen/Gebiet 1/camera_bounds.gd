@@ -11,6 +11,12 @@ extends Node2D
 @export var limit_margin_top: int = 0
 @export var limit_margin_bottom: int = 0
 
+@export_group("Kamera-Zoom")
+# Nutzer-Wunsch: Zoom pro Raum einstellbar (z. B. Gebiet 2 etwas weiter raus).
+# 0 = Zoom der Player-Kamera nicht anfassen (Standard aus player.tscn, 5.5).
+# Kleinerer Wert = weiter rausgezoomt, mehr vom Raum sichtbar.
+@export var camera_zoom: float = 0.0
+
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 var player: Node2D = null
@@ -86,6 +92,8 @@ func _activate_player_camera() -> void:
 
 	player_camera.enabled = true
 	player_camera.make_current()
+	if camera_zoom > 0.0:
+		player_camera.zoom = Vector2(camera_zoom, camera_zoom)
 	player_camera.reset_smoothing()
 
 	print(

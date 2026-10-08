@@ -7,7 +7,7 @@ offsets = PackedFloat32Array(0, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [node name="Wassertropfen" type="Node2D"]
-z_index = -1
+z_index = 1
 script = ExtResource("1_skript")
 
 [node name="Spritzer" type="CPUParticles2D" parent="."]

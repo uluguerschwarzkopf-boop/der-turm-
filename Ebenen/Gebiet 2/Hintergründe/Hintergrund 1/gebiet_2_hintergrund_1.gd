@@ -28,6 +28,11 @@ extends Node2D
 @export var anchor_at_camera_start: bool = false
 ## Frames warten, bis CameraBounds die Limits gesetzt hat (wartet selbst 2).
 @export var start_wait_frames: int = 3
+## Nutzer-Wunsch: Hintergrund selbst auf der Map verschieben koennen.
+## Ist hier ein Marker gesetzt, ist er der Bezugspunkt: Steht die Kamera
+## dort, sieht das Spiel exakt so aus wie der Editor. Hat Vorrang vor
+## anchor_at_camera_start.
+@export var anchor_marker: Node2D
 
 var _cam: Camera2D = null
 var _anchor: Vector2 = Vector2.ZERO
@@ -63,6 +68,9 @@ func _ready() -> void:
 func _grab_camera() -> void:
 	_cam = get_viewport().get_camera_2d()
 	if _cam == null:
+		return
+	if anchor_marker != null and is_instance_valid(anchor_marker):
+		_anchor = anchor_marker.global_position
 		return
 	if anchor_at_camera_start:
 		# Nur einmal setzen, sonst springt der Hintergrund, falls die Kamera

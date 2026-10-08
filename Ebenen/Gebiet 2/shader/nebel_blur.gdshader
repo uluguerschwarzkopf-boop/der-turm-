@@ -30,6 +30,11 @@ uniform vec2 drift = vec2(0.006, 0.0015);
 uniform float bottom_bias : hint_range(0.0, 1.0) = 0.3;
 // weiche Raender der Flaeche
 uniform float edge_fade : hint_range(0.0, 0.4) = 0.12;
+// Nutzer-Wunsch: Nebel kann statt seitlich zu treiben langsam auf und ab
+// "atmen". Wie weit (Anteil der Flaechenhoehe) und Sekunden pro Atemzug.
+// 0 = aus, dann verhaelt sich die Lage wie bisher.
+uniform float breath_amount : hint_range(0.0, 0.3) = 0.0;
+uniform float breath_period : hint_range(1.0, 30.0) = 9.0;
 
 float hash(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -61,11 +66,13 @@ float fbm(vec2 p) {
 
 void fragment() {
 	// y gestaucht, damit die Schwaden breit und flach liegen wie echter Bodennebel
-	vec2 p = UV * noise_scale * vec2(1.0, 0.45) + TIME * drift;
+	// Atmen: Nebelkoerper und Dichteverlauf wandern gemeinsam auf und ab.
+	vec2 uvb = UV + vec2(0.0, sin(TIME * TAU / breath_period) * breath_amount);
+	vec2 p = uvb * noise_scale * vec2(1.0, 0.45) + TIME * drift;
 	float n = fbm(p);
 
 	float f = smoothstep(coverage, coverage + softness, n);
-	f *= mix(1.0, smoothstep(0.0, 1.0, UV.y), bottom_bias);
+	f *= mix(1.0, smoothstep(0.0, 1.0, uvb.y), bottom_bias);
 
 	float e = smoothstep(0.0, edge_fade, UV.x) * smoothstep(0.0, edge_fade, 1.0 - UV.x)
 	        * smoothstep(0.0, edge_fade, UV.y) * smoothstep(0.0, edge_fade, 1.0 - UV.y);

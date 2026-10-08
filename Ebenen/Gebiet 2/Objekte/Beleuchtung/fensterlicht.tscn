@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/fensterlicht.gd" id="1_skript"]
+
+[sub_resource type="Gradient" id="Gradient_schein"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.35, 0.35, 0.35, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_schein"]
+gradient = SubResource("Gradient_schein")
+width = 24
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="Fensterlicht" type="Node2D"]
+script = ExtResource("1_skript")
+
+[node name="Schein" type="PointLight2D" parent="."]
+color = Color(0.5, 0.75, 1, 1)
+energy = 0.5
+range_z_min = -4096
+range_z_max = -3000
+range_item_cull_mask = 4
+texture = SubResource("GradientTexture2D_schein")
