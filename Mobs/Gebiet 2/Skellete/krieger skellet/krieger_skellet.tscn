@@ -8,7 +8,8 @@
 [ext_resource type="Script" uid="uid://ctd4vvwxdujk2" path="res://Player/enemy_spell_effects.gd" id="4_x8ivv"]
 [ext_resource type="Texture2D" uid="uid://b3emcwh4ryt0g" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/laufen-Sheet.png" id="5_rjmfs"]
 [ext_resource type="Texture2D" uid="uid://gw8tw214ute5" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/Rum liegen.png" id="6_rjmfs"]
-[ext_resource type="Texture2D" uid="uid://cmwesfruc7oi4" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/tot-Sheet.png" id="7_sjdbn"]
+[ext_resource type="Texture2D" uid="uid://dfjcjrqqo2378" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/tot-Sheet ohne Kopf.png" id="7_sjdbn"]
+[ext_resource type="Texture2D" uid="uid://cmgnu452yb3jt" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/Kopf.png" id="9_kopf"]
 [ext_resource type="Script" uid="uid://bf064gdvjry8p" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/krieger_skellet.gd" id="8_kriegerscript"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3lw1w"]
@@ -487,6 +488,7 @@ size = Vector2(14, 29)
 
 [node name="Krieger skellet" type="CharacterBody2D" unique_id=1279725451]
 script = ExtResource("8_kriegerscript")
+head_texture = ExtResource("9_kopf")
 max_health = 6
 move_speed = 20.0
 attack_2_damage_frame = 7

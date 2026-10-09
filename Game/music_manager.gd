@@ -39,6 +39,8 @@ const MUSIC_BUS_NAME: String = "Music"
 # seine eigene Musik bekommt.
 const AREA_MUSIC_PATHS: Dictionary = {
 	1: "res://Musik/Gebiet 1/dng22.mp3",
+	# Nutzer-Wunsch: eigene Musik für Gebiet 2 (Kerker).
+	2: "res://Musik/Gebiet 2/prisonbreak.mp3",
 }
 
 # room_music_id (siehe Levels/room_manager.gd -> room_music_id) ->
@@ -64,8 +66,16 @@ const ROOM_MUSIC_PATHS: Dictionary = {
 # 0.0 dB. Kommt ein neues Gebiet/Raum dazu und ist kein Eintrag
 # hinterlegt, wird einfach 0.0 dB (unverändert) benutzt.
 const AREA_VOLUME_OFFSET_DB: Dictionary = {
-	1: -5.0,
+	1: 10.0,
+	# Gebiet 2: noch nicht per Lautheit gemessen, vorerst wie Gebiet 1.
+	# Kleiner = leiser.
+	2: -5.0,
 }
+
+# Nutzer-Wunsch: Wechselt man das Gebiet (z.B. von Gebiet 1 nach 2),
+# wird die alte Musik so lange (Sekunden) ausgeblendet, bevor die neue
+# einblendet - statt hart abgeschnitten zu werden.
+const AREA_SWITCH_FADE_OUT: float = 1.5
 
 const ROOM_VOLUME_OFFSET_DB: Dictionary = {
 	&"shop": -9.3,
@@ -248,6 +258,28 @@ func play_area_music(
 
 	_apply_loop(stream)
 
+	# Läuft gerade die Musik eines ANDEREN Gebiets: erst sanft
+	# ausblenden, dann die neue starten (statt harter Schnitt).
+	if _area_player.playing and _current_area_music != -1:
+		_current_area_music = area_number
+		_cancel_fade(_area_attenuate_tween)
+		_area_fade_tween = create_tween()
+		_area_fade_tween.tween_property(
+			_area_player, "volume_db", -80.0, AREA_SWITCH_FADE_OUT
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		_area_fade_tween.tween_callback(
+			_start_area_stream.bind(stream, area_number, fade_in_duration)
+		)
+		return
+
+	_start_area_stream(stream, area_number, fade_in_duration)
+
+
+func _start_area_stream(
+	stream: AudioStream,
+	area_number: int,
+	fade_in_duration: float
+) -> void:
 	_current_area_music = area_number
 
 	_area_player.stream = stream

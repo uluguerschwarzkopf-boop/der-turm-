@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Ebenen/Gebiet 2/Objekte/Tropfen/wassertropfen.gd" id="1_skript"]
+
+[sub_resource type="Gradient" id="Gradient_spritzer"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[node name="Wassertropfen" type="Node2D"]
+z_index = 1
+script = ExtResource("1_skript")
+
+[node name="Spritzer" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 6
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(0, -1)
+spread = 55.0
+gravity = Vector2(0, 400)
+initial_velocity_min = 25.0
+initial_velocity_max = 50.0
+color = Color(0.55, 0.75, 0.95, 0.85)
+color_ramp = SubResource("Gradient_spritzer")

@@ -154,6 +154,37 @@ enum State {
 
 
 # ============================================================
+# KOPF BEIM TOD
+# ============================================================
+
+@export_group("Kopf beim Tod")
+
+# Nutzer-Wunsch: Stirbt er auf einer Plattform, fällt der Kopf mit
+# Schwerkraft herunter und rollt ein kleines Stück weg. Vorher war
+# der Kopf in die Tot-Animation gemalt und landete immer ca. 20 px
+# daneben auf Fußhöhe - an einer Plattformkante also in der Luft.
+# Die Tot-Animation nutzt deshalb "tot-Sheet ohne Kopf.png"; ab
+# head_detach_frame übernimmt ein echter Schädel (fallender_kopf.gd).
+@export var head_enabled: bool = true
+@export var head_texture: Texture2D
+# Ab diesem Frame der Tot-Animation fliegt der Kopf (Frame 2 = dort
+# löst er sich im Original-Sheet).
+@export var head_detach_frame: int = 2
+# Startpunkt des Schädels relativ zu den Füßen (bei Blick nach rechts,
+# wird beim Blick nach links gespiegelt).
+@export var head_start_offset: Vector2 = Vector2(16.5, -22.5)
+# Abwurf: x = nach vorne, y = negativ heißt nach oben.
+@export var head_throw_velocity: Vector2 = Vector2(30.0, -25.0)
+@export var head_gravity: float = 320.0
+# 0 = kein Abprallen, 1 = springt genauso hoch zurück.
+@export var head_bounce: float = 0.3
+# Höher = rollt kürzer.
+@export var head_roll_friction: float = 40.0
+# Drehung in der Luft (Bogenmaß pro Sekunde).
+@export var head_spin: float = 6.0
+
+
+# ============================================================
 # ZURÜCKSETZEN
 # ============================================================
 
@@ -282,6 +313,9 @@ var damage_hit_locked: bool = false
 
 var dead: bool = false
 var can_take_damage: bool = false
+var _head_spawned: bool = false
+
+const FALLENDER_KOPF := preload("res://Mobs/Gebiet 2/Skellete/krieger skellet/fallender_kopf.gd")
 
 var flash_generation: int = 0
 var hit_flash_material: ShaderMaterial = null
@@ -928,6 +962,7 @@ func _end_attack_by_timer_fallback(generation: int) -> void:
 
 func _on_frame_changed() -> void:
 	if dead:
+		_check_head_detach()
 		return
 
 	if state != State.ATTACK:
@@ -1572,6 +1607,32 @@ func _die() -> void:
 # _physics_process() bricht bei dead sofort ab, die Leiche bewegt
 # sich also nicht mehr; alle Areas und die Körper-Kollision sind
 # in _die() schon aus.
+# Sobald die Tot-Animation den Frame erreicht, in dem sich der Kopf löst,
+# übernimmt ein echter Schädel (siehe Exporte "Kopf beim Tod").
+func _check_head_detach() -> void:
+	if _head_spawned or not head_enabled or head_texture == null:
+		return
+	if sprite.animation != anim_death or sprite.frame < head_detach_frame:
+		return
+	_head_spawned = true
+
+	# Die Grafik ist nach rechts gezeichnet, der Kopf fliegt nach vorne.
+	var dir: float = 1.0 if facing_right else -1.0
+	var head: Node2D = FALLENDER_KOPF.new()
+	head.texture = head_texture
+	head.flip_h = sprite.flip_h
+	head.velocity = Vector2(head_throw_velocity.x * dir, head_throw_velocity.y)
+	head.gravity = head_gravity
+	head.bounce = head_bounce
+	head.roll_friction = head_roll_friction
+	head.spin = head_spin
+	head.z_index = sprite.z_index
+	add_child(head)
+	# Eigene Position unabhängig von der Leiche.
+	head.top_level = true
+	head.global_position = global_position + Vector2(head_start_offset.x * dir, head_start_offset.y)
+
+
 func _finish_death() -> void:
 	if not delete_after_death:
 		return
