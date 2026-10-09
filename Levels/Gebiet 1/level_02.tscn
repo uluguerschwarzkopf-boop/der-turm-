@@ -22,6 +22,8 @@
 [ext_resource type="PackedScene" uid="uid://xslqdc2fa60f" path="res://details/Gebiet 1/deko_risse.tscn" id="19_xom7m"]
 [ext_resource type="PackedScene" uid="uid://b3smekatwn7w2" path="res://details/Gebiet 1/Kleines Zeug/Stuff  allgemein/schwert_stachel.tscn" id="20_6lcei"]
 [ext_resource type="PackedScene" uid="uid://2np58bgpmc5s" path="res://Mobs/Gebiet 2/Spinne gros/spinne_gros.tscn" id="21_3h7cn"]
+[ext_resource type="PackedScene" uid="uid://d4mjifcx1o5jf" path="res://Mobs/Gebiet 2/Skellete/Archer/skellet_archer.tscn" id="23_tt4dg"]
+[ext_resource type="PackedScene" uid="uid://biu7tthm306q5" path="res://Mobs/Gebiet 2/Ratte/ratte.tscn" id="24_lsnnc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d3ajd"]
 size = Vector2(962, 519)
@@ -1737,10 +1739,10 @@ position = Vector2(496, -399)
 position = Vector2(-39, -192)
 
 [node name="skeleton_sword2" parent="Enemies" unique_id=124578451 instance=ExtResource("11_0bmir")]
-position = Vector2(297, -111)
+position = Vector2(368, -192)
 
 [node name="skeleton_archer" parent="Enemies" unique_id=209684129 instance=ExtResource("12_k8f0m")]
-position = Vector2(259, -239)
+position = Vector2(387, -191)
 
 [node name="Krieger skellet" parent="Enemies" unique_id=1279725451 instance=ExtResource("13_bkajc")]
 position = Vector2(62, -192)
@@ -1897,7 +1899,7 @@ z_index = -1
 position = Vector2(384, -496)
 
 [node name="Bush_Mob" parent="." unique_id=653443273 instance=ExtResource("17_1t40m")]
-position = Vector2(311, -112)
+position = Vector2(517, -256)
 
 [node name="Ranken VOR_2" parent="." unique_id=2008939516 instance=ExtResource("18_qhirt")]
 scroll_offset = Vector2(222, -528)
@@ -1948,4 +1950,10 @@ animation = &"Riss 3"
 position = Vector2(152, -392)
 
 [node name="Spinne Gros" parent="." unique_id=1833721472 instance=ExtResource("21_3h7cn")]
-position = Vector2(144, -112)
+position = Vector2(424, -208)
+
+[node name="Skellet_Archer" parent="." unique_id=370334480 instance=ExtResource("23_tt4dg")]
+position = Vector2(230, -112)
+
+[node name="Ratte" parent="." unique_id=142996783 instance=ExtResource("24_lsnnc")]
+position = Vector2(305, -240)

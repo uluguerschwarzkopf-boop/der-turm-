@@ -1,12 +1,8 @@
 [gd_scene format=3 uid="uid://csohn2l1sg2pn"]
 
-[ext_resource type="Texture2D" path="res://Levels/Gebiet 1/tile set gebiet 1 Version 2.png" id="1_s76r3"]
 [ext_resource type="PackedScene" uid="uid://buf6qcfjm4vst" path="res://Objects/fackel.tscn" id="2_ifhqs"]
-[ext_resource type="Texture2D" path="res://Levels/Gebiet 1/tile set gebiet 1 Version 3.png" id="2_rf8p6"]
 [ext_resource type="PackedScene" uid="uid://4d68ggr5agg3" path="res://Objects/platform.tscn" id="3_jph2m"]
-[ext_resource type="Script" path="res://Levels/Gebiet 1/camera_bounds.gd" id="4_jph2m"]
 [ext_resource type="PackedScene" uid="uid://b6h5u1pe5kjde" path="res://Objects/spike.tscn" id="5_g646b"]
-[ext_resource type="Script" path="res://Levels/Gebiet 2/shader/room_manager.gd" id="6_w0msx"]
 [ext_resource type="PackedScene" uid="uid://b207xmd77deb0" path="res://Objects/Doors/exit_door.tscn" id="7_dipv5"]
 [ext_resource type="PackedScene" uid="uid://cqyryemlwnxrm" path="res://Objects/Doors/spawn_door.tscn" id="8_8fyfv"]
 [ext_resource type="PackedScene" uid="uid://wwtf3iayv0sy" path="res://Mobs/Gebiet 1/Skellete/Normal/skeleton.tscn" id="8_dipv5"]
@@ -16,7 +12,6 @@
 [ext_resource type="PackedScene" uid="uid://daw5ga3gqn6dp" path="res://Objects/Chests/chest_spawner.tscn" id="12_2r7j5"]
 [ext_resource type="PackedScene" uid="uid://d1yo7xc8qsca6" path="res://details/Gebiet 1/Vordergrund/Ranken/ranken_vor_.tscn" id="17_2x4dn"]
 [ext_resource type="PackedScene" uid="uid://xslqdc2fa60f" path="res://details/Gebiet 1/deko_risse.tscn" id="18_g7lyc"]
-[ext_resource type="PackedScene" uid="uid://tt1wfvwesc3e" path="res://Mobs/Gebiet 2/Fledermaus gros/fledermaus_gros.tscn" id="19_h0sqo"]
 [ext_resource type="Texture2D" uid="uid://cmu5bx6wgg55v" path="res://Objects/Fenster/Fenster Licht-Weiss.png" id="9001_fensterlichtweiss"]
 [ext_resource type="PackedScene" uid="uid://c7ranke0v1nes" path="res://Objects/Ranken/ranke.tscn" id="9100_rankenscene"]
 
@@ -452,7 +447,6 @@ texture = SubResource("CompressedTexture2D_1s8wc")
 11:10/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rf8p6"]
-texture = ExtResource("1_s76r3")
 0:0/0 = 0
 0:0/0/z_index = 3
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -1101,7 +1095,6 @@ texture = ExtResource("1_s76r3")
 9:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -8, 8, 8, -8, 8, -8, -8)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hqh8s"]
-texture = ExtResource("2_rf8p6")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -8, 8, 8, -8, 8, -8, -8)
 1:0/0 = 0
@@ -2391,7 +2384,6 @@ position = Vector2(-121, -78)
 color = Color(0.23713818, 0.2835751, 0.29642302, 1)
 
 [node name="CameraBounds" type="Node2D" parent="." unique_id=752145378]
-script = ExtResource("4_jph2m")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraBounds" unique_id=1780229647]
 position = Vector2(-49, -141)
@@ -2429,8 +2421,6 @@ spike_variant = &"stone small"
 position = Vector2(-88, -215)
 
 [node name="RoomManager" type="Node" parent="." unique_id=1429676547]
-script = ExtResource("6_w0msx")
-boss_room_path = "uid://b135dvcl4iyjo"
 
 [node name="ExitDoor" parent="." unique_id=95013058 instance=ExtResource("7_dipv5")]
 position = Vector2(-258, -288)
@@ -2541,9 +2531,6 @@ animation = &"Riss 4"
 [node name="Deko_Risse6" parent="." unique_id=716627352 instance=ExtResource("18_g7lyc")]
 position = Vector2(-268, -319)
 animation = &"Riss 3"
-
-[node name="Fledermaus_gros" parent="." unique_id=837671149 instance=ExtResource("19_h0sqo")]
-position = Vector2(22, -128)
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=305817264]
 navigation_polygon = SubResource("NavigationPolygon_nav01")

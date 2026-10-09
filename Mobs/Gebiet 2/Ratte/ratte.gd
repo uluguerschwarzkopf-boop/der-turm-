@@ -157,6 +157,12 @@ enum State {
 # einfach sofort ohne Animation (siehe _should_play_turn_animation()).
 @export var turn_cooldown: float = 3.0
 
+# Nutzer-Korrektur: stand der Spieler direkt in der Ratte, hat sie
+# sich ständig umgedreht und nichts mehr gemacht. Die Umdreh-
+# Animation ist deshalb abgeschaltet - sie dreht sich sofort um.
+# Wieder einschalten nur, wenn das Problem anders gelöst ist.
+@export var use_turn_animation: bool = false
+
 
 # ============================================================
 # ABGRUNDPRÜFUNG
@@ -510,6 +516,9 @@ func _decide_next_state() -> void:
 	if _try_start_attack_if_in_range():
 		return
 
+	if _hold_if_target_inside():
+		return
+
 	var distance: float = _distance_to_target()
 	var direction: float = _direction_to_target()
 
@@ -540,10 +549,47 @@ func _try_start_attack_if_in_range() -> bool:
 	if not _target_is_available():
 		return false
 
-	if _distance_to_target() > attack_range:
+	# Nutzer-Wunsch: steht das Ziel in der Hurtbox der Ratte, greift
+	# sie immer an (sobald der Cooldown es erlaubt), auch wenn die
+	# reine X-Entfernung gerade nicht passt.
+	if (
+		_distance_to_target() > attack_range
+		and not _target_in_own_hurtbox()
+	):
 		return false
 
 	_start_attack()
+	return true
+
+
+# Steht das aktuelle Ziel in der eigenen Hurtbox? Spieler über seinen
+# Körper, beschworene Skelette über ihre Hurtbox-Area.
+func _target_in_own_hurtbox() -> bool:
+	if hurtbox == null or not _target_is_available():
+		return false
+
+	if (
+		current_target is PhysicsBody2D
+		and hurtbox.overlaps_body(current_target)
+	):
+		return true
+
+	var target_hurtbox := current_target.get_node_or_null(
+		"Hurtbox"
+	) as Area2D
+
+	return target_hurtbox != null and hurtbox.overlaps_area(target_hurtbox)
+
+
+# Nutzer-Korrektur: steht das Ziel in der Ratte und der Angriff ist
+# noch im Cooldown, bleibt sie einfach stehen (laufen/idle) - sie
+# dreht sich NICHT um und läuft nicht, sonst flackert die Richtung
+# jeden Frame hin und her. Gibt true zurück, wenn sie stehen bleibt.
+func _hold_if_target_inside() -> bool:
+	if not _target_in_own_hurtbox():
+		return false
+
+	_enter_idle()
 	return true
 
 
@@ -678,6 +724,9 @@ func _process_idle(delta: float) -> void:
 	if _try_start_attack_if_in_range():
 		return
 
+	if _hold_if_target_inside():
+		return
+
 	var distance: float = _distance_to_target()
 
 	if distance > chase_range:
@@ -726,6 +775,9 @@ func _process_walk() -> void:
 	if _try_start_attack_if_in_range():
 		return
 
+	if _hold_if_target_inside():
+		return
+
 	var distance: float = _distance_to_target()
 
 	if distance > chase_range:
@@ -769,6 +821,9 @@ func _enter_walk() -> void:
 		return
 
 	if _try_start_attack_if_in_range():
+		return
+
+	if _hold_if_target_inside():
 		return
 
 	var distance: float = _distance_to_target()
@@ -1623,6 +1678,9 @@ func _should_play_turn_animation() -> bool:
 		return false
 
 	if state != State.IDLE and state != State.WALK:
+		return false
+
+	if not use_turn_animation:
 		return false
 
 	if _turn_cooldown_time_left > 0.0:

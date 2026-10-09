@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://dlfr1ehu7p1bb"]
+
+[ext_resource type="Texture2D" uid="uid://bwa1bucyrya72" path="res://Mobs/Gebiet 2/Skellete/Archer/Pfeil.png" id="1_pxykv"]
+[ext_resource type="Script" uid="uid://d2trfp6k1pelp" path="res://Mobs/Gebiet 2/Skellete/Archer/arrow_skellet_archer.gd" id="2_arrowscript"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lh7bm"]
+atlas = ExtResource("1_pxykv")
+region = Rect2(0, 0, 19, 4)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_crw3d"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lh7bm")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_en1el"]
+size = Vector2(17, 2)
+
+[node name="Arrow_Skellet_Archer" type="Area2D" unique_id=558240101]
+script = ExtResource("2_arrowscript")
+speed = 170.0
+lifetime = 4.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1050845502]
+sprite_frames = SubResource("SpriteFrames_crw3d")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1269298364]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_en1el")

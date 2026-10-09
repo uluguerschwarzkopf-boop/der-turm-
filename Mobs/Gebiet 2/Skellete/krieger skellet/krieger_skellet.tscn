@@ -9,8 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://b3emcwh4ryt0g" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/laufen-Sheet.png" id="5_rjmfs"]
 [ext_resource type="Texture2D" uid="uid://gw8tw214ute5" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/Rum liegen.png" id="6_rjmfs"]
 [ext_resource type="Texture2D" uid="uid://dfjcjrqqo2378" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/tot-Sheet ohne Kopf.png" id="7_sjdbn"]
-[ext_resource type="Texture2D" uid="uid://cmgnu452yb3jt" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/Kopf.png" id="9_kopf"]
 [ext_resource type="Script" uid="uid://bf064gdvjry8p" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/krieger_skellet.gd" id="8_kriegerscript"]
+[ext_resource type="Texture2D" uid="uid://cmgnu452yb3jt" path="res://Mobs/Gebiet 2/Skellete/krieger skellet/Kopf.png" id="9_kopf"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3lw1w"]
 atlas = ExtResource("1_yiqtm")
@@ -488,10 +488,10 @@ size = Vector2(14, 29)
 
 [node name="Krieger skellet" type="CharacterBody2D" unique_id=1279725451]
 script = ExtResource("8_kriegerscript")
-head_texture = ExtResource("9_kopf")
 max_health = 6
 move_speed = 20.0
 attack_2_damage_frame = 7
+head_texture = ExtResource("9_kopf")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=426245958]
 position = Vector2(1, -16)
@@ -511,7 +511,7 @@ polygon = PackedVector2Array(23, 0, 27, -15, 28, -31, 16, -45, -8, -42, -20, -32
 [node name="AttackHitbox2" type="Area2D" parent="." unique_id=433683483]
 
 [node name="Attack 2" type="CollisionPolygon2D" parent="AttackHitbox2" unique_id=483370343]
-polygon = PackedVector2Array(39, -16, 41, -17, -1, -26, -32, -23, -28, -21, -1, -20, 15, -17)
+polygon = PackedVector2Array(39, -16, 41, -17, -1, -26, -25, -23, -19, -22, -1, -20, 15, -17)
 
 [node name="WakeArea" type="Area2D" parent="." unique_id=1183547039]
 
