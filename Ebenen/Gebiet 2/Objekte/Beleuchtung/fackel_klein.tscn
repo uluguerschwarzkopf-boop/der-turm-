@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Texture2D" uid="uid://buu1lvocjas7q" path="res://raw Assets (dropdown)/Objects/kleineFackel-Sheet.png" id="1_sheet"]
-[ext_resource type="Script" uid="uid://o7wfprdefr1l" path="res://Objects/fackel.gd" id="2_play"]
+[ext_resource type="Script" uid="uid://o7wfprdefr1l" path="res://Objects/Gebiet 1/fackel.gd" id="2_play"]
 [ext_resource type="Script" uid="uid://cd66vubspnpns" path="res://Ebenen/Gebiet 2/shader/torch_light_flicker.gd" id="3_flackern"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_f0"]

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dpeme5qs3ndlp" path="res://Player/Sheets/Spells/Projectile/Lightorb_disappear-Sheet.png" id="1_utbss"]
 [ext_resource type="Texture2D" uid="uid://cny6fml2xpraj" path="res://Player/Sheets/Spells/Projectile/Lightorb_float-Sheet.png" id="2_3rj0o"]
 [ext_resource type="Texture2D" uid="uid://ck3mrgote3jeo" path="res://Player/Sheets/Spells/Projectile/Lightorb_spawn-Sheet.png" id="3_87cdl"]
-[ext_resource type="Texture2D" uid="uid://dbmg5cyvc16of" path="res://Objects/Fakel licht.png" id="4_3rj0o"]
+[ext_resource type="Texture2D" uid="uid://dbmg5cyvc16of" path="res://Objects/Gebiet 1/Fakel licht.png" id="4_3rj0o"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2nihg"]
 atlas = ExtResource("1_utbss")

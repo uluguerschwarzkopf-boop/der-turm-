@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://clclqm65gxa4w" path="res://details/Gebiet 1/Vordergrund/Ranken/Ranke 1.png" id="1_4udjy"]
 [ext_resource type="Texture2D" uid="uid://cm4gshs2kyfgf" path="res://details/Gebiet 1/Vordergrund/Ranken/Ranke 2.png" id="2_bwu1w"]
 [ext_resource type="Script" uid="uid://c0bx751jx7x7b" path="res://details/Gebiet 1/Vordergrund/Ranken/ranken_parallax.gd" id="3_parallax"]
-[ext_resource type="Script" uid="uid://dl7eydfcwo7is" path="res://Objects/vordergrund_variant_picker.gd" id="4_variant"]
+[ext_resource type="Script" uid="uid://dl7eydfcwo7is" path="res://Objects/Gebiet 1/vordergrund_variant_picker.gd" id="4_variant"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ujnhc"]
 atlas = ExtResource("1_4udjy")
