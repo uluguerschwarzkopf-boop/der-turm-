@@ -217,6 +217,14 @@ enum State {
 # Füßen gleich bleibt.
 @export var edge_check_start_height: float = 8.0
 
+# Nutzer-Wunsch: Der Krieger soll nicht mehr an der Plattformkante
+# "kleben", sondern herunterspringen/-fallen, wenn sein Ziel UNTER
+# ihm ist. Steht das Ziel auf gleicher Höhe oder höher, bleibt er
+# weiter an der Kante stehen (sonst läuft er sinnlos in Abgründe).
+@export var fall_off_edges: bool = true
+# Ab so vielen Pixeln tiefer als der Krieger gilt das Ziel als "unten".
+@export var fall_target_below: float = 12.0
+
 
 # ============================================================
 # GRUPPEN
@@ -771,7 +779,7 @@ func _process_walk() -> void:
 		_enter_idle()
 		return
 
-	if not _has_ground_in_direction(direction):
+	if not _has_ground_in_direction(direction) and not _may_drop_down():
 		_enter_idle()
 		return
 
@@ -810,7 +818,7 @@ func _enter_walk() -> void:
 		_enter_idle()
 		return
 
-	if not _has_ground_in_direction(direction):
+	if not _has_ground_in_direction(direction) and not _may_drop_down():
 		_enter_idle()
 		return
 
@@ -1759,6 +1767,16 @@ func _should_play_turn_animation() -> bool:
 		return false
 
 	return _has_animation(anim_turn)
+
+
+# Darf er über die Kante laufen und herunterfallen? Nur wenn das Ziel
+# deutlich tiefer steht (siehe Exporte "Abgrundprüfung").
+func _may_drop_down() -> bool:
+	if not fall_off_edges:
+		return false
+	if current_target == null or not is_instance_valid(current_target):
+		return false
+	return current_target.global_position.y > global_position.y + fall_target_below
 
 
 func _has_ground_in_direction(

@@ -26,6 +26,7 @@
 [ext_resource type="PackedScene" uid="uid://tt1wfvwesc3e" path="res://Mobs/Gebiet 2/Fledermaus gros/fledermaus_gros.tscn" id="27_isx3u"]
 [ext_resource type="PackedScene" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/fensterlicht.tscn" id="30_fensterlicht"]
 [ext_resource type="Shader" uid="uid://dcgccp4yyjwun" path="res://Ebenen/Gebiet 2/shader/Partikelshader.gdshader" id="31_partikel"]
+[ext_resource type="PackedScene" uid="uid://d4mjifcx1o5jf" path="res://Mobs/Gebiet 2/Skellete/Archer/skellet_archer.tscn" id="39_nou43"]
 [ext_resource type="Script" uid="uid://d30cvgnx2loek" path="res://Ebenen/Gebiet 2/gebiet_musik.gd" id="40_musik"]
 [ext_resource type="Texture2D" uid="uid://cdx4uihe1fpaq" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/lichtstrahl.png" id="41_strahl"]
 [ext_resource type="Script" uid="uid://7txr3jumfxwb" path="res://Ebenen/Gebiet 2/shader/alpha_atmen.gd" id="43_alpha_atmen"]
@@ -38,6 +39,7 @@
 [ext_resource type="Texture2D" uid="uid://b4qy0abpet2ob" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/backgroundmockupGitteruntenRechtsschwarz.png" id="54_gitter"]
 [ext_resource type="Texture2D" uid="uid://sayjlq8n2ns2" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/backgroundmockupVordergrund-rework.png" id="55_truemmer"]
 [ext_resource type="PackedScene" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/fackel_klein.tscn" id="56_fackel_klein"]
+[ext_resource type="PackedScene" path="res://Ebenen/Gebiet 2/Objekte/Kaefig Falle/kaefig_falle.tscn" id="60_kaefigfalle"]
 
 [sub_resource type="Gradient" id="Gradient_wfbld"]
 offsets = PackedFloat32Array(0, 0.19879518, 0.39156628, 0.7108434, 1)
@@ -50,7 +52,7 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1wgke"]
-size = Vector2(2201.5, 252.125)
+size = Vector2(2687, 252.125)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rnd2m"]
 texture = ExtResource("4_wgq0a")
@@ -1187,7 +1189,7 @@ script = ExtResource("2_h563k")
 camera_zoom = 5.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CameraBounds" unique_id=41297775]
-position = Vector2(1063.25, -64.9375)
+position = Vector2(1113.5, -45)
 shape = SubResource("RectangleShape2D_1wgke")
 
 [node name="Darkness" type="CanvasModulate" parent="." unique_id=282204402]
@@ -1255,10 +1257,10 @@ copy_mode = 2
 
 [node name="Nebel Mitte" type="ColorRect" parent="Background" unique_id=1242121042]
 material = SubResource("ShaderMaterial_nebel_hinten")
-offset_left = -303.0
-offset_top = -250.0
-offset_right = 1899.0
-offset_bottom = -150.0
+offset_left = -536.0
+offset_top = -254.0
+offset_right = 1666.0
+offset_bottom = -154.0
 mouse_filter = 2
 
 [node name="Ebene Säulen" type="Parallax2D" parent="Background" unique_id=460397097]
@@ -1268,15 +1270,16 @@ scroll_offset = Vector2(0, -14)
 
 [node name="Säulen 1" type="Sprite2D" parent="Background/Ebene Säulen" unique_id=656177402]
 material = SubResource("ShaderMaterial_saeulen")
-position = Vector2(209, -226)
+position = Vector2(91, -222)
+scale = Vector2(1, 1.1884767)
 texture = ExtResource("12_lavoi")
 
 [node name="Dunkel Säulenfuß" type="ColorRect" parent="Background/Ebene Säulen" unique_id=1566350634]
 material = SubResource("ShaderMaterial_dunkel_saeulenfuss")
-offset_left = -303.0
-offset_top = -260.0
-offset_right = 721.0
-offset_bottom = -135.0
+offset_left = -373.0
+offset_top = -266.0
+offset_right = 651.0
+offset_bottom = -141.0
 mouse_filter = 2
 
 [node name="Nebel Säulenfuß Kopie" type="BackBufferCopy" parent="Background/Ebene Säulen" unique_id=1565121468]
@@ -1284,10 +1287,10 @@ copy_mode = 2
 
 [node name="Nebel Säulenfuß" type="ColorRect" parent="Background/Ebene Säulen" unique_id=1652191250]
 material = SubResource("ShaderMaterial_nebel_saeulenfuss")
-offset_left = -303.0
-offset_top = -235.0
-offset_right = 721.0
-offset_bottom = -135.0
+offset_left = 333.0
+offset_top = -303.0
+offset_right = 1357.0
+offset_bottom = -203.0
 mouse_filter = 2
 
 [node name="Ebene Strahl" type="Parallax2D" parent="Background" unique_id=1506009764]
@@ -1308,10 +1311,10 @@ offset = Vector2(0, 64)
 script = ExtResource("43_alpha_atmen")
 
 [node name="Strahl Licht" type="PointLight2D" parent="Background/Ebene Strahl/Lichtstrahl" unique_id=1422954460]
-position = Vector2(0, 52)
+position = Vector2(0, 51)
 scale = Vector2(1, 0.82)
 color = Color(0.55, 0.75, 1, 1)
-energy = 0.13
+energy = 0.0
 range_z_min = -4096
 range_item_cull_mask = 3
 texture = ExtResource("41_strahl")
@@ -1332,7 +1335,7 @@ process_material = SubResource("ParticleProcessMaterial_staub_rund")
 texture_filter = 1
 
 [node name="Käfige hinten" type="Sprite2D" parent="Background/Ebene Käfige hinten" unique_id=2024178504]
-position = Vector2(-36.250008, -248.75)
+position = Vector2(252.00002, -260)
 scale = Vector2(1.0957031, 1.1152344)
 texture = ExtResource("10_b4vyc")
 
@@ -1369,10 +1372,10 @@ copy_mode = 2
 [node name="Nebel vorne" type="ColorRect" parent="Background" unique_id=754097823]
 z_index = -1
 material = SubResource("ShaderMaterial_wgq0a")
-offset_left = 404.0
-offset_top = -333.0
-offset_right = 1592.0
-offset_bottom = -130.0
+offset_left = -542.0
+offset_top = -342.0
+offset_right = 646.0
+offset_bottom = -129.0
 mouse_filter = 2
 
 [node name="Ebene Säulen 3" type="Parallax2D" parent="Background" unique_id=1443892082]
@@ -1383,7 +1386,7 @@ scroll_offset = Vector2(0, -14)
 
 [node name="Säule 1" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=752842839]
 material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(-120, -226)
+position = Vector2(-121, -264)
 texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
@@ -1404,14 +1407,15 @@ region_rect = Rect2(451, 0, 85, 256)
 
 [node name="Zaun 1" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=1127363212]
 material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(180, -164.5)
+position = Vector2(465.99997, -175)
+scale = Vector2(0.5327553, 0.5891089)
 texture = ExtResource("51_zaun")
 region_enabled = true
 region_rect = Rect2(16, 139, 519, 101)
 
 [node name="Zaun 2" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=448226268]
 material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(1300, -164.5)
+position = Vector2(1283, -195)
 texture = ExtResource("52_zaun2")
 region_enabled = true
 region_rect = Rect2(640, 139, 343, 101)
@@ -1433,14 +1437,15 @@ position = Vector2(1080, -212)
 position = Vector2(1700, -212)
 
 [node name="Nebel Ebene 3 Kopie" type="BackBufferCopy" parent="Background/Ebene Säulen 3" unique_id=610822892]
+position = Vector2(-40, -3)
 copy_mode = 2
 
 [node name="Nebel Ebene 3" type="ColorRect" parent="Background/Ebene Säulen 3" unique_id=491209903]
 material = SubResource("ShaderMaterial_nebel_ebene3")
-offset_left = -400.0
-offset_top = -215.0
-offset_right = 1999.0
-offset_bottom = -130.0
+offset_left = -614.0
+offset_top = -185.0
+offset_right = 1785.0
+offset_bottom = -100.0
 mouse_filter = 2
 
 [node name="Enemies" type="Node" parent="." unique_id=1401092882]
@@ -1449,22 +1454,19 @@ mouse_filter = 2
 position = Vector2(1759, -220)
 
 [node name="Ratte" parent="Enemies" unique_id=142996783 instance=ExtResource("19_bygds")]
-position = Vector2(1493, -160)
+position = Vector2(1498, -160)
 
 [node name="Ratte2" parent="Enemies" unique_id=1050418511 instance=ExtResource("19_bygds")]
 position = Vector2(2022, -160)
 
 [node name="Krieger skellet" parent="Enemies" unique_id=1279725451 instance=ExtResource("24_lavoi")]
-position = Vector2(-28, -160)
+position = Vector2(-57, -161)
 
 [node name="Krieger skellet2" parent="Enemies" unique_id=858719972 instance=ExtResource("24_lavoi")]
 position = Vector2(941, -159)
 
-[node name="Krieger skellet3" parent="Enemies" unique_id=1563849533 instance=ExtResource("24_lavoi")]
-position = Vector2(266, -192)
-
 [node name="Schatten mutant" parent="Enemies" unique_id=1655272891 instance=ExtResource("18_isx3u")]
-position = Vector2(669, -160)
+position = Vector2(814, -191)
 
 [node name="Spinne Gros" parent="Enemies" unique_id=1833721472 instance=ExtResource("12_wufts")]
 position = Vector2(1359, -167)
@@ -1566,28 +1568,30 @@ breath_period = 5.0
 
 [node name="Nebel Spieler-Ebene Kopie" type="BackBufferCopy" parent="Effekte" unique_id=1787555014]
 z_index = 3
+position = Vector2(207, 38)
 copy_mode = 2
 
 [node name="Nebel Spieler-Ebene" type="ColorRect" parent="Effekte" unique_id=181216948]
 z_index = 3
 material = SubResource("ShaderMaterial_nebelwolke")
-offset_left = -303.0
-offset_top = -215.0
-offset_right = 1899.0
-offset_bottom = -150.0
+offset_left = -611.0
+offset_top = -162.0
+offset_right = 1591.0
+offset_bottom = -97.0
 mouse_filter = 2
 
 [node name="Nebelwolke Kopie" type="BackBufferCopy" parent="Effekte" unique_id=1833168195]
 z_index = 3
+position = Vector2(499, 11)
 copy_mode = 2
 
 [node name="Nebelwolke" type="ColorRect" parent="Effekte" unique_id=659932588]
 z_index = 3
 material = SubResource("ShaderMaterial_wolke_dicht")
-offset_left = 1900.0
-offset_top = -215.0
-offset_right = 2050.0
-offset_bottom = -140.0
+offset_left = 1909.0
+offset_top = -225.0
+offset_right = 2059.0
+offset_bottom = -150.0
 mouse_filter = 2
 script = ExtResource("44_wolke")
 speed = 70.0
@@ -1605,9 +1609,11 @@ scroll_scale = Vector2(1.08, 1.08)
 z_index = 10
 texture_filter = 2
 material = SubResource("ShaderMaterial_kaefige_blur")
-position = Vector2(315.50003, -235.5)
-scale = Vector2(1.6132814, 1.2851563)
+position = Vector2(309.87, -235.75)
+scale = Vector2(1.7246094, 1.3886719)
 texture = ExtResource("11_2fiap")
+region_enabled = true
+region_rect = Rect2(0, 0, 128, 256)
 
 [node name="Ebene Boden" type="Parallax2D" parent="Vordergrund" unique_id=924481121]
 z_index = 10
@@ -1633,7 +1639,8 @@ scroll_scale = Vector2(1.12, 1.12)
 [node name="Säule vorne 1" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=1695774239]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(-40, -240)
+position = Vector2(6, -254)
+scale = Vector2(1, 1.0859375)
 texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
@@ -1649,7 +1656,8 @@ region_rect = Rect2(451, 0, 85, 256)
 [node name="Gitter" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=1161196356]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(1150, -156)
+position = Vector2(1004, -164.5)
+scale = Vector2(1.1111104, 1.4027778)
 texture = ExtResource("54_gitter")
 region_enabled = true
 region_rect = Rect2(189, 184, 63, 72)
@@ -1657,7 +1665,8 @@ region_rect = Rect2(189, 184, 63, 72)
 [node name="Trümmer 1" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=813482552]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(-150, -119.5)
+position = Vector2(-127, -154)
+scale = Vector2(1.390625, 1.628205)
 texture = ExtResource("55_truemmer")
 region_enabled = true
 region_rect = Rect2(0, 217, 256, 39)
@@ -1665,10 +1674,20 @@ region_rect = Rect2(0, 217, 256, 39)
 [node name="Trümmer 2" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=1374141972]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(1520, -119.5)
+position = Vector2(1512, -135.25)
+scale = Vector2(1, 1.1666666)
 texture = ExtResource("55_truemmer")
 region_enabled = true
 region_rect = Rect2(0, 217, 256, 39)
 
 [node name="Musik" type="Node" parent="." unique_id=543741961]
 script = ExtResource("40_musik")
+
+[node name="Skellet_Archer" parent="." unique_id=370334480 instance=ExtResource("39_nou43")]
+position = Vector2(1160, -161)
+
+[node name="Käfig Falle" parent="." unique_id=1076404002 instance=ExtResource("60_kaefigfalle")]
+position = Vector2(478, -160)
+idle_swing_period = 2.0
+shake_swing_deg = 2.0
+shake_time = 1.0
