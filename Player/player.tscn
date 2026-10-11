@@ -13,7 +13,6 @@
 [ext_resource type="Texture2D" uid="uid://c58akrccwenb0" path="res://Player/Sheets/Heiltrank drinken-Sheet.png" id="5_gu6f8"]
 [ext_resource type="Texture2D" uid="uid://d02b7fwti07it" path="res://Player/Sheets/Bow Shoot-Sheet.png" id="6_b1ygp"]
 [ext_resource type="Texture2D" uid="uid://cmciryqg8kn3x" path="res://Player/Skills/Krieger Skill Tree/Iron Skin-Sheet.png" id="6_d30e8"]
-[ext_resource type="Texture2D" uid="uid://cviiy7est4ji0" path="res://Player/Sheets/idle-Sheet.png" id="6_lfmf2"]
 [ext_resource type="Texture2D" uid="uid://bcrfj3w1gkufq" path="res://Player/Sheets/jump-Sheet.png" id="7_pisgm"]
 [ext_resource type="Texture2D" uid="uid://cx84yctx4rqb" path="res://Player/Sheets/land-Sheet.png" id="8_b1ygp"]
 [ext_resource type="Texture2D" uid="uid://dussbxeqarifq" path="res://Player/Skills/Krieger Skill Tree/Parry-Sheet.png" id="8_ie76m"]
@@ -38,6 +37,7 @@
 [ext_resource type="Texture2D" uid="uid://pl7g25khxph7" path="res://Player/Sheets/Spells/Summon Animations/Ranken-Sheet.png" id="20_bbimk"]
 [ext_resource type="Script" uid="uid://bq3nwbgqcl2yk" path="res://Player/playerspells.gd" id="20_n471f"]
 [ext_resource type="Script" uid="uid://vq0lv76q2lpt" path="res://Player/spell_manager.gd" id="21_7emwf"]
+[ext_resource type="Texture2D" uid="uid://gmhfotsykhph" path="res://raw Assets (dropdown)/Player/Test spieler-Sheet.png" id="21_c4i3b"]
 [ext_resource type="PackedScene" uid="uid://drtr8egsinf83" path="res://Player/Spells/fireball_player.tscn" id="28_76lrf"]
 [ext_resource type="PackedScene" uid="uid://c5qphm18gwh2n" path="res://Player/Spells/lightning_player.tscn" id="29_efx54"]
 [ext_resource type="PackedScene" uid="uid://dtdegsdfe20o6" path="res://Player/Spells/ice_wave_player.tscn" id="30_755ss"]
@@ -953,21 +953,9 @@ region = Rect2(1050, 0, 150, 100)
 atlas = ExtResource("13_8ynux")
 region = Rect2(1200, 0, 150, 100)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_c4i3b"]
-atlas = ExtResource("6_lfmf2")
-region = Rect2(0, 0, 150, 100)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_uvbbp"]
-atlas = ExtResource("6_lfmf2")
-region = Rect2(150, 0, 150, 100)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7v2uk"]
-atlas = ExtResource("6_lfmf2")
-region = Rect2(300, 0, 150, 100)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_m6nl3"]
-atlas = ExtResource("6_lfmf2")
-region = Rect2(450, 0, 150, 100)
+atlas = ExtResource("21_c4i3b")
+region = Rect2(0, 0, 150, 100)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hx1r"]
 atlas = ExtResource("7_pisgm")
@@ -2140,16 +2128,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_c4i3b")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_uvbbp")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_7v2uk")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_m6nl3")
 }],
 "loop": 1,
 "name": &"idle",
@@ -2570,7 +2549,7 @@ position_smoothing_enabled = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=48907117]
 position = Vector2(-1, 1)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"spieler eingespinnt brechen"
+animation = &"idle"
 offset = Vector2(1, 0)
 
 [node name="Hitboxes" type="Node2D" parent="." unique_id=174370340]

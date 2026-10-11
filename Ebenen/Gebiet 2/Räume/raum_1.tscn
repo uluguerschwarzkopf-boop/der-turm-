@@ -29,6 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://d4mjifcx1o5jf" path="res://Mobs/Gebiet 2/Skellete/Archer/skellet_archer.tscn" id="39_nou43"]
 [ext_resource type="Script" uid="uid://d30cvgnx2loek" path="res://Ebenen/Gebiet 2/gebiet_musik.gd" id="40_musik"]
 [ext_resource type="Texture2D" uid="uid://cdx4uihe1fpaq" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/lichtstrahl.png" id="41_strahl"]
+[ext_resource type="PackedScene" uid="uid://bw55la8bguw0n" path="res://Mobs/Gebiet 2/Skellete/Bardiche_Skellet/bardiche_skellet.tscn" id="41_unkya"]
 [ext_resource type="Script" uid="uid://7txr3jumfxwb" path="res://Ebenen/Gebiet 2/shader/alpha_atmen.gd" id="43_alpha_atmen"]
 [ext_resource type="Script" uid="uid://cs1ct8vyie0k6" path="res://Ebenen/Gebiet 2/Objekte/nebelwolke_wandern.gd" id="44_wolke"]
 [ext_resource type="Shader" uid="uid://dnjyjrp27fl68" path="res://Ebenen/Gebiet 2/shader/dunkel_verlauf.gdshader" id="45_dunkel"]
@@ -1691,3 +1692,6 @@ position = Vector2(478, -160)
 idle_swing_period = 2.0
 shake_swing_deg = 2.0
 shake_time = 1.0
+
+[node name="Bardiche_Skellet" parent="." unique_id=1623814242 instance=ExtResource("41_unkya")]
+position = Vector2(-391, -160)
