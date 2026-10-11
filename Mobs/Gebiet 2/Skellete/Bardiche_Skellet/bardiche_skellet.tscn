@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bw55la8bguw0n"]
+
+[ext_resource type="Texture2D" uid="uid://dg5yxci5p7djs" path="res://Mobs/Gebiet 2/Skellete/Bardiche_Skellet/laufen.png" id="1_p5vu1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exox4"]
+atlas = ExtResource("1_p5vu1")
+region = Rect2(0, 0, 160, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_68pkx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exox4")
+}],
+"loop": 1,
+"name": &"laufen",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_68pkx"]
+size = Vector2(16, 32)
+
+[node name="Bardiche_Skellet" type="CharacterBody2D" unique_id=1623814242]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=92736824]
+position = Vector2(0, -16)
+sprite_frames = SubResource("SpriteFrames_68pkx")
+animation = &"laufen"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1612115880]
+position = Vector2(0, -16)
+shape = SubResource("RectangleShape2D_68pkx")
