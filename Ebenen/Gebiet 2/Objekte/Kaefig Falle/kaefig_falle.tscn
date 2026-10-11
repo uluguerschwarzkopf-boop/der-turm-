@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Ebenen/Gebiet 2/Objekte/Kaefig Falle/kaefig_falle.gd" id="1_skript"]
+[ext_resource type="Texture2D" uid="uid://cmbesegwbfn3x" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/backgroundmockupVordergrund2.png" id="2_kaefig"]
+[ext_resource type="PackedScene" uid="uid://dhd47hfpkixxq" path="res://Mobs/Gebiet 2/schatten mutant/schatten_mutant.tscn" id="3_mutant"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ausloeser"]
+size = Vector2(150, 60)
+
+[node name="Käfig Falle" type="Node2D"]
+script = ExtResource("1_skript")
+cage_texture = ExtResource("2_kaefig")
+mob_scene = ExtResource("3_mutant")
+
+[node name="Auslöser" type="Area2D" parent="."]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Auslöser"]
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_ausloeser")
