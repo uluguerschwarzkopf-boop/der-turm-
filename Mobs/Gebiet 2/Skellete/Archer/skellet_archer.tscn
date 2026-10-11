@@ -537,7 +537,7 @@ shape = SubResource("RectangleShape2D_g82hs")
 [node name="AttackHitbox" type="Area2D" parent="." unique_id=1738900232]
 
 [node name="Nahkampf_Angriff" type="CollisionPolygon2D" parent="AttackHitbox" unique_id=288650115]
-polygon = PackedVector2Array(21, -30, 24, -15, 18, -6, 9, -10, 10, -30)
+polygon = PackedVector2Array(21, -30, 24, -15, 18, -6, 3, -11, 10, -30)
 
 [node name="WakeArea" type="Area2D" parent="." unique_id=1085582920]
 
