@@ -66,7 +66,7 @@ const ROOM_MUSIC_PATHS: Dictionary = {
 # 0.0 dB. Kommt ein neues Gebiet/Raum dazu und ist kein Eintrag
 # hinterlegt, wird einfach 0.0 dB (unverändert) benutzt.
 const AREA_VOLUME_OFFSET_DB: Dictionary = {
-	1: 10.0,
+	1: 20.0,
 	# Gebiet 2: noch nicht per Lautheit gemessen, vorerst wie Gebiet 1.
 	# Kleiner = leiser.
 	2: -5.0,

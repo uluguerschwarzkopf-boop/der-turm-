@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" uid="uid://buu1lvocjas7q" path="res://raw Assets (dropdown)/Objects/kleineFackel-Sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://dkit12v16bgvt" path="res://Objects/Gebiet 2/Fackeln/Fackel 2-Sheet.png" id="1_sheet"]
 [ext_resource type="Script" uid="uid://o7wfprdefr1l" path="res://Objects/Gebiet 1/fackel.gd" id="2_play"]
 [ext_resource type="Script" uid="uid://cd66vubspnpns" path="res://Ebenen/Gebiet 2/shader/torch_light_flicker.gd" id="3_flackern"]
 
@@ -24,6 +24,30 @@ region = Rect2(192, 0, 64, 64)
 atlas = ExtResource("1_sheet")
 region = Rect2(256, 0, 64, 64)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_f5"]
+atlas = ExtResource("1_sheet")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f6"]
+atlas = ExtResource("1_sheet")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f7"]
+atlas = ExtResource("1_sheet")
+region = Rect2(448, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f8"]
+atlas = ExtResource("1_sheet")
+region = Rect2(512, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f9"]
+atlas = ExtResource("1_sheet")
+region = Rect2(576, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f10"]
+atlas = ExtResource("1_sheet")
+region = Rect2(640, 0, 64, 64)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_fackel"]
 animations = [{
 "frames": [{
@@ -41,10 +65,28 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_f4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f9")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f10")
 }],
 "loop": true,
 "name": &"default",
-"speed": 6.0
+"speed": 10.0
 }]
 
 [sub_resource type="Gradient" id="Gradient_lichtkreis"]
@@ -78,6 +120,7 @@ light_mode = 1
 [node name="Fackel klein" type="AnimatedSprite2D"]
 modulate = Color(0.62, 0.6, 0.66, 1)
 sprite_frames = SubResource("SpriteFrames_fackel")
+offset = Vector2(-4, -5)
 script = ExtResource("2_play")
 
 [node name="Lichtkreis" type="PointLight2D" parent="."]
@@ -86,15 +129,16 @@ color = Color(1, 0.62, 0.38, 1)
 energy = 2.0
 range_z_min = -4050
 texture = SubResource("GradientTexture2D_lichtkreis")
-texture_scale = 1.3
+texture_scale = 1.6
 script = ExtResource("3_flackern")
 base_energy = 2.0
 flicker_amount = 0.06
 speed = 4.0
 
 [node name="Schein" type="Sprite2D" parent="."]
-modulate = Color(1, 1, 1, 0.22)
+modulate = Color(1, 1, 1, 0.4)
 show_behind_parent = true
+scale = Vector2(1.7, 1.7)
 texture_filter = 2
 material = SubResource("CanvasItemMaterial_halo")
 position = Vector2(-6, -12)

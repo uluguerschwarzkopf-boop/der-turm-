@@ -34,20 +34,38 @@
 [ext_resource type="Script" uid="uid://cs1ct8vyie0k6" path="res://Ebenen/Gebiet 2/Objekte/nebelwolke_wandern.gd" id="44_wolke"]
 [ext_resource type="Shader" uid="uid://dnjyjrp27fl68" path="res://Ebenen/Gebiet 2/shader/dunkel_verlauf.gdshader" id="45_dunkel"]
 [ext_resource type="Texture2D" uid="uid://hrqkaw5ioxa5" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/Säulen.png" id="50_saeule"]
-[ext_resource type="Texture2D" uid="uid://cxn3mohxqlxc7" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/Zaun.png" id="51_zaun"]
 [ext_resource type="Texture2D" uid="uid://c3y0si46rnjef" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/Zaun2.png" id="52_zaun2"]
 [ext_resource type="Texture2D" uid="uid://cx8hgqyxurjvp" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/torbogen vordergrund.png" id="53_torbogen"]
 [ext_resource type="Texture2D" uid="uid://b4qy0abpet2ob" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/backgroundmockupGitteruntenRechtsschwarz.png" id="54_gitter"]
 [ext_resource type="Texture2D" uid="uid://sayjlq8n2ns2" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/backgroundmockupVordergrund-rework.png" id="55_truemmer"]
 [ext_resource type="PackedScene" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/fackel_klein.tscn" id="56_fackel_klein"]
 [ext_resource type="PackedScene" path="res://Ebenen/Gebiet 2/Objekte/Kaefig Falle/kaefig_falle.tscn" id="60_kaefigfalle"]
+[ext_resource type="Script" uid="uid://bmy5h0364wfww" path="res://Ebenen/Gebiet 2/gegner_licht.gd" id="61_gegnerlicht"]
+[ext_resource type="Shader" uid="uid://cbr0mcgv8l0vp" path="res://Ebenen/Gebiet 2/shader/plattform_lebendig.gdshader" id="70_plattform_shader"]
+[ext_resource type="Texture2D" uid="uid://tpp0bl3ma2vb" path="res://Ebenen/Gebiet 2/Tile sets/png/Raum1/Blöcke_lianen_maske.png" id="71_lianen_maske"]
+[ext_resource type="Script" uid="uid://jhc5k2wgnwo4" path="res://Ebenen/Gebiet 2/shader/plattform_leuchten.gd" id="72_leuchten"]
+[ext_resource type="PackedScene" path="res://Ebenen/Gebiet 2/Objekte/Bruchkante/bruchkante.tscn" id="73_bruchkante"]
+[ext_resource type="Texture2D" uid="uid://d2w3agpfdw80a" path="res://raw Assets (dropdown)/Backgrounds/f5fcbe16-5b19-46ab-844e-252208379f34.png" id="80_wand_hoehle"]
+[ext_resource type="Script" uid="uid://cnxd7hbjwdry7" path="res://Ebenen/Gebiet 2/Objekte/Fledermaeuse/fledermaus_schwarm.gd" id="81_fledermaeuse"]
+[ext_resource type="Texture2D" uid="uid://c81pxvg12rxvx" path="res://Mobs/Gebiet 2/Hintergrund/Fliegen-Sheet.png" id="82_fledermaus_flug"]
+[ext_resource type="Texture2D" uid="uid://qwa5n2oowwqw" path="res://raw Assets (dropdown)/Backgrounds/6f682216-b6f5-4fb0-9847-bd0fa8803617.png" id="90_ferne"]
 
-[sub_resource type="Gradient" id="Gradient_wfbld"]
-offsets = PackedFloat32Array(0, 0.19879518, 0.39156628, 0.7108434, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0.0141070485, 0.68057036, 1, 1, 0.0066118175, 0.34847543, 0.55078125, 1, 0.0025508949, 0.038980387, 0.27734375, 1, 0, 0, 0, 1)
+[sub_resource type="Gradient" id="Gradient_figurlicht"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.3, 0.3, 0.3, 1, 0, 0, 0, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_sjmyo"]
-gradient = SubResource("Gradient_wfbld")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_figurlicht"]
+gradient = SubResource("Gradient_figurlicht")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_lichtfleck"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lichtfleck"]
+gradient = SubResource("Gradient_lichtfleck")
+height = 20
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
@@ -55,204 +73,347 @@ fill_to = Vector2(1, 0.5)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1wgke"]
 size = Vector2(2687, 252.125)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_plattform"]
+shader = ExtResource("70_plattform_shader")
+shader_parameter/sway_mask = ExtResource("71_lianen_maske")
+shader_parameter/sway_px = 1.2
+shader_parameter/sway_period = 3.6
+shader_parameter/sway_phase_spread = 0.45
+shader_parameter/player_feet = Vector2(-99999, -99999)
+shader_parameter/glow_amount = 0.0
+shader_parameter/glow_radius = 30.0
+shader_parameter/glow_strength = 0.3
+shader_parameter/glow_color = Color(0.45, 0.95, 1, 1)
+shader_parameter/glow_min_luma = 0.27
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rnd2m"]
 texture = ExtResource("4_wgq0a")
 6:0/0 = 0
+6:0/0/material = SubResource("ShaderMaterial_plattform")
 6:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 7:0/0 = 0
+7:0/0/material = SubResource("ShaderMaterial_plattform")
 7:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 8:0/0 = 0
+8:0/0/material = SubResource("ShaderMaterial_plattform")
 8:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 9:0/0 = 0
+9:0/0/material = SubResource("ShaderMaterial_plattform")
 9:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 10:0/0 = 0
+10:0/0/material = SubResource("ShaderMaterial_plattform")
 10:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:0/0 = 0
+11:0/0/material = SubResource("ShaderMaterial_plattform")
 11:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 0:1/0 = 0
+0:1/0/material = SubResource("ShaderMaterial_plattform")
 0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:1/0 = 0
+1:1/0/material = SubResource("ShaderMaterial_plattform")
 1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 2:1/0 = 0
+2:1/0/material = SubResource("ShaderMaterial_plattform")
 2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:1/0 = 0
+3:1/0/material = SubResource("ShaderMaterial_plattform")
 3:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:1/0 = 0
+4:1/0/material = SubResource("ShaderMaterial_plattform")
 4:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 7:1/0 = 0
+7:1/0/material = SubResource("ShaderMaterial_plattform")
 8:1/0 = 0
+8:1/0/material = SubResource("ShaderMaterial_plattform")
 9:1/0 = 0
+9:1/0/material = SubResource("ShaderMaterial_plattform")
 10:1/0 = 0
+10:1/0/material = SubResource("ShaderMaterial_plattform")
 1:2/0 = 0
+1:2/0/material = SubResource("ShaderMaterial_plattform")
 2:2/0 = 0
+2:2/0/material = SubResource("ShaderMaterial_plattform")
 3:2/0 = 0
+3:2/0/material = SubResource("ShaderMaterial_plattform")
 9:2/0 = 0
+9:2/0/material = SubResource("ShaderMaterial_plattform")
 9:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 10:2/0 = 0
+10:2/0/material = SubResource("ShaderMaterial_plattform")
 10:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:2/0 = 0
+11:2/0/material = SubResource("ShaderMaterial_plattform")
 11:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 12:2/0 = 0
+12:2/0/material = SubResource("ShaderMaterial_plattform")
 12:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 13:2/0 = 0
+13:2/0/material = SubResource("ShaderMaterial_plattform")
 13:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 14:2/0 = 0
+14:2/0/material = SubResource("ShaderMaterial_plattform")
 14:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 0:3/0 = 0
+0:3/0/material = SubResource("ShaderMaterial_plattform")
 0:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:3/0 = 0
+1:3/0/material = SubResource("ShaderMaterial_plattform")
 1:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 2:3/0 = 0
+2:3/0/material = SubResource("ShaderMaterial_plattform")
 2:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:3/0 = 0
+3:3/0/material = SubResource("ShaderMaterial_plattform")
 3:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:3/0 = 0
+4:3/0/material = SubResource("ShaderMaterial_plattform")
 4:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:3/0 = 0
+5:3/0/material = SubResource("ShaderMaterial_plattform")
 5:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 10:3/0 = 0
+10:3/0/material = SubResource("ShaderMaterial_plattform")
 11:3/0 = 0
+11:3/0/material = SubResource("ShaderMaterial_plattform")
 12:3/0 = 0
+12:3/0/material = SubResource("ShaderMaterial_plattform")
 13:3/0 = 0
+13:3/0/material = SubResource("ShaderMaterial_plattform")
 1:4/0 = 0
+1:4/0/material = SubResource("ShaderMaterial_plattform")
 2:4/0 = 0
+2:4/0/material = SubResource("ShaderMaterial_plattform")
 3:4/0 = 0
+3:4/0/material = SubResource("ShaderMaterial_plattform")
 4:4/0 = 0
+4:4/0/material = SubResource("ShaderMaterial_plattform")
 9:4/0 = 0
+9:4/0/material = SubResource("ShaderMaterial_plattform")
 9:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 10:4/0 = 0
+10:4/0/material = SubResource("ShaderMaterial_plattform")
 10:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:4/0 = 0
+11:4/0/material = SubResource("ShaderMaterial_plattform")
 11:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 13:4/0 = 0
+13:4/0/material = SubResource("ShaderMaterial_plattform")
 13:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 14:4/0 = 0
+14:4/0/material = SubResource("ShaderMaterial_plattform")
 14:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 0:5/0 = 0
+0:5/0/material = SubResource("ShaderMaterial_plattform")
 0:5/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:5/0 = 0
+1:5/0/material = SubResource("ShaderMaterial_plattform")
 1:5/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 2:5/0 = 0
+2:5/0/material = SubResource("ShaderMaterial_plattform")
 2:5/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:5/0 = 0
+3:5/0/material = SubResource("ShaderMaterial_plattform")
 3:5/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:5/0 = 0
+4:5/0/material = SubResource("ShaderMaterial_plattform")
 4:5/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:5/0 = 0
+5:5/0/material = SubResource("ShaderMaterial_plattform")
 5:5/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:6/0 = 0
+1:6/0/material = SubResource("ShaderMaterial_plattform")
 2:6/0 = 0
+2:6/0/material = SubResource("ShaderMaterial_plattform")
 3:6/0 = 0
+3:6/0/material = SubResource("ShaderMaterial_plattform")
 4:6/0 = 0
+4:6/0/material = SubResource("ShaderMaterial_plattform")
 6:6/0 = 0
+6:6/0/material = SubResource("ShaderMaterial_plattform")
 6:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 7:6/0 = 0
+7:6/0/material = SubResource("ShaderMaterial_plattform")
 7:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 8:6/0 = 0
+8:6/0/material = SubResource("ShaderMaterial_plattform")
 8:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:6/0 = 0
+11:6/0/material = SubResource("ShaderMaterial_plattform")
 11:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 12:6/0 = 0
+12:6/0/material = SubResource("ShaderMaterial_plattform")
 12:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 13:6/0 = 0
+13:6/0/material = SubResource("ShaderMaterial_plattform")
 13:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 14:6/0 = 0
+14:6/0/material = SubResource("ShaderMaterial_plattform")
 14:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 9:7/0 = 0
+9:7/0/material = SubResource("ShaderMaterial_plattform")
 9:7/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:7/0 = 0
+11:7/0/material = SubResource("ShaderMaterial_plattform")
 11:7/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 12:7/0 = 0
+12:7/0/material = SubResource("ShaderMaterial_plattform")
 12:7/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 13:7/0 = 0
+13:7/0/material = SubResource("ShaderMaterial_plattform")
 13:7/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 14:7/0 = 0
+14:7/0/material = SubResource("ShaderMaterial_plattform")
 14:7/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:8/0 = 0
+1:8/0/material = SubResource("ShaderMaterial_plattform")
 1:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 14:8/0 = 0
+14:8/0/material = SubResource("ShaderMaterial_plattform")
 1:9/0 = 0
+1:9/0/material = SubResource("ShaderMaterial_plattform")
 2:9/0 = 0
+2:9/0/material = SubResource("ShaderMaterial_plattform")
 3:9/0 = 0
+3:9/0/material = SubResource("ShaderMaterial_plattform")
 4:9/0 = 0
+4:9/0/material = SubResource("ShaderMaterial_plattform")
 10:9/0 = 0
+10:9/0/material = SubResource("ShaderMaterial_plattform")
 10:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:9/0 = 0
+11:9/0/material = SubResource("ShaderMaterial_plattform")
 11:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 12:9/0 = 0
+12:9/0/material = SubResource("ShaderMaterial_plattform")
 12:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 13:9/0 = 0
+13:9/0/material = SubResource("ShaderMaterial_plattform")
 13:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 14:9/0 = 0
+14:9/0/material = SubResource("ShaderMaterial_plattform")
 14:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:10/0 = 0
+1:10/0/material = SubResource("ShaderMaterial_plattform")
 2:10/0 = 0
+2:10/0/material = SubResource("ShaderMaterial_plattform")
 3:10/0 = 0
+3:10/0/material = SubResource("ShaderMaterial_plattform")
 4:10/0 = 0
+4:10/0/material = SubResource("ShaderMaterial_plattform")
 5:10/0 = 0
+5:10/0/material = SubResource("ShaderMaterial_plattform")
 10:10/0 = 0
+10:10/0/material = SubResource("ShaderMaterial_plattform")
 11:10/0 = 0
+11:10/0/material = SubResource("ShaderMaterial_plattform")
 12:10/0 = 0
+12:10/0/material = SubResource("ShaderMaterial_plattform")
 13:10/0 = 0
+13:10/0/material = SubResource("ShaderMaterial_plattform")
 14:10/0 = 0
+14:10/0/material = SubResource("ShaderMaterial_plattform")
 10:11/0 = 0
+10:11/0/material = SubResource("ShaderMaterial_plattform")
 11:11/0 = 0
+11:11/0/material = SubResource("ShaderMaterial_plattform")
 12:11/0 = 0
+12:11/0/material = SubResource("ShaderMaterial_plattform")
 13:11/0 = 0
+13:11/0/material = SubResource("ShaderMaterial_plattform")
 14:11/0 = 0
+14:11/0/material = SubResource("ShaderMaterial_plattform")
 2:12/0 = 0
+2:12/0/material = SubResource("ShaderMaterial_plattform")
 4:12/0 = 0
+4:12/0/material = SubResource("ShaderMaterial_plattform")
 10:12/0 = 0
+10:12/0/material = SubResource("ShaderMaterial_plattform")
 0:13/0 = 0
+0:13/0/material = SubResource("ShaderMaterial_plattform")
 0:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:13/0 = 0
+1:13/0/material = SubResource("ShaderMaterial_plattform")
 1:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 2:13/0 = 0
+2:13/0/material = SubResource("ShaderMaterial_plattform")
 2:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:13/0 = 0
+3:13/0/material = SubResource("ShaderMaterial_plattform")
 3:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:13/0 = 0
+4:13/0/material = SubResource("ShaderMaterial_plattform")
 4:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:13/0 = 0
+5:13/0/material = SubResource("ShaderMaterial_plattform")
 6:13/0 = 0
+6:13/0/material = SubResource("ShaderMaterial_plattform")
 6:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 7:13/0 = 0
+7:13/0/material = SubResource("ShaderMaterial_plattform")
 7:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 8:13/0 = 0
+8:13/0/material = SubResource("ShaderMaterial_plattform")
 8:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 9:13/0 = 0
+9:13/0/material = SubResource("ShaderMaterial_plattform")
 9:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 10:13/0 = 0
+10:13/0/material = SubResource("ShaderMaterial_plattform")
 10:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 0:14/0 = 0
+0:14/0/material = SubResource("ShaderMaterial_plattform")
 1:14/0 = 0
+1:14/0/material = SubResource("ShaderMaterial_plattform")
 2:14/0 = 0
+2:14/0/material = SubResource("ShaderMaterial_plattform")
 3:14/0 = 0
+3:14/0/material = SubResource("ShaderMaterial_plattform")
 4:14/0 = 0
+4:14/0/material = SubResource("ShaderMaterial_plattform")
 6:14/0 = 0
+6:14/0/material = SubResource("ShaderMaterial_plattform")
 7:14/0 = 0
+7:14/0/material = SubResource("ShaderMaterial_plattform")
 8:14/0 = 0
+8:14/0/material = SubResource("ShaderMaterial_plattform")
 9:14/0 = 0
+9:14/0/material = SubResource("ShaderMaterial_plattform")
 10:14/0 = 0
+10:14/0/material = SubResource("ShaderMaterial_plattform")
 0:15/0 = 0
+0:15/0/material = SubResource("ShaderMaterial_plattform")
 1:15/0 = 0
+1:15/0/material = SubResource("ShaderMaterial_plattform")
 2:15/0 = 0
+2:15/0/material = SubResource("ShaderMaterial_plattform")
 3:15/0 = 0
+3:15/0/material = SubResource("ShaderMaterial_plattform")
 4:15/0 = 0
+4:15/0/material = SubResource("ShaderMaterial_plattform")
 6:15/0 = 0
+6:15/0/material = SubResource("ShaderMaterial_plattform")
 7:15/0 = 0
+7:15/0/material = SubResource("ShaderMaterial_plattform")
 8:15/0 = 0
+8:15/0/material = SubResource("ShaderMaterial_plattform")
 9:15/0 = 0
+9:15/0/material = SubResource("ShaderMaterial_plattform")
 10:15/0 = 0
+10:15/0/material = SubResource("ShaderMaterial_plattform")
 2:8/0 = 0
+2:8/0/material = SubResource("ShaderMaterial_plattform")
 2:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:8/0 = 0
+3:8/0/material = SubResource("ShaderMaterial_plattform")
 3:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:8/0 = 0
+4:8/0/material = SubResource("ShaderMaterial_plattform")
 4:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:8/0 = 0
+5:8/0/material = SubResource("ShaderMaterial_plattform")
 5:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:9/0 = 0
+5:9/0/material = SubResource("ShaderMaterial_plattform")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lavoi"]
 texture = ExtResource("4_u3fqr")
@@ -932,6 +1093,26 @@ sources/2 = SubResource("TileSetAtlasSource_j8hek")
 sources/3 = SubResource("TileSetAtlasSource_b4vyc")
 sources/0 = SubResource("TileSetAtlasSource_wufts")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ferne_wand"]
+shader = ExtResource("14_ebene")
+shader_parameter/brightness = 7.0
+shader_parameter/saturation = 0.6
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.3
+shader_parameter/blur_radius = 1.0
+shader_parameter/blur_mix = 0.8
+shader_parameter/blur_lod = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_zwischen"]
+shader = ExtResource("14_ebene")
+shader_parameter/brightness = 2.6
+shader_parameter/saturation = 0.6
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.3
+shader_parameter/blur_radius = 0.8
+shader_parameter/blur_mix = 0.6
+shader_parameter/blur_lod = 0.0
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wand"]
 shader = ExtResource("14_ebene")
 shader_parameter/brightness = 3.4
@@ -939,7 +1120,18 @@ shader_parameter/saturation = 0.55
 shader_parameter/tint = Color(0.72, 0.84, 1, 1)
 shader_parameter/tint_amount = 0.35
 shader_parameter/blur_radius = 1.0
-shader_parameter/blur_mix = 0.5
+shader_parameter/blur_mix = 0.8
+shader_parameter/blur_lod = 0.4
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wand_2"]
+shader = ExtResource("14_ebene")
+shader_parameter/brightness = 6.0
+shader_parameter/saturation = 0.7
+shader_parameter/tint = Color(0.72, 0.84, 1, 1)
+shader_parameter/tint_amount = 0.25
+shader_parameter/blur_radius = 1.0
+shader_parameter/blur_mix = 0.8
+shader_parameter/blur_lod = 1.2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nebel_hinten"]
 shader = ExtResource("17_cxhdy")
@@ -964,6 +1156,7 @@ shader_parameter/tint = Color(0.72, 0.84, 1, 1)
 shader_parameter/tint_amount = 0.2
 shader_parameter/blur_radius = 0.6
 shader_parameter/blur_mix = 0.3
+shader_parameter/blur_lod = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dunkel_saeulenfuss"]
 shader = ExtResource("45_dunkel")
@@ -1028,16 +1221,6 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[sub_resource type="Gradient" id="Gradient_lichtfleck"]
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_lichtfleck"]
-gradient = SubResource("Gradient_lichtfleck")
-height = 20
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wgq0a"]
 shader = ExtResource("17_cxhdy")
 shader_parameter/fog_color = Color(0.12, 0.17, 0.3, 1)
@@ -1061,6 +1244,7 @@ shader_parameter/tint = Color(0.72, 0.84, 1, 1)
 shader_parameter/tint_amount = 0.1
 shader_parameter/blur_radius = 0.0
 shader_parameter/blur_mix = 0.0
+shader_parameter/blur_lod = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nebel_ebene3"]
 shader = ExtResource("17_cxhdy")
@@ -1169,6 +1353,7 @@ shader_parameter/tint = Color(1, 1, 1, 1)
 shader_parameter/tint_amount = 0.0
 shader_parameter/blur_radius = 1.0
 shader_parameter/blur_mix = 0.35
+shader_parameter/blur_lod = 0.0
 
 [node name="Raum1" type="Node2D" unique_id=188748194]
 
@@ -1176,12 +1361,18 @@ shader_parameter/blur_mix = 0.35
 position = Vector2(-265, -161)
 
 [node name="PointLight2D" type="PointLight2D" parent="Player" unique_id=775444303]
-position = Vector2(-195, 299)
-scale = Vector2(0.15213817, 0.20867601)
-color = Color(0.78431374, 0.83137256, 0.9098039, 1)
-energy = 0.31
-texture = SubResource("GradientTexture2D_sjmyo")
-texture_scale = 3.8
+position = Vector2(0, -14)
+color = Color(0.8, 0.86, 1, 1)
+energy = 0.45
+texture = SubResource("GradientTexture2D_figurlicht")
+texture_scale = 1.4
+
+[node name="Fußlicht" type="PointLight2D" parent="Player" unique_id=1490106572]
+position = Vector2(0, -1)
+color = Color(0.5, 0.9, 1, 1)
+energy = 0.1
+texture = SubResource("GradientTexture2D_lichtfleck")
+texture_scale = 0.8
 
 [node name="CameraBounds" type="Area2D" parent="Player" unique_id=1830762781]
 monitoring = false
@@ -1194,7 +1385,7 @@ position = Vector2(1113.5, -45)
 shape = SubResource("RectangleShape2D_1wgke")
 
 [node name="Darkness" type="CanvasModulate" parent="." unique_id=282204402]
-color = Color(0.16, 0.2, 0.32, 1)
+color = Color(0.34, 0.38, 0.5, 1)
 
 [node name="CanvasLayer" parent="." unique_id=766876166 instance=ExtResource("3_t3kt8")]
 
@@ -1205,6 +1396,10 @@ position = Vector2(-290, -172)
 position = Vector2(338, -226)
 
 [node name="Tiles" type="Node2D" parent="." unique_id=1643241279]
+
+[node name="Plattform Leuchten" type="Node" parent="Tiles" unique_id=1259761095]
+script = ExtResource("72_leuchten")
+material = SubResource("ShaderMaterial_plattform")
 
 [node name="TileMapPlayerEbene2" type="TileMapLayer" parent="Tiles" unique_id=804783125]
 use_parent_material = true
@@ -1220,21 +1415,96 @@ use_parent_material = true
 tile_set = SubResource("TileSet_2fiap")
 
 [node name="Background" type="Node2D" parent="." unique_id=1480058726 node_paths=PackedStringArray("anchor_marker")]
+modulate = Color(0.31, 0.356, 0.466, 1)
 z_index = -4096
 script = ExtResource("16_parallax")
 anchor_at_camera_start = true
 anchor_marker = NodePath("../Parallax-Bezugspunkt")
 
+[node name="Ebene Ferne" type="Parallax2D" parent="Background" unique_id=641188424]
+texture_filter = 1
+scroll_scale = Vector2(0.5, 0.5)
+
+[node name="Ferne Wand" type="Sprite2D" parent="Background/Ebene Ferne" unique_id=1876422575]
+texture_filter = 4
+material = SubResource("ShaderMaterial_ferne_wand")
+position = Vector2(1623, -235.99998)
+scale = Vector2(0.8485714, 0.5990991)
+texture = ExtResource("90_ferne")
+
+[node name="Ebene Zwischen" type="Parallax2D" parent="Background" unique_id=1670127102]
+texture_filter = 1
+scroll_scale = Vector2(0.7, 0.7)
+scroll_offset = Vector2(0, -14)
+
+[node name="Säule fern 1" type="Sprite2D" parent="Background/Ebene Zwischen" unique_id=1283684098]
+material = SubResource("ShaderMaterial_zwischen")
+position = Vector2(60, -236)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("50_saeule")
+region_enabled = true
+region_rect = Rect2(451, 0, 85, 256)
+
+[node name="Säule fern 2" type="Sprite2D" parent="Background/Ebene Zwischen" unique_id=1095059366]
+material = SubResource("ShaderMaterial_zwischen")
+position = Vector2(520, -236)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("50_saeule")
+region_enabled = true
+region_rect = Rect2(451, 0, 85, 256)
+
+[node name="Säule fern 3" type="Sprite2D" parent="Background/Ebene Zwischen" unique_id=1126369164]
+material = SubResource("ShaderMaterial_zwischen")
+position = Vector2(760, -236)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("50_saeule")
+region_enabled = true
+region_rect = Rect2(451, 0, 85, 256)
+
+[node name="Säule fern 4" type="Sprite2D" parent="Background/Ebene Zwischen" unique_id=199192793]
+material = SubResource("ShaderMaterial_zwischen")
+position = Vector2(1150, -236)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("50_saeule")
+region_enabled = true
+region_rect = Rect2(451, 0, 85, 256)
+
+[node name="Torbogen fern 1" type="Sprite2D" parent="Background/Ebene Zwischen" unique_id=1138891260]
+material = SubResource("ShaderMaterial_zwischen")
+position = Vector2(300, -196)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("53_torbogen")
+region_enabled = true
+region_rect = Rect2(688, 86, 111, 154)
+
+[node name="Torbogen fern 2" type="Sprite2D" parent="Background/Ebene Zwischen" unique_id=693962236]
+material = SubResource("ShaderMaterial_zwischen")
+position = Vector2(960, -196)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("53_torbogen")
+region_enabled = true
+region_rect = Rect2(688, 86, 111, 154)
+
 [node name="Ebene Wand" type="Parallax2D" parent="Background" unique_id=997693771]
+visible = false
 texture_filter = 1
 scroll_scale = Vector2(0.85, 0.85)
 scroll_offset = Vector2(0, -14)
 
 [node name="Wand 1" type="Sprite2D" parent="Background/Ebene Wand" unique_id=1632055862]
 light_mask = 5
+texture_filter = 4
 material = SubResource("ShaderMaterial_wand")
 position = Vector2(209, -226)
 texture = ExtResource("11_rnd2m")
+
+[node name="Wand 2" type="Sprite2D" parent="Background/Ebene Wand" unique_id=1135660263]
+light_mask = 5
+texture_filter = 4
+material = SubResource("ShaderMaterial_wand_2")
+position = Vector2(922.8, -226)
+scale = Vector2(0.2563, 0.2563)
+texture = ExtResource("80_wand_hoehle")
 
 [node name="Fensterlichter" type="Node2D" parent="Background/Ebene Wand" unique_id=879547144]
 
@@ -1295,6 +1565,7 @@ offset_bottom = -203.0
 mouse_filter = 2
 
 [node name="Ebene Strahl" type="Parallax2D" parent="Background" unique_id=1506009764]
+visible = false
 texture_filter = 1
 scroll_scale = Vector2(0.85, 0.85)
 scroll_offset = Vector2(0, -14)
@@ -1306,13 +1577,14 @@ position = Vector2(338, -263)
 modulate = Color(0.55, 0.75, 1, 0.3)
 texture_filter = 2
 material = SubResource("CanvasItemMaterial_strahl")
+position = Vector2(267, -237)
 scale = Vector2(1, 0.82)
 texture = ExtResource("41_strahl")
 offset = Vector2(0, 64)
 script = ExtResource("43_alpha_atmen")
 
 [node name="Strahl Licht" type="PointLight2D" parent="Background/Ebene Strahl/Lichtstrahl" unique_id=1422954460]
-position = Vector2(0, 51)
+position = Vector2(256, -145)
 scale = Vector2(1, 0.82)
 color = Color(0.55, 0.75, 1, 1)
 energy = 0.0
@@ -1332,11 +1604,16 @@ visibility_rect = Rect2(-30, -70, 60, 140)
 local_coords = true
 process_material = SubResource("ParticleProcessMaterial_staub_rund")
 
+[node name="Fledermäuse" type="Node2D" parent="Background" unique_id=1952587374]
+position = Vector2(0, -160)
+script = ExtResource("81_fledermaeuse")
+sheet = ExtResource("82_fledermaus_flug")
+
 [node name="Ebene Käfige hinten" type="Parallax2D" parent="Background" unique_id=214573404]
 texture_filter = 1
 
 [node name="Käfige hinten" type="Sprite2D" parent="Background/Ebene Käfige hinten" unique_id=2024178504]
-position = Vector2(252.00002, -260)
+position = Vector2(209.00002, -260)
 scale = Vector2(1.0957031, 1.1152344)
 texture = ExtResource("10_b4vyc")
 
@@ -1373,10 +1650,10 @@ copy_mode = 2
 [node name="Nebel vorne" type="ColorRect" parent="Background" unique_id=754097823]
 z_index = -1
 material = SubResource("ShaderMaterial_wgq0a")
-offset_left = -542.0
-offset_top = -342.0
-offset_right = 646.0
-offset_bottom = -129.0
+offset_left = -367.0
+offset_top = -362.0
+offset_right = 821.0
+offset_bottom = -149.0
 mouse_filter = 2
 
 [node name="Ebene Säulen 3" type="Parallax2D" parent="Background" unique_id=1443892082]
@@ -1406,17 +1683,9 @@ texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
 
-[node name="Zaun 1" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=1127363212]
-material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(465.99997, -175)
-scale = Vector2(0.5327553, 0.5891089)
-texture = ExtResource("51_zaun")
-region_enabled = true
-region_rect = Rect2(16, 139, 519, 101)
-
 [node name="Zaun 2" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=448226268]
 material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(1283, -195)
+position = Vector2(1239, -618)
 texture = ExtResource("52_zaun2")
 region_enabled = true
 region_rect = Rect2(640, 139, 343, 101)
@@ -1429,27 +1698,31 @@ region_enabled = true
 region_rect = Rect2(688, 86, 111, 154)
 
 [node name="Fackel 1" parent="Background/Ebene Säulen 3" unique_id=1399013560 instance=ExtResource("56_fackel_klein")]
+modulate = Color(3, 2.45, 1.9, 1)
 position = Vector2(-120, -212)
 
 [node name="Fackel 2" parent="Background/Ebene Säulen 3" unique_id=1390859228 instance=ExtResource("56_fackel_klein")]
+modulate = Color(3, 2.45, 1.9, 1)
 position = Vector2(1080, -212)
 
 [node name="Fackel 3" parent="Background/Ebene Säulen 3" unique_id=1136905578 instance=ExtResource("56_fackel_klein")]
+modulate = Color(3, 2.45, 1.9, 1)
 position = Vector2(1700, -212)
 
 [node name="Nebel Ebene 3 Kopie" type="BackBufferCopy" parent="Background/Ebene Säulen 3" unique_id=610822892]
-position = Vector2(-40, -3)
+position = Vector2(313, 178)
 copy_mode = 2
 
 [node name="Nebel Ebene 3" type="ColorRect" parent="Background/Ebene Säulen 3" unique_id=491209903]
 material = SubResource("ShaderMaterial_nebel_ebene3")
-offset_left = -614.0
-offset_top = -185.0
-offset_right = 1785.0
-offset_bottom = -100.0
+offset_left = -571.0
+offset_top = -218.0
+offset_right = 1828.0
+offset_bottom = -133.0
 mouse_filter = 2
 
 [node name="Enemies" type="Node" parent="." unique_id=1401092882]
+script = ExtResource("61_gegnerlicht")
 
 [node name="Fledermaus_gros" parent="Enemies" unique_id=837671149 instance=ExtResource("27_isx3u")]
 position = Vector2(1759, -220)
@@ -1548,6 +1821,10 @@ position = Vector2(1560, -352)
 interval_min = 4.0
 interval_max = 9.0
 
+[node name="Bruchkante" parent="Effekte" unique_id=654813100 node_paths=PackedStringArray("tile_layer") instance=ExtResource("73_bruchkante")]
+position = Vector2(1136, -176)
+tile_layer = NodePath("../../Tiles/TileMapPlayerEbene2")
+
 [node name="Knochenhaufen Glühen" type="Node2D" parent="Effekte" unique_id=844135409]
 position = Vector2(152, -174)
 
@@ -1569,21 +1846,21 @@ breath_period = 5.0
 
 [node name="Nebel Spieler-Ebene Kopie" type="BackBufferCopy" parent="Effekte" unique_id=1787555014]
 z_index = 3
-position = Vector2(207, 38)
+position = Vector2(213, 73)
 copy_mode = 2
 
 [node name="Nebel Spieler-Ebene" type="ColorRect" parent="Effekte" unique_id=181216948]
 z_index = 3
 material = SubResource("ShaderMaterial_nebelwolke")
-offset_left = -611.0
-offset_top = -162.0
-offset_right = 1591.0
-offset_bottom = -97.0
+offset_left = -603.0
+offset_top = -180.0
+offset_right = 1599.0
+offset_bottom = -115.0
 mouse_filter = 2
 
 [node name="Nebelwolke Kopie" type="BackBufferCopy" parent="Effekte" unique_id=1833168195]
 z_index = 3
-position = Vector2(499, 11)
+position = Vector2(492, 66)
 copy_mode = 2
 
 [node name="Nebelwolke" type="ColorRect" parent="Effekte" unique_id=659932588]
@@ -1598,6 +1875,7 @@ script = ExtResource("44_wolke")
 speed = 70.0
 
 [node name="Vordergrund" type="CanvasGroup" parent="." unique_id=1799508647]
+modulate = Color(0.31, 0.356, 0.466, 1)
 script = ExtResource("16_parallax")
 anchor_at_camera_start = true
 
@@ -1610,7 +1888,7 @@ scroll_scale = Vector2(1.08, 1.08)
 z_index = 10
 texture_filter = 2
 material = SubResource("ShaderMaterial_kaefige_blur")
-position = Vector2(309.87, -235.75)
+position = Vector2(357, -228.99998)
 scale = Vector2(1.7246094, 1.3886719)
 texture = ExtResource("11_2fiap")
 region_enabled = true
@@ -1657,7 +1935,7 @@ region_rect = Rect2(451, 0, 85, 256)
 [node name="Gitter" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=1161196356]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(1004, -164.5)
+position = Vector2(578, -189)
 scale = Vector2(1.1111104, 1.4027778)
 texture = ExtResource("54_gitter")
 region_enabled = true
@@ -1675,7 +1953,7 @@ region_rect = Rect2(0, 217, 256, 39)
 [node name="Trümmer 2" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=1374141972]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(1512, -135.25)
+position = Vector2(1508, -144)
 scale = Vector2(1, 1.1666666)
 texture = ExtResource("55_truemmer")
 region_enabled = true
@@ -1692,6 +1970,7 @@ position = Vector2(478, -160)
 idle_swing_period = 2.0
 shake_swing_deg = 2.0
 shake_time = 1.0
+dust_color = Color(0.62, 0.68, 0.8, 0.6)
 
 [node name="Bardiche_Skellet" parent="." unique_id=1623814242 instance=ExtResource("41_unkya")]
 position = Vector2(-391, -160)

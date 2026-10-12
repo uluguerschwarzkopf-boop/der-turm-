@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Ebenen/Gebiet 2/Objekte/Bruchkante/bruchkante.gd" id="1_skript"]
+
+[node name="Bruchkante" type="Node2D"]
+script = ExtResource("1_skript")

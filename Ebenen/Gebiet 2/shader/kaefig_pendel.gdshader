@@ -36,6 +36,15 @@ uniform float split_u : hint_range(0.0, 1.0) = 0.5;
 uniform float right_phase : hint_range(0.0, 6.3) = 2.2;
 uniform float right_speed : hint_range(0.5, 2.0) = 1.13;
 
+// Nutzer-Wunsch: Abdunklung nur auf Hinter-/Vordergrund (per Modulate am
+// Eltern-Node statt CanvasModulate). COLOR wird unten ueberschrieben, deshalb
+// das Modulate aus vertex() mitnehmen, sonst haette es keine Wirkung.
+varying vec4 modulate;
+
+void vertex() {
+	modulate = COLOR;
+}
+
 void fragment() {
 	bool right = UV.x >= split_u;
 	float spd = right ? right_speed : 1.0;
@@ -71,5 +80,5 @@ void fragment() {
 	c.rgb = mix(c.rgb, vec3(l) * tint.rgb * 1.6, tint_amount);
 	c.rgb *= brightness;
 
-	COLOR = c;
+	COLOR = c * modulate;
 }
