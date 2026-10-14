@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cmbesegwbfn3x" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/backgroundmockupVordergrund2.png" id="2_kaefig"]
 [ext_resource type="PackedScene" uid="uid://dhd47hfpkixxq" path="res://Mobs/Gebiet 2/schatten mutant/schatten_mutant.tscn" id="3_mutant"]
 
+[ext_resource type="FontFile" path="res://Fonts/pixelify_sans.woff2" id="4_font"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ausloeser"]
 size = Vector2(150, 60)
 
@@ -11,6 +12,7 @@ size = Vector2(150, 60)
 script = ExtResource("1_skript")
 cage_texture = ExtResource("2_kaefig")
 mob_scene = ExtResource("3_mutant")
+speech_font = ExtResource("4_font")
 
 [node name="Auslöser" type="Area2D" parent="."]
 monitorable = false

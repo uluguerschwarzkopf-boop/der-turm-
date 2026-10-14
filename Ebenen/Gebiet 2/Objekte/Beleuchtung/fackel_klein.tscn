@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://o7wfprdefr1l" path="res://Objects/Gebiet 1/fackel.gd" id="2_play"]
 [ext_resource type="Script" uid="uid://cd66vubspnpns" path="res://Ebenen/Gebiet 2/shader/torch_light_flicker.gd" id="3_flackern"]
 
+[ext_resource type="Shader" uid="uid://cwesa6cfisa0p" path="res://Ebenen/Gebiet 2/shader/fackel_look.gdshader" id="4_look"]
 [sub_resource type="AtlasTexture" id="AtlasTexture_f0"]
 atlas = ExtResource("1_sheet")
 region = Rect2(0, 0, 64, 64)
@@ -90,8 +91,8 @@ animations = [{
 }]
 
 [sub_resource type="Gradient" id="Gradient_lichtkreis"]
-offsets = PackedFloat32Array(0, 0.45, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0.3, 0.3, 0.3, 1, 0, 0, 0, 1)
+offsets = PackedFloat32Array(0, 0.2, 0.5, 0.8, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.6, 0.6, 0.6, 1, 0.22, 0.22, 0.22, 1, 0.05, 0.05, 0.05, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_lichtkreis"]
 gradient = SubResource("Gradient_lichtkreis")
@@ -102,8 +103,8 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
 [sub_resource type="Gradient" id="Gradient_halo"]
-offsets = PackedFloat32Array(0, 0.4, 1)
-colors = PackedColorArray(1, 0.65, 0.4, 1, 0.45, 0.25, 0.15, 1, 0, 0, 0, 1)
+offsets = PackedFloat32Array(0, 0.25, 0.55, 0.8, 1)
+colors = PackedColorArray(1, 0.65, 0.4, 1, 0.55, 0.32, 0.18, 1, 0.18, 0.1, 0.05, 1, 0.04, 0.02, 0.01, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_halo"]
 gradient = SubResource("Gradient_halo")
@@ -117,8 +118,13 @@ fill_to = Vector2(1, 0.5)
 blend_mode = 1
 light_mode = 1
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fackel"]
+shader = ExtResource("4_look")
+shader_parameter/flame_boost = 4.0
+shader_parameter/holder_mult = 1.0
+
 [node name="Fackel klein" type="AnimatedSprite2D"]
-modulate = Color(0.62, 0.6, 0.66, 1)
+material = SubResource("ShaderMaterial_fackel")
 sprite_frames = SubResource("SpriteFrames_fackel")
 offset = Vector2(-4, -5)
 script = ExtResource("2_play")
@@ -126,17 +132,18 @@ script = ExtResource("2_play")
 [node name="Lichtkreis" type="PointLight2D" parent="."]
 position = Vector2(-6, -12)
 color = Color(1, 0.62, 0.38, 1)
-energy = 2.0
+energy = 1.1
 range_z_min = -4050
 texture = SubResource("GradientTexture2D_lichtkreis")
 texture_scale = 1.6
 script = ExtResource("3_flackern")
-base_energy = 2.0
+base_energy = 1.1
 flicker_amount = 0.06
 speed = 4.0
 
 [node name="Schein" type="Sprite2D" parent="."]
-modulate = Color(1, 1, 1, 0.4)
+# Ausgleich der Hintergrund-Abdunklung, damit der Schein warm leuchtet.
+modulate = Color(7, 6, 5.5, 0.18)
 show_behind_parent = true
 scale = Vector2(1.7, 1.7)
 texture_filter = 2

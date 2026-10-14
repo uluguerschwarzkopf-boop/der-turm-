@@ -72,6 +72,8 @@ extends Node2D
 # ============================================================
 
 @export_group("Spieler-Animationen")
+## Aus = Spieler steht während der Szene nur in "idle" (aktueller Stand).
+@export var player_animations_enabled: bool = false
 ## Platzhalter, bis es eigene Animationen gibt. Später hier einfach die
 ## neuen Animationsnamen aus dem Spieler-SpriteFrames eintragen.
 @export var anim_look_up: StringName = &"idle"
@@ -89,6 +91,21 @@ extends Node2D
 # ============================================================
 # KINO-MODUS
 # ============================================================
+
+@export_group("Textbox")
+## Nutzer-Wunsch: Am Anfang der Szene erscheint über dem Spieler eine Textbox.
+@export var speech_enabled: bool = true
+## Schlüssel in SettingsManager.TRANSLATIONS (Game/settings_manager.gd).
+@export var speech_text_key: String = "cutscene.cage.what_is_that"
+@export var speech_font: Font
+@export var speech_font_size: int = 22
+## Wie lange die Box stehen bleibt und wie schnell sie ein-/ausblendet (Sekunden).
+@export var speech_hold_time: float = 2.0
+@export var speech_fade_time: float = 0.3
+## Abstand über dem Spieler (Welt-Pixel nach oben).
+@export var speech_height: float = 38.0
+@export var speech_text_color: Color = Color(0.9, 0.93, 1.0)
+@export var speech_box_color: Color = Color(0.03, 0.04, 0.08, 0.85)
 
 @export_group("Kino-Balken")
 @export var bar_height_ratio: float = 0.12
@@ -108,9 +125,11 @@ extends Node2D
 ## So lange fährt die Kamera vor dem Fall langsam wieder zurück.
 @export var camera_return_time: float = 1.8
 ## Dauerwackeln der Kamera, während der Käfig wackelt (Pixel).
-@export var camera_shake_px: float = 1.2
+# Nutzer-Korrektur: Kamera soll nur flüssig rein- und rausfahren, deshalb ist
+# das Wackeln standardmäßig aus (0). Wer es wieder will: Wert erhöhen.
+@export var camera_shake_px: float = 0.0
 ## Ruckler beim Aufprall.
-@export var impact_shake_px: float = 6.0
+@export var impact_shake_px: float = 0.0
 @export var impact_shake_time: float = 0.35
 
 # ============================================================
@@ -144,6 +163,8 @@ var _shake_time_left: float = 0.0
 var _shake_target: Vector2 = Vector2.ZERO
 var _shake_now: Vector2 = Vector2.ZERO
 var _shake_retarget: float = 0.0
+var _shake_total: float = 0.0
+var _shake_decay: bool = false
 var _cam_controlled: bool = false
 
 var _hang: Node2D = null
@@ -158,6 +179,7 @@ var _canvas_layer: CanvasLayer = null
 var _top_bar: ColorRect = null
 var _bottom_bar: ColorRect = null
 var _dust_texture: Texture2D = null
+var _speech_box: PanelContainer = null
 
 @onready var trigger: Area2D = $"Auslöser"
 
@@ -176,6 +198,8 @@ func _process(delta: float) -> void:
 		_swing_t += delta
 		_hang.rotation = deg_to_rad(_swing_deg) * sin(_swing_t * TAU / maxf(_swing_period, 0.05))
 
+	_update_speech_position()
+
 	if _cam_controlled and _camera != null and is_instance_valid(_camera):
 		# Nutzer-Korrektur: Wackeln weich nachziehen (neues Ziel nur alle
 		# 0.07 s), sonst wirkt die Kamera ruckig, als würde sie zurückspringen.
@@ -184,7 +208,10 @@ func _process(delta: float) -> void:
 			_shake_retarget -= delta
 			if _shake_retarget <= 0.0:
 				_shake_retarget = 0.07
-				_shake_target = Vector2(randf_range(-_shake_px, _shake_px), randf_range(-_shake_px, _shake_px))
+				var amp: float = _shake_px
+				if _shake_decay and _shake_total > 0.0:
+					amp *= clampf(_shake_time_left / _shake_total, 0.0, 1.0)
+				_shake_target = Vector2(randf_range(-amp, amp), randf_range(-amp, amp))
 		else:
 			_shake_target = Vector2.ZERO
 		_shake_now = _shake_now.lerp(_shake_target, clampf(delta * 18.0, 0.0, 1.0))
@@ -307,12 +334,18 @@ func _run_cutscene() -> void:
 	if _player.has_method("force_idle"):
 		_player.force_idle()
 	_face_player_to_cage()
-	_play_player_anim(anim_look_up)
+	# Nutzer-Korrektur: Der Spieler bleibt während der ganzen Szene einfach in
+	# "idle" stehen. Eigene Animationen (hochschauen, hinsetzen, krabbeln,
+	# aufstehen) werden später geliefert - erst dann player_animations_enabled
+	# anschalten und die Namen unten eintragen.
+	if player_animations_enabled:
+		_play_player_anim(anim_look_up)
 
 	if hide_hud and get_node_or_null("/root/CutsceneManager") != null:
 		CutsceneManager.begin_cutscene()
 
 	_fade_bars(1.0)
+	_show_speech()
 	_camera = _player.get_node_or_null("Camera2D") as Camera2D
 	if _camera != null:
 		_cam_zoom_orig = _camera.zoom
@@ -356,19 +389,21 @@ func _run_cutscene() -> void:
 	var fall_tween: Tween = create_tween().set_parallel(true)
 	fall_tween.tween_property(_hang, "position:y", hang_offset.y + fall_distance, fall_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	fall_tween.tween_property(_hang, "rotation", 0.0, fall_time * 0.6)
-	_crawl_back()
+	if player_animations_enabled:
+		_crawl_back()
 	if not await _wait(fall_time):
 		return
 
 	# --- 4) Aufprall: Ruckler, Staubwelle, Staubwolke, Käfig zerbricht ---
-	_start_shake(impact_shake_px, impact_shake_time)
+	_start_shake(impact_shake_px, impact_shake_time, true)
 	_spawn_dust()
 	_break_cage()
 	if not await _wait(dust_cloud_time):
 		return
 
 	# --- 5) Wolke weg: Spieler steht auf, Mutant bricht aus ---
-	_play_player_anim(anim_stand_up)
+	if player_animations_enabled:
+		_play_player_anim(anim_stand_up)
 	var mob: Node2D = _spawn_mob()
 	if not await _wait(maxf(stand_up_time, mob_wake_delay)):
 		return
@@ -382,10 +417,15 @@ func _run_cutscene() -> void:
 func _end_cutscene() -> void:
 	_fade_bars(0.0)
 	if _camera != null and is_instance_valid(_camera):
-		var cam_tween: Tween = create_tween().set_parallel(true)
-		cam_tween.tween_property(_camera, "zoom", _cam_zoom_orig, bar_fade_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		cam_tween.tween_property(self, "_cam_offset_base", _cam_offset_orig, bar_fade_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		cam_tween.chain().tween_callback(_release_camera)
+		# Nutzer-Korrektur: Am Ende keine weitere Kamerafahrt (wirkte wie
+		# mehrfaches Zurückspringen). Die Kamera steht seit dem Rauszoomen schon
+		# normal; nur noch das Wackeln auslaufen lassen und freigeben.
+		_shake_time_left = 0.0
+		_camera.zoom = _cam_zoom_orig
+		_cam_offset_base = _cam_offset_orig
+		var cam_tween: Tween = create_tween()
+		cam_tween.tween_interval(0.4)
+		cam_tween.tween_callback(_release_camera)
 	if hide_hud and get_node_or_null("/root/CutsceneManager") != null:
 		CutsceneManager.end_cutscene()
 	if _player != null and is_instance_valid(_player):
@@ -448,12 +488,58 @@ func _crawl_back() -> void:
 
 
 # ============================================================
+# TEXTBOX
+# ============================================================
+
+func _show_speech() -> void:
+	if not speech_enabled:
+		return
+	_speech_box = PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = speech_box_color
+	style.set_corner_radius_all(4)
+	style.content_margin_left = 12.0
+	style.content_margin_right = 12.0
+	style.content_margin_top = 6.0
+	style.content_margin_bottom = 6.0
+	_speech_box.add_theme_stylebox_override("panel", style)
+	_speech_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var label := Label.new()
+	label.text = SettingsManager.t(speech_text_key) if get_node_or_null("/root/SettingsManager") != null else speech_text_key
+	if speech_font != null:
+		label.add_theme_font_override("font", speech_font)
+	label.add_theme_font_size_override("font_size", speech_font_size)
+	label.add_theme_color_override("font_color", speech_text_color)
+	_speech_box.add_child(label)
+	_speech_box.modulate.a = 0.0
+	# Auf der Kino-Ebene (über dem Spiel, Schrift bleibt trotz Kamera-Zoom scharf).
+	_canvas_layer.add_child(_speech_box)
+	var t: Tween = create_tween()
+	t.tween_property(_speech_box, "modulate:a", 1.0, speech_fade_time)
+	t.tween_interval(speech_hold_time)
+	t.tween_property(_speech_box, "modulate:a", 0.0, speech_fade_time)
+	t.tween_callback(_speech_box.queue_free)
+
+
+# Box folgt dem Spieler auf dem Bildschirm (auch während die Kamera fährt).
+func _update_speech_position() -> void:
+	if _speech_box == null or not is_instance_valid(_speech_box):
+		return
+	if _player == null or not is_instance_valid(_player):
+		return
+	var screen: Vector2 = get_viewport().get_canvas_transform() * (_player.global_position + Vector2(0.0, -speech_height))
+	_speech_box.position = screen - Vector2(_speech_box.size.x * 0.5, _speech_box.size.y)
+
+
+# ============================================================
 # KAMERA / BALKEN
 # ============================================================
 
-func _start_shake(px: float, seconds: float) -> void:
+func _start_shake(px: float, seconds: float, decay: bool = false) -> void:
 	_shake_px = px
 	_shake_time_left = seconds
+	_shake_total = seconds
+	_shake_decay = decay
 
 
 func _fade_bars(alpha: float) -> void:

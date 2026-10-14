@@ -49,6 +49,8 @@
 [ext_resource type="Script" uid="uid://cnxd7hbjwdry7" path="res://Ebenen/Gebiet 2/Objekte/Fledermaeuse/fledermaus_schwarm.gd" id="81_fledermaeuse"]
 [ext_resource type="Texture2D" uid="uid://c81pxvg12rxvx" path="res://Mobs/Gebiet 2/Hintergrund/Fliegen-Sheet.png" id="82_fledermaus_flug"]
 [ext_resource type="Texture2D" uid="uid://qwa5n2oowwqw" path="res://raw Assets (dropdown)/Backgrounds/6f682216-b6f5-4fb0-9847-bd0fa8803617.png" id="90_ferne"]
+[ext_resource type="Shader" uid="uid://cq1oacmovyoa0" path="res://Ebenen/Gebiet 2/shader/boden_schwarz.gdshader" id="96_boden_schwarz"]
+[ext_resource type="Script" uid="uid://x631q53ee2oq" path="res://Ebenen/Gebiet 2/shader/plattform_kruemel.gd" id="97_kruemel"]
 
 [sub_resource type="Gradient" id="Gradient_figurlicht"]
 offsets = PackedFloat32Array(0, 0.5, 1)
@@ -76,9 +78,11 @@ size = Vector2(2687, 252.125)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_plattform"]
 shader = ExtResource("70_plattform_shader")
 shader_parameter/sway_mask = ExtResource("71_lianen_maske")
-shader_parameter/sway_px = 1.2
-shader_parameter/sway_period = 3.6
-shader_parameter/sway_phase_spread = 0.45
+shader_parameter/sway_px = 1.6
+shader_parameter/sway_period = 2.0
+shader_parameter/sway_phase_spread = 0.07
+shader_parameter/sway_wildness = 0.0
+shader_parameter/sway_pixel_snap = true
 shader_parameter/player_feet = Vector2(-99999, -99999)
 shader_parameter/glow_amount = 0.0
 shader_parameter/glow_radius = 30.0
@@ -1093,6 +1097,15 @@ sources/2 = SubResource("TileSetAtlasSource_j8hek")
 sources/3 = SubResource("TileSetAtlasSource_b4vyc")
 sources/0 = SubResource("TileSetAtlasSource_wufts")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_boden_schwarz"]
+shader = ExtResource("96_boden_schwarz")
+shader_parameter/color = Color(0, 0, 0, 1)
+shader_parameter/solid_from = 0.55
+shader_parameter/top_strength = 0.0
+shader_parameter/wave_amount = 0.12
+shader_parameter/wave_width = 40.0
+shader_parameter/rect_width = 3200.0
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ferne_wand"]
 shader = ExtResource("14_ebene")
 shader_parameter/brightness = 7.0
@@ -1414,6 +1427,18 @@ tile_set = SubResource("TileSet_wekvi")
 use_parent_material = true
 tile_set = SubResource("TileSet_2fiap")
 
+[node name="Boden Schwarz" type="ColorRect" parent="Tiles" unique_id=1690544110]
+material = SubResource("ShaderMaterial_boden_schwarz")
+offset_left = -473.0
+offset_top = -175.0
+offset_right = 2727.0
+offset_bottom = -111.0
+mouse_filter = 2
+
+[node name="Plattform Krümel" type="Node2D" parent="Tiles" unique_id=2055615514 node_paths=PackedStringArray("tile_layer")]
+script = ExtResource("97_kruemel")
+tile_layer = NodePath("../TileMapPlayerEbene2")
+
 [node name="Background" type="Node2D" parent="." unique_id=1480058726 node_paths=PackedStringArray("anchor_marker")]
 modulate = Color(0.31, 0.356, 0.466, 1)
 z_index = -4096
@@ -1428,8 +1453,8 @@ scroll_scale = Vector2(0.5, 0.5)
 [node name="Ferne Wand" type="Sprite2D" parent="Background/Ebene Ferne" unique_id=1876422575]
 texture_filter = 4
 material = SubResource("ShaderMaterial_ferne_wand")
-position = Vector2(1623, -235.99998)
-scale = Vector2(0.8485714, 0.5990991)
+position = Vector2(1730.0001, -224)
+scale = Vector2(0.40325397, 0.22147149)
 texture = ExtResource("90_ferne")
 
 [node name="Ebene Zwischen" type="Parallax2D" parent="Background" unique_id=1670127102]
@@ -1698,15 +1723,12 @@ region_enabled = true
 region_rect = Rect2(688, 86, 111, 154)
 
 [node name="Fackel 1" parent="Background/Ebene Säulen 3" unique_id=1399013560 instance=ExtResource("56_fackel_klein")]
-modulate = Color(3, 2.45, 1.9, 1)
 position = Vector2(-120, -212)
 
 [node name="Fackel 2" parent="Background/Ebene Säulen 3" unique_id=1390859228 instance=ExtResource("56_fackel_klein")]
-modulate = Color(3, 2.45, 1.9, 1)
 position = Vector2(1080, -212)
 
 [node name="Fackel 3" parent="Background/Ebene Säulen 3" unique_id=1136905578 instance=ExtResource("56_fackel_klein")]
-modulate = Color(3, 2.45, 1.9, 1)
 position = Vector2(1700, -212)
 
 [node name="Nebel Ebene 3 Kopie" type="BackBufferCopy" parent="Background/Ebene Säulen 3" unique_id=610822892]

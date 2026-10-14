@@ -270,6 +270,8 @@ const TRANSLATIONS: Dictionary = {
 	"area_intro.gebiet_1_title": {"de": "GEBIET 1", "en": "AREA 1"},
 	"area_intro.gebiet_1_subtitle": {"de": "DIE EINGANGSHALLEN", "en": "THE ENTRANCE HALLS"},
 	"echo.echo_der_flamme_erhalten": {"de": "ECHO DER FLAMME ERHALTEN", "en": "ECHO OF THE FLAME OBTAINED"},
+	# Nutzer-Wunsch: Textbox über dem Spieler am Anfang der Käfig-Cutscene (Gebiet 2).
+	"cutscene.cage.what_is_that": {"de": "Was ist das?", "en": "What is that?"},
 	"void.fire_knight_line_1": {"de": "Einer seiner Wächter wartet dahinter.", "en": "One of his guardians waits beyond."},
 	"void.fire_knight_line_2": {"de": "Erschlage ihn.", "en": "Slay him."},
 	"void.fire_knight_line_3": {"de": "Und setze deinen Aufstieg fort.", "en": "And continue your ascent."},

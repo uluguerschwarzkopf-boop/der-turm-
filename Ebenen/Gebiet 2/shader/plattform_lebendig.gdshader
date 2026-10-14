@@ -16,7 +16,13 @@ uniform float sway_px : hint_range(0.0, 4.0) = 1.2;
 // Sekunden fuer eine Schwingung.
 uniform float sway_period : hint_range(0.5, 12.0) = 3.6;
 // Wie unterschiedlich benachbarte Lianen schwingen (0 = alle im Gleichtakt).
-uniform float sway_phase_spread : hint_range(0.0, 2.0) = 0.45;
+uniform float sway_phase_spread : hint_range(0.0, 2.0) = 0.07;
+// Nutzer-Wunsch: Bewegung wie in "Haengende Masse schwingen-Sheet.png":
+// eine ruhige Links-Rechts-Welle in ganzen Pixelschritten.
+// 0 = nur die eine ruhige Welle, 1 = zweite, unruhigere Welle voll dazu.
+uniform float sway_wildness : hint_range(0.0, 1.0) = 0.0;
+// An = Verschiebung auf ganze Pixel runden (sauberer Pixel-Look).
+uniform bool sway_pixel_snap = true;
 
 // --- Leuchtende Oberkante ---
 // Fuss-Position des Spielers in Weltkoordinaten (setzt plattform_leuchten.gd).
@@ -46,8 +52,12 @@ void fragment() {
 	float w = texture(sway_mask, UV).r;
 	float ph = world_pos.x * sway_phase_spread;
 	float t = TIME * TAU / max(sway_period, 0.01);
-	float s = sin(t + ph) * 0.7 + sin(t * 1.63 + ph * 1.7 + 1.3) * 0.3;
-	vec2 uv = UV - vec2(s * sway_px * w * TEXTURE_PIXEL_SIZE.x, 0.0);
+	float s = mix(sin(t + ph), sin(t + ph) * 0.7 + sin(t * 1.63 + ph * 1.7 + 1.3) * 0.3, sway_wildness);
+	float shift = s * sway_px * w;
+	if (sway_pixel_snap) {
+		shift = round(shift);
+	}
+	vec2 uv = UV - vec2(shift * TEXTURE_PIXEL_SIZE.x, 0.0);
 	vec4 c = texture(TEXTURE, uv);
 
 	// Oberkante: helle Pixel nahe an den Fuessen des Spielers aufhellen.

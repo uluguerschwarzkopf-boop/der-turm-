@@ -19,8 +19,11 @@ extends Node2D
 @export var sheet: Texture2D
 @export var frame_count: int = 4
 @export var frame_size: Vector2i = Vector2i(32, 32)
-## Nur anschalten, wenn die Grafik seitlich (nach rechts) gezeichnet ist.
-@export var flip_with_direction: bool = false
+## Nutzer-Korrektur: Die Tiere flogen rückwärts. Die kleine Fledermaus ist mit
+## dem Kopf nach LINKS gezeichnet, also wird beim Flug nach rechts gespiegelt.
+@export var flip_with_direction: bool = true
+## In welche Richtung die Grafik gezeichnet ist. Fliegen sie rückwärts: umschalten.
+@export var sprite_faces_right: bool = false
 ## Flügelschläge: Bilder pro Sekunde.
 @export var anim_fps: float = 9.0
 ## Größe der Tiere (klein = wirkt weiter weg). Zufällig zwischen min und max.
@@ -155,7 +158,7 @@ func _add_bat(start: Vector2, vel: Vector2) -> void:
 	var s: float = randf_range(scale_min, scale_max)
 	spr.scale = Vector2(s, s)
 	spr.modulate = bat_color
-	spr.flip_h = flip_with_direction and vel.x < 0.0
+	spr.flip_h = flip_with_direction and ((vel.x > 0.0) != sprite_faces_right)
 	add_child(spr)
 	spr.global_position = start
 	spr.play(&"fliegen")
