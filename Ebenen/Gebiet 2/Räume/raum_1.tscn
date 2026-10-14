@@ -1988,6 +1988,7 @@ script = ExtResource("40_musik")
 position = Vector2(1160, -161)
 
 [node name="Käfig Falle" parent="." unique_id=1076404002 instance=ExtResource("60_kaefigfalle")]
+visible = false
 position = Vector2(478, -160)
 idle_swing_period = 2.0
 shake_swing_deg = 2.0
