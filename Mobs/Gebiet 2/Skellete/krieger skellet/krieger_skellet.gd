@@ -140,6 +140,27 @@ enum State {
 
 
 # ============================================================
+# KANTENLICHT
+# ============================================================
+
+@export_group("Kantenlicht")
+
+# Nutzer-Wunsch: wie beim Spieler eine helle Kante oben auf Kopf/Schultern
+# (Rim Light statt Outline), aber schwächer. Steckt im selben Shader wie der
+# Trefferblitz, weil das Sprite nur ein Material haben kann.
+@export var rim_enabled: bool = true
+@export var rim_color: Color = Color(0.75, 0.85, 1.0)
+# Stärke (0 = aus). Spieler steht auf ca. 0.37 x 2.5.
+@export var rim_strength: float = 0.25
+# Gleicht die Raum-Abdunklung aus.
+@export var rim_boost: float = 2.5
+# Wie viele Pixel tief die Kante reicht (1-3).
+@export var rim_depth: int = 1
+# Anteil der seitlichen Kanten (0 = nur von oben).
+@export var rim_side_amount: float = 0.3
+
+
+# ============================================================
 # TOD
 # ============================================================
 
@@ -1479,8 +1500,34 @@ uniform float flash_amount : hint_range(0.0, 1.0) = 0.0;
 uniform vec3 flash_color = vec3(0.82, 0.9, 1.0);
 uniform float flash_boost = 5.0;
 
+uniform vec3 rim_color = vec3(0.75, 0.85, 1.0);
+uniform float rim_strength = 0.0;
+uniform int rim_depth = 1;
+uniform float rim_side_amount = 0.3;
+
+float alpha_at(sampler2D tex, vec2 uv) {
+	return texture(tex, uv).a;
+}
+
 void fragment() {
 	vec4 source = texture(TEXTURE, UV);
+
+	// Kantenlicht: Pixel ohne Figur-Pixel darüber/daneben aufhellen.
+	if (source.a > 0.5 && rim_strength > 0.0) {
+		vec2 px = TEXTURE_PIXEL_SIZE;
+		float rim = 0.0;
+		for (int i = 1; i <= 3; i++) {
+			if (i > rim_depth) { break; }
+			float above = alpha_at(TEXTURE, UV - vec2(0.0, px.y * float(i)));
+			rim = max(rim, (1.0 - step(0.5, above)) * (1.0 - float(i - 1) * 0.35));
+		}
+		float side = max(
+			1.0 - step(0.5, alpha_at(TEXTURE, UV - vec2(px.x, 0.0))),
+			1.0 - step(0.5, alpha_at(TEXTURE, UV + vec2(px.x, 0.0)))
+		);
+		rim = max(rim, side * rim_side_amount);
+		source.rgb += rim_color * rim * rim_strength * max(max(source.r, source.g), 0.25);
+	}
 
 	vec3 final_color = mix(
 		source.rgb,
@@ -1510,6 +1557,10 @@ void fragment() {
 		"flash_boost",
 		hit_flash_boost
 	)
+	hit_flash_material.set_shader_parameter("rim_color", Vector3(rim_color.r, rim_color.g, rim_color.b))
+	hit_flash_material.set_shader_parameter("rim_strength", rim_strength * rim_boost if rim_enabled else 0.0)
+	hit_flash_material.set_shader_parameter("rim_depth", rim_depth)
+	hit_flash_material.set_shader_parameter("rim_side_amount", rim_side_amount)
 
 	sprite.material = hit_flash_material
 

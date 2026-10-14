@@ -53,9 +53,19 @@
 [ext_resource type="AudioStream" uid="uid://bvd061whls2fv" path="res://Player/Sounds/Test/Door open und close/BRS_Door_Wood_Cheap_Open_Creak_3.wav" id="47_6rl0i"]
 [ext_resource type="Script" uid="uid://fh0gst67jxm8" path="res://Player/Sounds/sound_bank_entry.gd" id="47_entry"]
 [ext_resource type="AudioStream" uid="uid://c3465wdg5fgev" path="res://Player/Sounds/Test/Door open und close/clsoe.mp3" id="48_7x5p2"]
+[ext_resource type="Shader" uid="uid://b3bwgj35b76s0" path="res://Player/spieler_kantenlicht.gdshader" id="90_kantenlicht"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j2n6q"]
 size = Vector2(11, 22)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kantenlicht"]
+shader = ExtResource("90_kantenlicht")
+shader_parameter/rim_color = Color(1, 0.54901963, 0.5019608, 1)
+shader_parameter/rim_boost = 2.5
+shader_parameter/rim_strength = 0.3730000177175
+shader_parameter/rim_depth = 1
+shader_parameter/side_amount = 0.35
+shader_parameter/top_glow = 0.1530000072675
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_32uw3"]
 atlas = ExtResource("2_lfmf2")
@@ -2589,6 +2599,7 @@ zoom = Vector2(5.5, 5.5)
 position_smoothing_enabled = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=48907117]
+material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
 animation = &"jump"

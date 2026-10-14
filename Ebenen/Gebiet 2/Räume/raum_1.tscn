@@ -26,6 +26,7 @@
 [ext_resource type="PackedScene" uid="uid://tt1wfvwesc3e" path="res://Mobs/Gebiet 2/Fledermaus gros/fledermaus_gros.tscn" id="27_isx3u"]
 [ext_resource type="PackedScene" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/fensterlicht.tscn" id="30_fensterlicht"]
 [ext_resource type="Shader" uid="uid://dcgccp4yyjwun" path="res://Ebenen/Gebiet 2/shader/Partikelshader.gdshader" id="31_partikel"]
+[ext_resource type="Shader" uid="uid://b3bwgj35b76s0" path="res://Player/spieler_kantenlicht.gdshader" id="37_gtyyc"]
 [ext_resource type="PackedScene" uid="uid://d4mjifcx1o5jf" path="res://Mobs/Gebiet 2/Skellete/Archer/skellet_archer.tscn" id="39_nou43"]
 [ext_resource type="Script" uid="uid://d30cvgnx2loek" path="res://Ebenen/Gebiet 2/gebiet_musik.gd" id="40_musik"]
 [ext_resource type="Texture2D" uid="uid://cdx4uihe1fpaq" path="res://Ebenen/Gebiet 2/Objekte/Beleuchtung/lichtstrahl.png" id="41_strahl"]
@@ -73,7 +74,7 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1wgke"]
-size = Vector2(2687, 252.125)
+size = Vector2(2689, 335.0625)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_plattform"]
 shader = ExtResource("70_plattform_shader")
@@ -1274,6 +1275,17 @@ shader_parameter/edge_fade = 0.08
 shader_parameter/breath_amount = 0.01
 shader_parameter/breath_period = 12.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d7y2t"]
+shader = ExtResource("37_gtyyc")
+shader_parameter/rim_color = Color(1, 0.54901963, 0.5019608, 1)
+shader_parameter/rim_boost = 2.5
+shader_parameter/rim_strength = 0.3070000145825
+shader_parameter/rim_depth = 1
+shader_parameter/side_amount = 0.35
+shader_parameter/top_glow = 0.1530000072675
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wf7lc"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_glimmen"]
 shader = ExtResource("31_partikel")
 shader_parameter/glow_color = Color(0.6, 0.8, 1, 1)
@@ -1391,10 +1403,10 @@ texture_scale = 0.8
 monitoring = false
 monitorable = false
 script = ExtResource("2_h563k")
-camera_zoom = 5.0
+camera_zoom = 4.5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CameraBounds" unique_id=41297775]
-position = Vector2(1113.5, -45)
+position = Vector2(1112.5, -86.46875)
 shape = SubResource("RectangleShape2D_1wgke")
 
 [node name="Darkness" type="CanvasModulate" parent="." unique_id=282204402]
@@ -1757,6 +1769,12 @@ position = Vector2(2022, -160)
 
 [node name="Krieger skellet" parent="Enemies" unique_id=1279725451 instance=ExtResource("24_lavoi")]
 position = Vector2(-57, -161)
+
+[node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="Enemies/Krieger skellet" unique_id=267161768]
+material = SubResource("ShaderMaterial_d7y2t")
+position = Vector2(-1, -23)
+sprite_frames = SubResource("SpriteFrames_wf7lc")
+offset = Vector2(1, 0)
 
 [node name="Krieger skellet2" parent="Enemies" unique_id=858719972 instance=ExtResource("24_lavoi")]
 position = Vector2(941, -159)
