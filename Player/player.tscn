@@ -15,7 +15,6 @@
 [ext_resource type="Texture2D" uid="uid://dussbxeqarifq" path="res://Player/Skills/Krieger Skill Tree/Parry-Sheet.png" id="8_ie76m"]
 [ext_resource type="Texture2D" uid="uid://6q3xxr2fmnju" path="res://Mobs/Gebiet 2/Spinne gros/spieler eingespinnt.png" id="9_c4i3b"]
 [ext_resource type="Texture2D" uid="uid://cejvfxa66sahg" path="res://Player/Skills/Krieger Skill Tree/Warlord-Sheet.png" id="9_gvnt1"]
-[ext_resource type="Texture2D" uid="uid://gh0ninf8p0pv" path="res://Player/Sheets/roll-Sheet.png" id="9_o28un"]
 [ext_resource type="Script" uid="uid://cxmyrrxjyp2ak" path="res://Player/player_health.gd" id="11_5htga"]
 [ext_resource type="Texture2D" uid="uid://d37if0snrgewg" path="res://Player/Skills/Krieger Skill Tree/Backstep-Sheet.png" id="11_wvbyc"]
 [ext_resource type="Texture2D" uid="uid://dojlb7j5541t3" path="res://Player/Skills/Krieger Skill Tree/Ground slam Fall-Sheet.png" id="12_f4lon"]
@@ -38,6 +37,7 @@
 [ext_resource type="Texture2D" uid="uid://igi7hswfuro4" path="res://NEW PLAYER/Animation/classic animation/Springen-Sheet.png" id="22_c4i3b"]
 [ext_resource type="Texture2D" uid="uid://8qnxb1l55dp2" path="res://NEW PLAYER/Animation/classic animation/Land-Sheet.png" id="24_uvbbp"]
 [ext_resource type="Texture2D" uid="uid://boargdrt30yl8" path="res://NEW PLAYER/Animation/classic animation/Laufen-Sheet.png" id="25_c4i3b"]
+[ext_resource type="Texture2D" uid="uid://bd6msljsm3ihi" path="res://NEW PLAYER/Animation/classic animation/Slide-Sheet.png" id="25_uvbbp"]
 [ext_resource type="PackedScene" uid="uid://drtr8egsinf83" path="res://Player/Spells/fireball_player.tscn" id="28_76lrf"]
 [ext_resource type="PackedScene" uid="uid://c5qphm18gwh2n" path="res://Player/Spells/lightning_player.tscn" id="29_efx54"]
 [ext_resource type="PackedScene" uid="uid://dtdegsdfe20o6" path="res://Player/Spells/ice_wave_player.tscn" id="30_755ss"]
@@ -1068,36 +1068,36 @@ atlas = ExtResource("24_uvbbp")
 region = Rect2(704, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mdkl3"]
-atlas = ExtResource("9_o28un")
-region = Rect2(0, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(0, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_68syb"]
-atlas = ExtResource("9_o28un")
-region = Rect2(150, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(176, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x0uyb"]
-atlas = ExtResource("9_o28un")
-region = Rect2(300, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(352, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_f8nak"]
-atlas = ExtResource("9_o28un")
-region = Rect2(450, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(528, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pqfba"]
-atlas = ExtResource("9_o28un")
-region = Rect2(600, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(704, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lgaa7"]
-atlas = ExtResource("9_o28un")
-region = Rect2(750, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(880, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lfyh2"]
-atlas = ExtResource("9_o28un")
-region = Rect2(900, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(1056, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_soeee"]
-atlas = ExtResource("9_o28un")
-region = Rect2(1050, 0, 150, 100)
+atlas = ExtResource("25_uvbbp")
+region = Rect2(1232, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7v2uk"]
 atlas = ExtResource("25_c4i3b")
@@ -2336,7 +2336,7 @@ animations = [{
 }],
 "loop": 0,
 "name": &"roll",
-"speed": 9.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2682,7 +2682,7 @@ script = ExtResource("1_l8h54")
 speed = 60.0
 jump_velocity = -270.0
 gravity = 800.0
-roll_speed = 80.0
+roll_speed = 110.0
 roll_time = 0.8
 dash_slash_speed = 70.0
 backstep_speed = 90.0
@@ -2700,8 +2700,8 @@ position_smoothing_enabled = true
 material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"land"
-frame = 4
+animation = &"roll"
+frame = 7
 frame_progress = 1.0
 offset = Vector2(1, 0)
 
