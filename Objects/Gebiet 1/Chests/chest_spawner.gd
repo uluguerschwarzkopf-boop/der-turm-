@@ -4,15 +4,15 @@ extends Marker2D
 @export_group("Chest Scenes")
 
 @export var bronze_chest_scene: PackedScene = preload(
-	"res://Objects/Chests/bronze_chest.tscn"
+	"res://Objects/Gebiet 1/Chests/bronze_chest.tscn"
 )
 
 @export var silver_chest_scene: PackedScene = preload(
-	"res://Objects/Chests/silber_chest.tscn"
+	"res://Objects/Gebiet 1/Chests/silber_chest.tscn"
 )
 
 @export var gold_chest_scene: PackedScene = preload(
-	"res://Objects/Chests/gold_chest.tscn"
+	"res://Objects/Gebiet 1/Chests/gold_chest.tscn"
 )
 
 

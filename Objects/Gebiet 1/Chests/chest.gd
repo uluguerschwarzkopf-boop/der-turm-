@@ -831,7 +831,7 @@ var shine_width: float = 0.14
 @export var shine_duration: float = 0.6
 
 const _CHEST_SHINE_SHADER: Shader = preload(
-	"res://Objects/Chests/chest_shine.gdshader"
+	"res://Objects/Gebiet 1/Chests/chest_shine.gdshader"
 )
 
 var _shine_material: ShaderMaterial = null

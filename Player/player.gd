@@ -43,6 +43,35 @@ extends CharacterBody2D
 var _footstep_timer: float = 0.0
 
 
+@export_group("Landen")
+
+# Nutzer-Wunsch: nach einem Fall spielt beim Aufkommen einmal die
+# "land"-Animation. Vorher wurde "land" nirgends abgespielt - die
+# Bewegungslogik hat am Boden sofort "idle"/"run" gesetzt.
+@export var use_land_animation: bool = true
+@export var anim_land: StringName = &"land"
+
+# Nutzer-Wunsch: "land" nur nach einem LÄNGEREN Fall, nicht nach einem
+# normalen Sprung. Gemessen wird die Fallhöhe in Pixeln vom höchsten
+# Punkt in der Luft bis zum Aufkommen. Ein normaler Sprung auf gleicher
+# Höhe sind ca. 60 px (jump_velocity -330, gravity 900), deshalb liegt
+# der Standard deutlich darüber. Kommt "land" zu selten/zu oft, hier
+# anpassen (16 px = 1 Tile).
+@export var min_fall_height_for_land: float = 90.0
+
+# Nutzer-Wunsch: während "land" kann sich der Spieler NICHT bewegen
+# (kein Laufen, kein Umdrehen). Springen ist standardmäßig auch
+# gesperrt; Angriffe/Skills können "land" weiterhin abbrechen.
+@export var land_blocks_movement: bool = true
+@export var land_allow_jump: bool = false
+
+# Läuft gerade die "land"-Animation (siehe _physics_process()).
+var _landing: bool = false
+
+# Höchster Punkt (kleinstes Y) seit dem letzten Bodenkontakt.
+var _air_peak_y: float = 0.0
+
+
 @export_group("Eingesponnen (Spinnenwebenball)")
 
 # Nutzer-Wunsch: trifft der Spinnenwebenball der Spinne Gros (siehe
@@ -368,6 +397,14 @@ func _physics_process(delta: float) -> void:
 	# nichts (Timer wird dann zurückgesetzt).
 	_update_footstep_sound(delta)
 
+	# Höchsten Punkt in der Luft merken (für die Fallhöhe der "land"-
+	# Animation). Am Boden immer auf die aktuelle Höhe zurücksetzen.
+	# Y wächst nach unten -> höchster Punkt = kleinstes Y.
+	if is_on_floor():
+		_air_peak_y = global_position.y
+	else:
+		_air_peak_y = min(_air_peak_y, global_position.y)
+
 	# Auch während eines Zaubers bleibt die Schwerkraft aktiv.
 	# Nur die horizontale Steuerung wird blockiert.
 	if control_locked:
@@ -556,6 +593,19 @@ func _physics_process(delta: float) -> void:
 		"move_right"
 	)
 
+	# "land" läuft nur so lange, wie die Animation wirklich noch
+	# sichtbar ist (z.B. hat ein Angriff/Skill sie überschrieben).
+	if _landing and (
+		sprite == null
+		or sprite.animation != anim_land
+		or not sprite.is_playing()
+	):
+		_landing = false
+
+	# Nutzer-Wunsch: während "land" stillstehen - Eingabe ignorieren.
+	if _landing and land_blocks_movement:
+		dir = 0.0
+
 	if dir != 0:
 		velocity.x = dir * speed
 		facing_right = dir > 0
@@ -563,30 +613,74 @@ func _physics_process(delta: float) -> void:
 		if sprite != null:
 			sprite.flip_h = not facing_right
 
-			if is_on_floor():
+			if is_on_floor() and not _landing:
 				sprite.play("run")
 	else:
 		velocity.x = 0
 
-		if sprite != null and is_on_floor():
+		if sprite != null and is_on_floor() and not _landing:
 			sprite.play("idle")
 
 	if (
 		Input.is_action_just_pressed("jump")
 		and is_on_floor()
+		and (not _landing or land_allow_jump)
 	):
 		velocity.y = jump_velocity
+		_landing = false
 
 		if sprite != null:
 			sprite.play("jump")
 
 	if sprite != null and not is_on_floor():
+		_landing = false
+
 		if velocity.y < 0:
 			sprite.play("jump")
 		else:
 			sprite.play("fall")
 
+	# Vor move_and_slide() merken, ob wir in der Luft waren.
+	var was_in_air: bool = not is_on_floor()
+
 	move_and_slide()
+
+	_try_start_land_animation(was_in_air)
+
+
+# Nutzer-Wunsch: Luft -> Boden nach einem längeren Fall (siehe
+# min_fall_height_for_land) spielt einmal "land". Bis sie fertig ist,
+# setzt die Bewegungslogik oben kein "idle"/"run" und (Nutzer-Wunsch)
+# der Spieler kann sich nicht bewegen.
+func _try_start_land_animation(was_in_air: bool) -> void:
+	if not use_land_animation:
+		return
+
+	if not was_in_air or not is_on_floor():
+		return
+
+	var fall_height: float = global_position.y - _air_peak_y
+
+	_air_peak_y = global_position.y
+
+	if fall_height < min_fall_height_for_land:
+		return
+
+	if sprite == null or sprite.sprite_frames == null:
+		return
+
+	if not sprite.sprite_frames.has_animation(anim_land):
+		return
+
+	# Stehen bleiben (Nutzer-Wunsch: keine Bewegung während "land").
+	if land_blocks_movement:
+		velocity.x = 0
+
+	# "land" darf nicht loopen, sonst würde sie nie fertig.
+	sprite.sprite_frames.set_animation_loop(anim_land, false)
+
+	_landing = true
+	sprite.play(anim_land)
 
 
 func _apply_gravity(delta: float) -> void:
