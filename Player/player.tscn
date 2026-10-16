@@ -2682,8 +2682,8 @@ script = ExtResource("1_l8h54")
 speed = 60.0
 jump_velocity = -270.0
 gravity = 800.0
-roll_speed = 110.0
-roll_time = 0.8
+roll_speed = 150.0
+roll_time = 0.4
 dash_slash_speed = 70.0
 backstep_speed = 90.0
 
@@ -2786,3 +2786,6 @@ position = Vector2(14, -17)
 position = Vector2(0, -31.5)
 shape = SubResource("RectangleShape2D_qs4pp")
 disabled = true
+
+[node name="Effekt spawn Slide start" type="Marker2D" parent="." unique_id=1772491011]
+position = Vector2(-5, -2)

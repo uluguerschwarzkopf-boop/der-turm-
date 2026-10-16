@@ -72,6 +72,47 @@ var _landing: bool = false
 var _air_peak_y: float = 0.0
 
 
+@export_group("Rolle")
+
+# Nutzer-Wunsch: nach einer Rolle (bzw. Double-Roll-Kette) erst nach
+# so vielen Sekunden wieder rollen. Startet, wenn die Rolle vorbei ist.
+@export var roll_cooldown: float = 1.0
+
+# Nutzer-Wunsch: mit Springen aus der Rolle raus (beendet die Rolle).
+@export var roll_jump_cancel: bool = true
+
+# Restzeit des Roll-Cooldowns.
+var _roll_cooldown_left: float = 0.0
+
+
+@export_group("Roll-Effekt")
+
+# Nutzer-Wunsch: bei jeder Rolle spawnt am Marker "Effekt spawn Slide
+# start" einmal der Staub-Effekt aus der Effekt-Szene (siehe
+# _spawn_roll_effect()). Der Effekt hängt in der Raum-Szene, nicht am
+# Spieler - der Staub bleibt also liegen, während der Spieler wegrollt.
+@export var use_roll_effect: bool = true
+@export var roll_effect_scene: PackedScene = preload(
+	"res://NEW PLAYER/Animation/Effekte/effekte.tscn"
+)
+@export var roll_effect_anim: StringName = &"Staub slide start"
+
+# Name des Markers am Player (direktes Kind). Seine Position im Editor
+# gilt für "Spieler schaut nach rechts" - schaut er nach links, wird
+# X automatisch gespiegelt.
+@export var roll_effect_marker_name: StringName = &"Effekt spawn Slide start"
+
+# Zusätzliche Verschiebung zum Marker (wird beim Spiegeln mitgespiegelt).
+@export var roll_effect_offset: Vector2 = Vector2.ZERO
+
+# -1 = hinter dem Spieler, 1 = davor.
+@export var roll_effect_z_index: int = -1
+
+# Sicherheitsnetz: so lange (Sekunden) zusätzlich zur Animationsdauer,
+# danach wird der Effekt auf jeden Fall gelöscht.
+@export var roll_effect_cleanup_margin: float = 0.5
+
+
 @export_group("Eingesponnen (Spinnenwebenball)")
 
 # Nutzer-Wunsch: trifft der Spinnenwebenball der Spinne Gros (siehe
@@ -380,6 +421,9 @@ func _physics_process(delta: float) -> void:
 	if scene_is_changing:
 		return
 
+	if _roll_cooldown_left > 0.0:
+		_roll_cooldown_left = max(_roll_cooldown_left - delta, 0.0)
+
 	if _charge_attack_cooldown_remaining > 0.0:
 		_charge_attack_cooldown_remaining = max(
 			_charge_attack_cooldown_remaining - delta, 0.0
@@ -429,18 +473,29 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if is_rolling:
+		# Nutzer-Wunsch: aus der Rolle rausspringen. Beendet die Rolle
+		# sofort (Cooldown startet) und springt mit dem Roll-Schwung ab;
+		# ab dem nächsten Frame übernimmt die normale Steuerung.
+		if (
+			roll_jump_cancel
+			and Input.is_action_just_pressed("jump")
+			and is_on_floor()
+		):
+			_end_roll()
+
+			velocity.y = jump_velocity
+
+			if sprite != null:
+				sprite.play("jump")
+
+			move_and_slide()
+			return
+
 		roll_timer -= delta
 		velocity.x = roll_direction * roll_speed
 
 		if roll_timer <= 0.0:
-			is_rolling = false
-
-			# Zurücksetzen falls start_roll() für eine 2. Rolle die
-			# Abspielgeschwindigkeit angepasst hat (siehe dort) - sonst
-			# würden auch alle folgenden Animationen (Laufen, Idle...)
-			# zu schnell/langsam abgespielt werden.
-			if sprite != null:
-				sprite.speed_scale = 1.0
+			_end_roll()
 
 		move_and_slide()
 		return
@@ -741,6 +796,7 @@ func start_roll() -> void:
 		roll_timer = roll_time
 
 		_spawn_roll_dust()
+		_spawn_roll_effect()
 
 		# sprite.play("roll") würde hier NICHTS tun, wenn "roll" schon
 		# die gerade laufende Animation ist (Godot startet dieselbe
@@ -799,6 +855,11 @@ func start_roll() -> void:
 	if not is_on_floor():
 		return
 
+	# Nutzer-Wunsch: neue Rolle erst, wenn die vorige fertig ist UND
+	# der Cooldown (roll_cooldown) abgelaufen ist.
+	if _roll_cooldown_left > 0.0:
+		return
+
 	is_rolling = true
 	roll_timer = roll_time
 	roll_direction = 1.0 if facing_right else -1.0
@@ -812,6 +873,23 @@ func start_roll() -> void:
 		# Geschwindigkeit startet.
 		sprite.speed_scale = 1.0
 		sprite.play("roll")
+
+	_spawn_roll_effect()
+
+
+# Rolle (bzw. Roll-Kette) ist vorbei - normal abgelaufen oder per
+# Sprung abgebrochen. Startet den Roll-Cooldown (Nutzer-Wunsch).
+func _end_roll() -> void:
+	is_rolling = false
+	_rolls_remaining_in_chain = 0
+	_roll_cooldown_left = max(roll_cooldown, 0.0)
+
+	# Zurücksetzen falls start_roll() für eine 2. Rolle die
+	# Abspielgeschwindigkeit angepasst hat (siehe dort) - sonst
+	# würden auch alle folgenden Animationen (Laufen, Idle...)
+	# zu schnell/langsam abgespielt werden.
+	if sprite != null:
+		sprite.speed_scale = 1.0
 
 
 # Wie viele Rollen insgesamt in einer Kette möglich sind, bevor man
@@ -915,6 +993,75 @@ func _spawn_roll_dust() -> void:
 
 	if is_instance_valid(particles):
 		particles.queue_free()
+
+
+# ============================================================
+# ROLL-EFFEKT (SPRITE-ANIMATION AUS DER EFFEKT-SZENE)
+# ============================================================
+
+# Nutzer-Wunsch: bei jeder Rolle (auch der 2. beim Double Roll) am
+# Marker "Effekt spawn Slide start" den Effekt "Staub slide start"
+# spawnen. Die Effekt-Grafik ist in dieselbe Richtung gezeichnet wie
+# der Spieler, wird also genauso gespiegelt (flip_h wie beim Spieler).
+func _spawn_roll_effect() -> void:
+	if not use_roll_effect or roll_effect_scene == null:
+		return
+
+	var tree := get_tree()
+
+	if tree == null or tree.current_scene == null:
+		return
+
+	var effect := roll_effect_scene.instantiate() as AnimatedSprite2D
+
+	if effect == null:
+		push_warning("Roll-Effekt: Root der Effekt-Szene ist kein AnimatedSprite2D.")
+		return
+
+	if (
+		effect.sprite_frames == null
+		or not effect.sprite_frames.has_animation(roll_effect_anim)
+	):
+		push_warning("Roll-Effekt: Animation '%s' fehlt." % roll_effect_anim)
+		effect.free()
+		return
+
+	# Position: Marker im Editor = Blick nach rechts; nach links X
+	# spiegeln (der Marker selbst wird nicht mitgedreht, nur der Sprite).
+	var side: float = 1.0 if facing_right else -1.0
+	var local_pos: Vector2 = roll_effect_offset
+
+	var marker := get_node_or_null(NodePath(String(roll_effect_marker_name))) as Node2D
+
+	if marker != null:
+		local_pos += marker.position
+
+	local_pos.x *= side
+
+	# In die Raum-Szene hängen, damit der Staub liegen bleibt.
+	tree.current_scene.add_child(effect)
+
+	effect.global_position = to_global(local_pos)
+	effect.z_index = z_index + roll_effect_z_index
+	effect.flip_h = not facing_right
+
+	effect.sprite_frames.set_animation_loop(roll_effect_anim, false)
+	effect.play(roll_effect_anim)
+	effect.frame = 0
+
+	effect.animation_finished.connect(effect.queue_free)
+
+	# Sicherheitsnetz, falls animation_finished nicht kommt.
+	var fps: float = effect.sprite_frames.get_animation_speed(roll_effect_anim)
+	var frames: int = effect.sprite_frames.get_frame_count(roll_effect_anim)
+	var duration: float = (
+		float(frames) / max(fps, 0.01) + max(roll_effect_cleanup_margin, 0.0)
+	)
+
+	await tree.create_timer(duration).timeout
+
+	if is_instance_valid(effect):
+		effect.queue_free()
 
 
 var _roll_dust_texture: Texture2D = null

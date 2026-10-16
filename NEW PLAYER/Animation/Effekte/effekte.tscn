@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://db2ot2ccevsb3"]
+
+[ext_resource type="Texture2D" uid="uid://dh31mvishkggy" path="res://NEW PLAYER/Animation/Effekte/Rauch Slide start-Sheet.png" id="1_txnip"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8pqrk"]
+atlas = ExtResource("1_txnip")
+region = Rect2(0, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uvq0q"]
+atlas = ExtResource("1_txnip")
+region = Rect2(176, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_afbon"]
+atlas = ExtResource("1_txnip")
+region = Rect2(352, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uiy82"]
+atlas = ExtResource("1_txnip")
+region = Rect2(528, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_287y5"]
+atlas = ExtResource("1_txnip")
+region = Rect2(704, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6plyw"]
+atlas = ExtResource("1_txnip")
+region = Rect2(880, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_smd6a"]
+atlas = ExtResource("1_txnip")
+region = Rect2(1056, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_levn1"]
+atlas = ExtResource("1_txnip")
+region = Rect2(1232, 0, 176, 144)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_68pkx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8pqrk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uvq0q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_afbon")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uiy82")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_287y5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6plyw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_smd6a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_levn1")
+}],
+"loop": 0,
+"name": &"Staub slide start",
+"speed": 8.0
+}]
+
+[node name="Effekte" type="AnimatedSprite2D" unique_id=1815529474]
+sprite_frames = SubResource("SpriteFrames_68pkx")
+animation = &"Staub slide start"
+frame = 7
+frame_progress = 1.0
