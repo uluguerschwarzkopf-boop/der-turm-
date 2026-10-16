@@ -105,7 +105,14 @@ var _roll_cooldown_left: float = 0.0
 # Zusätzliche Verschiebung zum Marker (wird beim Spiegeln mitgespiegelt).
 @export var roll_effect_offset: Vector2 = Vector2.ZERO
 
-# -1 = hinter dem Spieler, 1 = davor.
+# Nutzer-Wunsch: Staub am Ende der Rolle (auch beim Abbruch per
+# Sprung; bei Double Roll nur einmal am Ende der ganzen Kette).
+@export var use_roll_end_effect: bool = true
+@export var roll_end_effect_anim: StringName = &"Staub slide end"
+@export var roll_end_effect_marker_name: StringName = &"Effekt spawn Slide end"
+@export var roll_end_effect_offset: Vector2 = Vector2.ZERO
+
+# -1 = hinter dem Spieler, 1 = davor (gilt für alle Roll-Effekte).
 @export var roll_effect_z_index: int = -1
 
 # Sicherheitsnetz: so lange (Sekunden) zusätzlich zur Animationsdauer,
@@ -884,6 +891,8 @@ func _end_roll() -> void:
 	_rolls_remaining_in_chain = 0
 	_roll_cooldown_left = max(roll_cooldown, 0.0)
 
+	_spawn_roll_end_effect()
+
 	# Zurücksetzen falls start_roll() für eine 2. Rolle die
 	# Abspielgeschwindigkeit angepasst hat (siehe dort) - sonst
 	# würden auch alle folgenden Animationen (Laufen, Idle...)
@@ -1000,11 +1009,40 @@ func _spawn_roll_dust() -> void:
 # ============================================================
 
 # Nutzer-Wunsch: bei jeder Rolle (auch der 2. beim Double Roll) am
-# Marker "Effekt spawn Slide start" den Effekt "Staub slide start"
-# spawnen. Die Effekt-Grafik ist in dieselbe Richtung gezeichnet wie
-# der Spieler, wird also genauso gespiegelt (flip_h wie beim Spieler).
+# Marker "Effekt spawn Slide start" den Effekt "Staub slide start".
 func _spawn_roll_effect() -> void:
-	if not use_roll_effect or roll_effect_scene == null:
+	if not use_roll_effect:
+		return
+
+	_spawn_player_effect(
+		roll_effect_anim,
+		roll_effect_marker_name,
+		roll_effect_offset
+	)
+
+
+# Nutzer-Wunsch: am Ende der Rolle (bzw. der ganzen Double-Roll-Kette)
+# und beim Abbruch per Sprung am Marker "Effekt spawn Slide end" den
+# Effekt "Staub slide end" (Aufruf in _end_roll()).
+func _spawn_roll_end_effect() -> void:
+	if not use_roll_end_effect:
+		return
+
+	_spawn_player_effect(
+		roll_end_effect_anim,
+		roll_end_effect_marker_name,
+		roll_end_effect_offset
+	)
+
+
+# Gemeinsame Spawn-Funktion für alle Spieler-Effekte aus effekte.tscn
+# (roll_effect_scene). Die Effekt-Grafiken sind in dieselbe Richtung
+# gezeichnet wie der Spieler, werden also genauso gespiegelt (flip_h
+# wie beim Spieler); die Marker-Position wird nach Blickrichtung
+# gespiegelt. Für neue Effekte einfach diese Funktion mit anderer
+# Animation/anderem Marker aufrufen.
+func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset: Vector2) -> void:
+	if roll_effect_scene == null:
 		return
 
 	var tree := get_tree()
@@ -1020,18 +1058,18 @@ func _spawn_roll_effect() -> void:
 
 	if (
 		effect.sprite_frames == null
-		or not effect.sprite_frames.has_animation(roll_effect_anim)
+		or not effect.sprite_frames.has_animation(anim_name)
 	):
-		push_warning("Roll-Effekt: Animation '%s' fehlt." % roll_effect_anim)
+		push_warning("Roll-Effekt: Animation '%s' fehlt." % anim_name)
 		effect.free()
 		return
 
 	# Position: Marker im Editor = Blick nach rechts; nach links X
 	# spiegeln (der Marker selbst wird nicht mitgedreht, nur der Sprite).
 	var side: float = 1.0 if facing_right else -1.0
-	var local_pos: Vector2 = roll_effect_offset
+	var local_pos: Vector2 = offset
 
-	var marker := get_node_or_null(NodePath(String(roll_effect_marker_name))) as Node2D
+	var marker := get_node_or_null(NodePath(String(marker_name))) as Node2D
 
 	if marker != null:
 		local_pos += marker.position
@@ -1045,15 +1083,15 @@ func _spawn_roll_effect() -> void:
 	effect.z_index = z_index + roll_effect_z_index
 	effect.flip_h = not facing_right
 
-	effect.sprite_frames.set_animation_loop(roll_effect_anim, false)
-	effect.play(roll_effect_anim)
+	effect.sprite_frames.set_animation_loop(anim_name, false)
+	effect.play(anim_name)
 	effect.frame = 0
 
 	effect.animation_finished.connect(effect.queue_free)
 
 	# Sicherheitsnetz, falls animation_finished nicht kommt.
-	var fps: float = effect.sprite_frames.get_animation_speed(roll_effect_anim)
-	var frames: int = effect.sprite_frames.get_frame_count(roll_effect_anim)
+	var fps: float = effect.sprite_frames.get_animation_speed(anim_name)
+	var frames: int = effect.sprite_frames.get_frame_count(anim_name)
 	var duration: float = (
 		float(frames) / max(fps, 0.01) + max(roll_effect_cleanup_margin, 0.0)
 	)

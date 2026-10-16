@@ -1,6 +1,31 @@
 [gd_scene format=3 uid="uid://db2ot2ccevsb3"]
 
+[ext_resource type="Texture2D" uid="uid://btfxofut5gp4v" path="res://NEW PLAYER/Animation/Effekte/Rauch Slide end-Sheet.png" id="1_8pqrk"]
 [ext_resource type="Texture2D" uid="uid://dh31mvishkggy" path="res://NEW PLAYER/Animation/Effekte/Rauch Slide start-Sheet.png" id="1_txnip"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pm5ll"]
+atlas = ExtResource("1_8pqrk")
+region = Rect2(0, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x50yo"]
+atlas = ExtResource("1_8pqrk")
+region = Rect2(176, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ecww7"]
+atlas = ExtResource("1_8pqrk")
+region = Rect2(352, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ibl4"]
+atlas = ExtResource("1_8pqrk")
+region = Rect2(528, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_inm5l"]
+atlas = ExtResource("1_8pqrk")
+region = Rect2(704, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gtf1j"]
+atlas = ExtResource("1_8pqrk")
+region = Rect2(880, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8pqrk"]
 atlas = ExtResource("1_txnip")
@@ -38,6 +63,29 @@ region = Rect2(1232, 0, 176, 144)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_pm5ll")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x50yo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ecww7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2ibl4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_inm5l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gtf1j")
+}],
+"loop": 0,
+"name": &"Staub slide end",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_8pqrk")
 }, {
 "duration": 1.0,
@@ -68,6 +116,6 @@ animations = [{
 
 [node name="Effekte" type="AnimatedSprite2D" unique_id=1815529474]
 sprite_frames = SubResource("SpriteFrames_68pkx")
-animation = &"Staub slide start"
-frame = 7
+animation = &"Staub slide end"
+frame = 5
 frame_progress = 1.0

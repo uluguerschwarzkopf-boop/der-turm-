@@ -1099,6 +1099,10 @@ region = Rect2(1056, 0, 176, 144)
 atlas = ExtResource("25_uvbbp")
 region = Rect2(1232, 0, 176, 144)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_t6eb4"]
+atlas = ExtResource("25_uvbbp")
+region = Rect2(1408, 0, 176, 144)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_7v2uk"]
 atlas = ExtResource("25_c4i3b")
 region = Rect2(0, 0, 176, 144)
@@ -2333,10 +2337,13 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_soeee")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t6eb4")
 }],
 "loop": 0,
 "name": &"roll",
-"speed": 8.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2683,7 +2690,7 @@ speed = 60.0
 jump_velocity = -270.0
 gravity = 800.0
 roll_speed = 150.0
-roll_time = 0.4
+roll_time = 0.45
 dash_slash_speed = 70.0
 backstep_speed = 90.0
 
@@ -2701,7 +2708,7 @@ material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
 animation = &"roll"
-frame = 7
+frame = 8
 frame_progress = 1.0
 offset = Vector2(1, 0)
 
@@ -2789,3 +2796,6 @@ disabled = true
 
 [node name="Effekt spawn Slide start" type="Marker2D" parent="." unique_id=1772491011]
 position = Vector2(-5, -2)
+
+[node name="Effekt spawn Slide end" type="Marker2D" parent="." unique_id=1486896185]
+position = Vector2(24, -2)
