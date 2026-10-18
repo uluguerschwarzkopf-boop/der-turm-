@@ -19,6 +19,8 @@ var _wait: float = 0.0
 
 
 func _ready() -> void:
+	# Wandert in _process(): Physik-Interpolation hier aus, sonst leichtes Zittern.
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	position.x = start_x
 
 
