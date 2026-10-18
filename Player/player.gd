@@ -72,6 +72,24 @@ var _landing: bool = false
 var _air_peak_y: float = 0.0
 
 
+@export_group("Lauf-Stopp")
+
+# Nutzer-Wunsch: beim Übergang Laufen -> Stehen einmal "laufen in idle"
+# abspielen, damit der Übergang sauberer aussieht. Laufen, Springen,
+# Rollen, Angriffe und Fallen brechen sie ab.
+@export var use_run_stop_animation: bool = true
+@export var anim_run_stop: StringName = &"laufen in idle"
+
+# Erst wenn mindestens so lange (Sekunden) gelaufen wurde - sonst
+# flackert sie bei kurzem Antippen.
+@export var min_run_time_for_stop: float = 0.15
+
+# Läuft gerade "laufen in idle".
+var _run_stopping: bool = false
+# Wie lange schon am Stück gelaufen wird.
+var _run_time: float = 0.0
+
+
 @export_group("Rolle")
 
 # Nutzer-Wunsch: nach einer Rolle (bzw. Double-Roll-Kette) erst nach
@@ -114,6 +132,24 @@ var _roll_cooldown_left: float = 0.0
 
 # -1 = hinter dem Spieler, 1 = davor (gilt für alle Roll-Effekte).
 @export var roll_effect_z_index: int = -1
+
+
+@export_group("Attack 3 Hit-Effekt")
+
+# Nutzer-Wunsch: Effekt am Marker "Attack 3 hit effekt", wenn Attack 3
+# einen Gegner trifft (gleiche Effekt-Szene wie die Roll-Effekte).
+@export var use_attack_3_hit_effect: bool = true
+@export var attack_3_hit_effect_anim: StringName = &"Attack 3 hit effekt Spieler"
+@export var attack_3_hit_effect_marker_name: StringName = &"Attack 3 hit effekt"
+# Nutzer-Wunsch: Effekt in der Mitte des getroffenen Gegners statt am
+# Marker. Aus = am Marker "Attack 3 hit effekt" (altes Verhalten).
+@export var attack_3_hit_effect_on_enemy: bool = true
+# An = ein Effekt pro getroffenem Gegner, aus = nur einer pro Schlag.
+@export var attack_3_hit_effect_per_enemy: bool = true
+# Zusätzliche Verschiebung (bei Blick nach links in X gespiegelt).
+@export var attack_3_hit_effect_offset: Vector2 = Vector2.ZERO
+# 1 = vor dem Spieler (Treffer-Blitz soll sichtbar sein), -1 = dahinter.
+@export var attack_3_hit_effect_z_index: int = 1
 
 # Sicherheitsnetz: so lange (Sekunden) zusätzlich zur Animationsdauer,
 # danach wird der Effekt auf jeden Fall gelöscht.
@@ -387,6 +423,13 @@ func _input(event: InputEvent) -> void:
 			and not is_rolling
 			and not is_drinking
 			and not _is_active_skill_busy()
+			# Nutzer-Wunsch: Attack 2 nicht abbrechbar - auch nicht
+			# durch den Bogen (siehe PlayerCombat attack_2_cancelable).
+			and not (
+				combat != null
+				and combat.has_method("is_uncancelable_attack")
+				and combat.is_uncancelable_attack()
+			)
 		):
 			bow.shoot(facing_right)
 
@@ -642,6 +685,12 @@ func _physics_process(delta: float) -> void:
 			# Sprunglogik weiter unten durch.
 		else:
 			velocity.x = 0
+
+			# Nutzer-Wunsch: kleiner Dash nach vorne bei Attack 3 (Weite/
+			# Tempo in PlayerCombat, Gruppe "Attack 3").
+			if combat.has_method("get_attack_dash_velocity"):
+				velocity.x = combat.get_attack_dash_velocity(delta)
+
 			move_and_slide()
 			return
 
@@ -676,12 +725,30 @@ func _physics_process(delta: float) -> void:
 			sprite.flip_h = not facing_right
 
 			if is_on_floor() and not _landing:
+				# Erneutes Laufen bricht "laufen in idle" sofort ab.
+				_run_stopping = false
 				sprite.play("run")
+				_run_time += get_physics_process_delta_time()
 	else:
 		velocity.x = 0
 
+		# "laufen in idle" läuft nur, solange sie wirklich noch
+		# sichtbar spielt (fertig oder von etwas anderem überschrieben
+		# -> vorbei).
+		if _run_stopping and (
+			sprite == null
+			or sprite.animation != anim_run_stop
+			or not sprite.is_playing()
+		):
+			_run_stopping = false
+
 		if sprite != null and is_on_floor() and not _landing:
-			sprite.play("idle")
+			# Nutzer-Wunsch: Übergang Laufen -> Stehen über
+			# "laufen in idle" (siehe _try_start_run_stop_animation()).
+			if not _run_stopping and not _try_start_run_stop_animation():
+				sprite.play("idle")
+
+		_run_time = 0.0
 
 	if (
 		Input.is_action_just_pressed("jump")
@@ -708,6 +775,36 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	_try_start_land_animation(was_in_air)
+
+
+# Nutzer-Wunsch: lief der Spieler gerade ("run") und lässt die
+# Richtung los, spielt einmal "laufen in idle", danach "idle". Gibt
+# true zurück, wenn die Animation gestartet wurde.
+func _try_start_run_stop_animation() -> bool:
+	if not use_run_stop_animation:
+		return false
+
+	if sprite == null or sprite.sprite_frames == null:
+		return false
+
+	# Nur direkt aus dem Laufen heraus (nicht nach Landen, Angriff,
+	# Rolle usw.) und nicht nach kurzem Antippen.
+	if sprite.animation != "run":
+		return false
+
+	if _run_time < min_run_time_for_stop:
+		return false
+
+	if not sprite.sprite_frames.has_animation(anim_run_stop):
+		return false
+
+	# Darf nicht loopen, sonst würde sie nie fertig.
+	sprite.sprite_frames.set_animation_loop(anim_run_stop, false)
+
+	_run_stopping = true
+	sprite.play(anim_run_stop)
+
+	return true
 
 
 # Nutzer-Wunsch: Luft -> Boden nach einem längeren Fall (siehe
@@ -1017,7 +1114,8 @@ func _spawn_roll_effect() -> void:
 	_spawn_player_effect(
 		roll_effect_anim,
 		roll_effect_marker_name,
-		roll_effect_offset
+		roll_effect_offset,
+		roll_effect_z_index
 	)
 
 
@@ -1031,8 +1129,118 @@ func _spawn_roll_end_effect() -> void:
 	_spawn_player_effect(
 		roll_end_effect_anim,
 		roll_end_effect_marker_name,
-		roll_end_effect_offset
+		roll_end_effect_offset,
+		roll_effect_z_index
 	)
+
+
+# Nutzer-Wunsch: trifft Attack 3, spawnt der Effekt "Attack 3 hit
+# effekt Spieler" in der MITTE des getroffenen Gegners (oder, mit
+# attack_3_hit_effect_on_enemy aus, am Marker "Attack 3 hit effekt").
+# Wird von PlayerCombat (player_combat.gd) beim Treffer aufgerufen.
+func spawn_attack_3_hit_effect(target: Node = null) -> void:
+	if not use_attack_3_hit_effect:
+		return
+
+	var world_pos: Variant = null
+
+	if attack_3_hit_effect_on_enemy and target != null and is_instance_valid(target):
+		var side: float = 1.0 if facing_right else -1.0
+
+		world_pos = (
+			get_enemy_center(target)
+			+ Vector2(attack_3_hit_effect_offset.x * side, attack_3_hit_effect_offset.y)
+		)
+
+	_spawn_player_effect(
+		attack_3_hit_effect_anim,
+		attack_3_hit_effect_marker_name,
+		attack_3_hit_effect_offset,
+		attack_3_hit_effect_z_index,
+		world_pos
+	)
+
+
+# Mitte eines Gegners in Weltkoordinaten. Reihenfolge: Mitte der
+# Hurtbox-Form, dann Mitte des Sprites, dann Mitte der Körper-
+# Kollision, zuletzt einfach seine Position (die liegt bei unseren
+# Mobs an den Füßen, deshalb nur als Notlösung).
+func get_enemy_center(target: Node) -> Vector2:
+	var hurtbox := target.get_node_or_null("Hurtbox") as Node2D
+
+	if hurtbox != null:
+		var center: Variant = _shapes_center(hurtbox)
+
+		if center != null:
+			return center
+
+	for child: Node in target.get_children():
+		if child is AnimatedSprite2D or child is Sprite2D:
+			var item := child as Node2D
+			var rect: Rect2 = Rect2()
+
+			if child is AnimatedSprite2D:
+				var anim_sprite := child as AnimatedSprite2D
+				var tex: Texture2D = null
+
+				if anim_sprite.sprite_frames != null:
+					tex = anim_sprite.sprite_frames.get_frame_texture(
+						anim_sprite.animation, anim_sprite.frame
+					)
+
+				if tex == null:
+					continue
+
+				var size: Vector2 = tex.get_size()
+				rect = Rect2(
+					anim_sprite.offset - (size * 0.5 if anim_sprite.centered else Vector2.ZERO),
+					size
+				)
+			else:
+				rect = (child as Sprite2D).get_rect()
+
+			return item.to_global(rect.get_center())
+
+	if target is Node2D:
+		var body_center: Variant = _shapes_center(target as Node2D)
+
+		if body_center != null:
+			return body_center
+
+		return (target as Node2D).global_position
+
+	return global_position
+
+
+# Mitte aller direkten CollisionShape2D/CollisionPolygon2D-Kinder eines
+# Nodes in Weltkoordinaten (Polygon: Mitte seiner Bounding-Box).
+# null, wenn es keine gibt.
+func _shapes_center(owner_node: Node2D) -> Variant:
+	var total := Vector2.ZERO
+	var count: int = 0
+
+	for child: Node in owner_node.get_children():
+		if child is CollisionShape2D and (child as CollisionShape2D).shape != null:
+			total += (child as Node2D).global_position
+			count += 1
+		elif child is CollisionPolygon2D:
+			var poly := child as CollisionPolygon2D
+
+			if poly.polygon.is_empty():
+				continue
+
+			var bounds := Rect2(poly.polygon[0], Vector2.ZERO)
+
+			for point: Vector2 in poly.polygon:
+				bounds = bounds.expand(point)
+
+			total += poly.to_global(bounds.get_center())
+			count += 1
+
+	if count == 0:
+		return null
+
+	return total / float(count)
 
 
 # Gemeinsame Spawn-Funktion für alle Spieler-Effekte aus effekte.tscn
@@ -1041,7 +1249,10 @@ func _spawn_roll_end_effect() -> void:
 # wie beim Spieler); die Marker-Position wird nach Blickrichtung
 # gespiegelt. Für neue Effekte einfach diese Funktion mit anderer
 # Animation/anderem Marker aufrufen.
-func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset: Vector2) -> void:
+#
+# world_pos (optional): feste Welt-Position statt Marker (z.B. Mitte
+# eines getroffenen Gegners).
+func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset: Vector2, z_offset: int = -1, world_pos: Variant = null) -> void:
 	if roll_effect_scene == null:
 		return
 
@@ -1079,8 +1290,12 @@ func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset
 	# In die Raum-Szene hängen, damit der Staub liegen bleibt.
 	tree.current_scene.add_child(effect)
 
-	effect.global_position = to_global(local_pos)
-	effect.z_index = z_index + roll_effect_z_index
+	if world_pos is Vector2:
+		effect.global_position = world_pos
+	else:
+		effect.global_position = to_global(local_pos)
+
+	effect.z_index = z_index + z_offset
 	effect.flip_h = not facing_right
 
 	effect.sprite_frames.set_animation_loop(anim_name, false)
