@@ -2,6 +2,27 @@
 
 [ext_resource type="Texture2D" uid="uid://btfxofut5gp4v" path="res://NEW PLAYER/Animation/Effekte/Rauch Slide end-Sheet.png" id="1_8pqrk"]
 [ext_resource type="Texture2D" uid="uid://dh31mvishkggy" path="res://NEW PLAYER/Animation/Effekte/Rauch Slide start-Sheet.png" id="1_txnip"]
+[ext_resource type="Texture2D" uid="uid://xj3sn2t1dueo" path="res://NEW PLAYER/Animation/Effekte/Attack 3 Hit effekt-Sheet.png" id="1_uvq0q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7yye6"]
+atlas = ExtResource("1_uvq0q")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jc427"]
+atlas = ExtResource("1_uvq0q")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exqsk"]
+atlas = ExtResource("1_uvq0q")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_672af"]
+atlas = ExtResource("1_uvq0q")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_672qd"]
+atlas = ExtResource("1_uvq0q")
+region = Rect2(256, 0, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pm5ll"]
 atlas = ExtResource("1_8pqrk")
@@ -63,6 +84,26 @@ region = Rect2(1232, 0, 176, 144)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_7yye6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jc427")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exqsk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_672af")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_672qd")
+}],
+"loop": 0,
+"name": &"Attack 3 hit effekt Spieler",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_pm5ll")
 }, {
 "duration": 1.0,
@@ -116,6 +157,6 @@ animations = [{
 
 [node name="Effekte" type="AnimatedSprite2D" unique_id=1815529474]
 sprite_frames = SubResource("SpriteFrames_68pkx")
-animation = &"Staub slide end"
-frame = 5
+animation = &"Attack 3 hit effekt Spieler"
+frame = 4
 frame_progress = 1.0

@@ -1723,7 +1723,7 @@ spike_variant = &"mossy small"
 position = Vector2(360, -392)
 
 [node name="SpawnDoor" parent="." unique_id=1256228195 instance=ExtResource("6_jwt8i")]
-position = Vector2(-1244, 512)
+position = Vector2(-272, -240)
 
 [node name="ExitDoor" parent="." unique_id=95013058 instance=ExtResource("7_c632n")]
 position = Vector2(-67, -448)
@@ -1744,6 +1744,7 @@ position = Vector2(496, -399)
 
 [node name="skeleton_sword" parent="Enemies" unique_id=712944137 instance=ExtResource("11_0bmir")]
 position = Vector2(-39, -192)
+max_health = 7
 
 [node name="skeleton_sword2" parent="Enemies" unique_id=124578451 instance=ExtResource("11_0bmir")]
 position = Vector2(368, -192)
@@ -1753,6 +1754,7 @@ position = Vector2(387, -191)
 
 [node name="Krieger skellet" parent="Enemies" unique_id=1279725451 instance=ExtResource("13_bkajc")]
 position = Vector2(62, -192)
+max_health = 10
 
 [node name="CanvasLayer" parent="." unique_id=766876166 instance=ExtResource("13_ibmhm")]
 

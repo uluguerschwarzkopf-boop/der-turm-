@@ -9,6 +9,93 @@ extends Node
 @export var attack_1_hit_delay: float = 0.22
 @export var attack_2_hit_delay: float = 0.22
 
+# Nutzer-Wunsch (neue Attack-1-Animation): die Hitbox von Attack 1 wird
+# auf einem festen FRAME aktiv statt nach attack_1_hit_delay Sekunden.
+# Frames zählen wie im SpriteFrames-Editor (erster Frame = 0).
+# Aus = wieder die alte Zeit-Verzögerung (attack_1_hit_delay).
+@export var attack_1_use_hit_frame: bool = true
+@export var attack_1_hit_frame: int = 1
+
+# Nutzer-Wunsch (neue Attack-2-Animation): wie bei Attack 1 auf festem
+# Frame treffen (erster Frame = 0). Aus = alte Zeit-Verzögerung
+# (attack_2_hit_delay).
+@export var attack_2_use_hit_frame: bool = true
+@export var attack_2_hit_frame: int = 2
+
+# Nutzer-Wunsch: Attack 2 ist NICHT mehr abbrechbar (vorher konnte man
+# den 2. Schlag ganz am Anfang durch Laufen/Springen abbrechen).
+# An = altes Verhalten (abbrechbar bis zum Treffer-Frame).
+@export var attack_2_cancelable: bool = false
+
+# Läuft gerade der 2. Schlag (siehe is_uncancelable_attack()).
+var _in_attack_2: bool = false
+
+
+@export_group("Attack 3")
+
+# Nutzer-Wunsch: dritter Schlag der Combo (attack 1 -> attack 2 ->
+# Attack 3). Klickt man während Attack 2 nochmal, folgt Attack 3 -
+# genau wie Attack 2 auf Attack 1 folgt. Aus = Combo endet nach
+# Attack 2 (altes Verhalten).
+@export var use_attack_3: bool = true
+
+# Achtung: großes A und Leerzeichen, genau wie in den SpriteFrames.
+@export var attack_3_name: StringName = &"Attack 3"
+
+# Nutzer-Wunsch: Attack 3 macht 2 Schaden.
+@export var attack_3_damage: int = 2
+
+# Nutzer-Wunsch: Attack 3 gibt es nur, wenn attack 1 (oder Execution)
+# UND attack 2 der aktuellen Combo je mindestens einen Gegner getroffen
+# haben. Sonst endet die Combo nach attack 2. Aus = altes Verhalten
+# (Attack 3 immer möglich).
+@export var attack_3_requires_hits: bool = true
+
+# Sound-ID aus der Sound-Bank (Player -> Scripts -> SoundManager). Es
+# gibt noch keinen eigenen Sound für Attack 3 - legt man z.B.
+# "sword_hit_3" in der Bank an, hier eintragen.
+@export var attack_3_sound: StringName = &"sword_hit_1"
+
+# Treffer-Frame (erster Frame = 0, wie im SpriteFrames-Editor).
+# Aus = Zeit-Verzögerung attack_3_hit_delay statt Frame.
+@export var attack_3_use_hit_frame: bool = true
+@export var attack_3_hit_frame: int = 2
+@export var attack_3_hit_delay: float = 0.22
+
+# Wie Attack 2: standardmäßig NICHT abbrechbar (kein Laufen/Springen/
+# Bogen). An = abbrechbar bis zum Treffer-Frame.
+@export var attack_3_cancelable: bool = false
+
+# Eigene Hitbox (Nutzer-Wunsch) - Pfad relativ zum Player.
+@export var attack_3_hitbox_path: NodePath = ^"Hitboxes/Attack 3 Hitbox"
+
+# Nutzer-Wunsch: bei Attack 3 ein kleiner Dash nach vorne (in
+# Blickrichtung). Weite in Pixeln - Standard ca. 2 Schritte, also
+# bewusst kurz (16 px = 1 Tile). 0 = kein Dash.
+@export var attack_3_dash_distance: float = 16.0
+# Tempo des Dashs in Pixeln pro Sekunde (Laufen = 160).
+@export var attack_3_dash_speed: float = 140.0
+# Ab diesem Frame der Attack-3-Animation startet der Dash (erster
+# Frame = 0).
+@export var attack_3_dash_start_frame: int = 1
+
+# Treffer-Merker der aktuellen Combo (siehe attack_3_requires_hits).
+var _attack_1_landed: bool = false
+var _attack_2_landed: bool = false
+# Hat die zuletzt aktivierte Hitbox einen Gegner getroffen?
+var _last_hitbox_landed: bool = false
+# Gegner, die beim Aktivieren der Hitbox noch lebten (Instanz-IDs).
+var _alive_at_activation: Dictionary = {}
+# Leben der Gegner beim Aktivieren der Hitbox (Instanz-ID -> hp).
+var _hp_at_activation: Dictionary = {}
+
+# Restweite des laufenden Attack-3-Dashs.
+var _attack_3_dash_left: float = 0.0
+
+# Läuft gerade der 3. Schlag.
+var _in_attack_3: bool = false
+var attack_3_hitbox: Area2D = null
+
 @export_group("Passiver Skill - Execution")
 
 # Nutzer-Wunsch: sobald der passive Skill "execution" im Skill-Baum
@@ -125,6 +212,23 @@ func _ready() -> void:
 	backstep_hitbox.set_meta("active", false)
 	backstep_hitbox.set_meta("damage", damage)
 
+	# Attack-3-Hitbox (Nutzer-Wunsch) - gleich eingerichtet wie die
+	# anderen, damit die Gegner-Hurtboxen sie als Spielerangriff
+	# erkennen (Gruppe player_attack + meta active/damage).
+	attack_3_hitbox = player.get_node_or_null(attack_3_hitbox_path) as Area2D
+
+	if attack_3_hitbox != null:
+		attack_3_hitbox.monitoring = false
+		attack_3_hitbox.monitorable = true
+		attack_3_hitbox.add_to_group("player_attack")
+		attack_3_hitbox.set_meta("active", false)
+		attack_3_hitbox.set_meta("damage", attack_3_damage)
+	elif use_attack_3:
+		push_warning("PlayerCombat: Attack 3 Hitbox nicht gefunden: %s" % attack_3_hitbox_path)
+
+	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(attack_3_name):
+		sprite.sprite_frames.set_animation_loop(attack_3_name, false)
+
 
 func attack() -> void:
 	if player.is_rolling:
@@ -134,6 +238,8 @@ func attack() -> void:
 		if (
 			sprite.animation == attack_1_name
 			or sprite.animation == execution_anim
+			# Nutzer-Wunsch: Klick während Attack 2 -> Attack 3.
+			or (sprite.animation == attack_2_name and _can_do_attack_3())
 		):
 			combo_requested = true
 		return
@@ -209,6 +315,8 @@ func attack() -> void:
 
 	if is_execution:
 		await _wait_for_sprite_frame(execution_anim, execution_hit_frame)
+	elif attack_1_use_hit_frame:
+		await _wait_for_sprite_frame(attack_1_name, attack_1_hit_frame)
 	else:
 		await get_tree().create_timer(attack_1_hit_delay).timeout
 
@@ -217,6 +325,11 @@ func attack() -> void:
 	# sorgt nur dafür, dass _damage_body() weiter unten den Execution-
 	# Schaden statt des normalen Schadens berechnet.
 	await _activate_hitbox(-1, null, is_execution)
+
+	# Neue Combo: Treffer-Merker neu setzen (Execution zählt wie
+	# attack 1).
+	_attack_1_landed = _last_hitbox_landed
+	_attack_2_landed = false
 
 	await sprite.animation_finished
 
@@ -231,9 +344,15 @@ func attack() -> void:
 		# Doppelklick). Sobald der Schaden-Frame aktiviert wird
 		# (_activate_hitbox), ist kein Abbruch mehr möglich -
 		# der Treffer muss dann durchgezogen werden.
-		second_hit_cancel_window_open = true
+		_in_attack_2 = true
 
-		await get_tree().create_timer(attack_2_hit_delay).timeout
+		# Nutzer-Wunsch: nur offen, wenn Attack 2 abbrechbar sein soll.
+		second_hit_cancel_window_open = attack_2_cancelable
+
+		if attack_2_use_hit_frame:
+			await _wait_for_sprite_frame(attack_2_name, attack_2_hit_frame)
+		else:
+			await get_tree().create_timer(attack_2_hit_delay).timeout
 
 		second_hit_cancel_window_open = false
 
@@ -243,9 +362,85 @@ func attack() -> void:
 
 		await _activate_hitbox()
 
+		_attack_2_landed = _last_hitbox_landed
+
 		await sprite.animation_finished
 
+		# Nutzer-Wunsch: dritter Schlag, wenn während Attack 2
+		# nochmal geklickt wurde.
+		# Der Klick während attack 2 wird gepuffert (combo_requested);
+		# erst hier, nach dem Treffer-Frame von attack 2, wird geprüft,
+		# ob beide vorigen Schläge getroffen haben.
+		if (
+			combo_requested
+			and _can_do_attack_3()
+			and (
+				not attack_3_requires_hits
+				or (_attack_1_landed and _attack_2_landed)
+			)
+		):
+			combo_requested = false
+
+			_in_attack_2 = false
+			_in_attack_3 = true
+			_attack_3_dash_left = max(attack_3_dash_distance, 0.0)
+
+			sprite.play(attack_3_name)
+			_play_sound(attack_3_sound)
+
+			second_hit_cancel_window_open = attack_3_cancelable
+
+			if attack_3_use_hit_frame:
+				await _wait_for_sprite_frame(attack_3_name, attack_3_hit_frame)
+			else:
+				await get_tree().create_timer(attack_3_hit_delay).timeout
+
+			second_hit_cancel_window_open = false
+
+			if cancel_requested:
+				_end_attack()
+				return
+
+			await _activate_hitbox(attack_3_damage, attack_3_hitbox)
+
+			await sprite.animation_finished
+
 	_end_attack()
+
+
+# Wird von player.gd jeden Physik-Frame während eines Angriffs
+# abgefragt. Gibt die horizontale Geschwindigkeit für den Attack-3-
+# Dash zurück (0 = stehen bleiben). Der Dash stoppt genau nach
+# attack_3_dash_distance Pixeln.
+func get_attack_dash_velocity(delta: float) -> float:
+	if not attacking or not _in_attack_3:
+		return 0.0
+
+	if _attack_3_dash_left <= 0.0 or delta <= 0.0:
+		return 0.0
+
+	if sprite.animation != attack_3_name:
+		return 0.0
+
+	if sprite.frame < attack_3_dash_start_frame:
+		return 0.0
+
+	var step: float = min(attack_3_dash_speed * delta, _attack_3_dash_left)
+
+	_attack_3_dash_left -= step
+
+	var direction: float = 1.0 if player.facing_right else -1.0
+
+	return direction * step / delta
+
+
+func _can_do_attack_3() -> bool:
+	return (
+		use_attack_3
+		and attack_3_hitbox != null
+		and sprite.sprite_frames != null
+		and sprite.sprite_frames.has_animation(attack_3_name)
+	)
 
 
 # ============================================================
@@ -270,8 +465,28 @@ func cancel_attack() -> void:
 	attack_hitbox.monitoring = false
 	attack_hitbox.set_meta("active", false)
 
+	if attack_3_hitbox != null:
+		attack_3_hitbox.monitoring = false
+		attack_3_hitbox.set_meta("active", false)
+
+
+# Läuft gerade Attack 2 oder 3 und darf (Nutzer-Wunsch) nicht
+# abgebrochen werden? Wird von player.gd abgefragt, z.B. damit der
+# Bogen den Schlag nicht überschreibt.
+func is_uncancelable_attack() -> bool:
+	if not attacking:
+		return false
+
+	if _in_attack_2 and not attack_2_cancelable:
+		return true
+
+	return _in_attack_3 and not attack_3_cancelable
+
 
 func _end_attack() -> void:
+	_in_attack_2 = false
+	_in_attack_3 = false
+	_attack_3_dash_left = 0.0
 	attacking = false
 	combo_requested = false
 	cancel_requested = false
@@ -319,6 +534,17 @@ func _activate_hitbox(
 	)
 
 	hit_targets.clear()
+	_last_hitbox_landed = false
+
+	# Nutzer-Wunsch: ein Gegner, den DIESER Schlag tötet, zählt als
+	# Treffer (Hit-Effekt kommt auch beim Todesschlag). Dafür merken wir
+	# uns, wer beim Aktivieren noch lebte - Leichen, die schon vorher
+	# tot waren, zählen weiterhin nicht.
+	_alive_at_activation.clear()
+
+	for enemy: Node in get_tree().get_nodes_in_group(&"enemy"):
+		if not bool(enemy.get("dead")):
+			_alive_at_activation[enemy.get_instance_id()] = true
 
 	_update_hitbox_side(hitbox)
 
@@ -326,15 +552,128 @@ func _activate_hitbox(
 	hitbox.set_meta("damage", applied_damage)
 	hitbox.monitoring = true
 
+	# Nutzer-Korrektur: als Treffer zählt nur, wenn der Gegner durch
+	# DIESEN Schlag wirklich Schaden bekommen hat (Leben gesunken oder
+	# gestorben) - nur "in Reichweite"/in der Hitbox stehen reicht
+	# nicht (z.B. Gegner gerade unverwundbar, schläft noch, Treffer-
+	# Sperre). Dafür das Leben aller Gegner vor dem Schlag merken.
+	_hp_at_activation.clear()
+
+	for enemy: Node in get_tree().get_nodes_in_group(&"enemy"):
+		var enemy_hp: Variant = enemy.get("hp")
+
+		if enemy_hp is int or enemy_hp is float:
+			_hp_at_activation[enemy.get_instance_id()] = float(enemy_hp)
+
 	await get_tree().physics_frame
 
 	for body in hitbox.get_overlapping_bodies():
 		_damage_body(body, applied_damage, execution_mode)
 
-	await get_tree().create_timer(hitbox_active_time).timeout
+	# Alle getroffenen Gegner dieses Schlags (Instanz-ID -> Node).
+	var hit_enemies: Dictionary = {}
+	# Gegner, für die der Attack-3-Hit-Effekt schon kam.
+	var effect_shown: Dictionary = {}
+
+	# Jeden Physik-Frame der aktiven Zeit prüfen, wer Schaden bekommen
+	# hat - Gebiet-2-Mobs nehmen den Schaden selbst über ihre Hurtbox,
+	# das passiert in ihrem eigenen Physik-Frame.
+	var elapsed: float = 0.0
+
+	while true:
+		_collect_damaged_enemies(hitbox, hit_enemies)
+
+		# Nutzer-Wunsch: Attack-3-Hit-Effekt sofort beim Treffer, in der
+		# Mitte des getroffenen Gegners (siehe Player
+		# spawn_attack_3_hit_effect()). Pro Gegner höchstens einmal.
+		if hitbox == attack_3_hitbox:
+			_show_attack_3_hit_effects(hit_enemies, effect_shown)
+
+		if elapsed >= hitbox_active_time or not is_inside_tree():
+			break
+
+		await get_tree().physics_frame
+		elapsed += get_physics_process_delta_time()
+
+	_last_hitbox_landed = not hit_enemies.is_empty()
 
 	hitbox.monitoring = false
 	hitbox.set_meta("active", false)
+
+
+# Sammelt alle Gegner, die (über ihren Körper oder ihre Hurtbox) in
+# der Hitbox stecken bzw. von _damage_body() getroffen wurden UND
+# seit dem Aktivieren wirklich Schaden bekommen haben.
+func _collect_damaged_enemies(hitbox: Area2D, hit_enemies: Dictionary) -> void:
+	var candidates: Array[Node] = []
+
+	for body: Node in hitbox.get_overlapping_bodies():
+		candidates.append(body)
+
+	for area: Area2D in hitbox.get_overlapping_areas():
+		candidates.append(area)
+		candidates.append(area.get_parent())
+
+	for id: int in hit_targets.keys():
+		var node: Object = instance_from_id(id)
+
+		if node is Node and is_instance_valid(node):
+			candidates.append(node as Node)
+
+	for node: Node in candidates:
+		if node == null or not is_instance_valid(node):
+			continue
+
+		if hit_enemies.has(node.get_instance_id()):
+			continue
+
+		if _was_damaged_by_this_hit(node):
+			hit_enemies[node.get_instance_id()] = node
+
+
+func _was_damaged_by_this_hit(node: Node) -> bool:
+	if node == player or not node.is_in_group(&"enemy"):
+		return false
+
+	var id: int = node.get_instance_id()
+
+	# Durch diesen Schlag gestorben (vorher noch am Leben).
+	if bool(node.get("dead")) and _alive_at_activation.has(id):
+		return true
+
+	# Leben gesunken.
+	if _hp_at_activation.has(id):
+		var current_hp: Variant = node.get("hp")
+
+		if (current_hp is int or current_hp is float) and float(current_hp) < _hp_at_activation[id]:
+			return true
+
+		return false
+
+	# Gegner ohne "hp"-Variable: dann zählt, dass _damage_body() ihm
+	# Schaden gegeben hat.
+	return hit_targets.has(id)
+
+
+# Spawnt den Attack-3-Hit-Effekt für alle (noch nicht gezeigten)
+# getroffenen Gegner - oder nur für einen, wenn
+# attack_3_hit_effect_per_enemy (am Player) aus ist.
+func _show_attack_3_hit_effects(hit_enemies: Dictionary, effect_shown: Dictionary) -> void:
+	if player == null or not player.has_method("spawn_attack_3_hit_effect"):
+		return
+
+	var per_enemy: bool = bool(player.get("attack_3_hit_effect_per_enemy"))
+
+	for id: int in hit_enemies.keys():
+		if not per_enemy and not effect_shown.is_empty():
+			return
+
+		if effect_shown.has(id):
+			continue
+
+		effect_shown[id] = true
+		player.spawn_attack_3_hit_effect(hit_enemies[id])
+
 
 
 # Öffentlicher Zugriff für aktive Skills (Pfad der Stärke), die auf
