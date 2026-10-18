@@ -445,7 +445,7 @@ size = Vector2(14, 29)
 
 [node name="Schatten mutant" type="CharacterBody2D" unique_id=1655272891]
 script = ExtResource("9_smscript")
-max_health = 6
+max_health = 12
 move_speed = 20.0
 attack_cooldown = 1.5
 attack_damage_frame = 6

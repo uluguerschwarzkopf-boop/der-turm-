@@ -1742,10 +1742,6 @@ position = Vector2(397, -191)
 [node name="Skeleton2" parent="Enemies" unique_id=879850894 instance=ExtResource("10_w4dqn")]
 position = Vector2(496, -399)
 
-[node name="skeleton_sword" parent="Enemies" unique_id=712944137 instance=ExtResource("11_0bmir")]
-position = Vector2(-39, -192)
-max_health = 7
-
 [node name="skeleton_sword2" parent="Enemies" unique_id=124578451 instance=ExtResource("11_0bmir")]
 position = Vector2(368, -192)
 
@@ -1754,7 +1750,9 @@ position = Vector2(387, -191)
 
 [node name="Krieger skellet" parent="Enemies" unique_id=1279725451 instance=ExtResource("13_bkajc")]
 position = Vector2(62, -192)
-max_health = 10
+
+[node name="Krieger skellet2" parent="Enemies" unique_id=350527001 instance=ExtResource("13_bkajc")]
+position = Vector2(-71, -192)
 
 [node name="CanvasLayer" parent="." unique_id=766876166 instance=ExtResource("13_ibmhm")]
 

@@ -488,8 +488,9 @@ size = Vector2(14, 29)
 
 [node name="Krieger skellet" type="CharacterBody2D" unique_id=1279725451]
 script = ExtResource("8_kriegerscript")
-max_health = 6
+max_health = 10
 move_speed = 20.0
+attack_2_damage = 2
 attack_2_damage_frame = 7
 head_texture = ExtResource("9_kopf")
 

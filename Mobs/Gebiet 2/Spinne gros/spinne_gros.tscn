@@ -563,7 +563,7 @@ size = Vector2(22, 21)
 
 [node name="Spinne Gros" type="CharacterBody2D" unique_id=1833721472]
 script = ExtResource("10_spinnegros")
-max_health = 5
+max_health = 7
 move_speed = 25.0
 attack_cooldown = 2.0
 spit_frame = 6

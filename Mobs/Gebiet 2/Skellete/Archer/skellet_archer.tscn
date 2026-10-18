@@ -518,7 +518,7 @@ size = Vector2(418, 29)
 
 [node name="Skellet_Archer" type="CharacterBody2D" unique_id=370334480]
 script = ExtResource("8_archerscript")
-max_health = 5
+max_health = 8
 move_speed = 15.0
 shoot_cooldown = 3.0
 arrow_scene = ExtResource("9_archerarrow")
