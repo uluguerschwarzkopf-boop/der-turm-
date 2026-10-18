@@ -72,6 +72,24 @@ var _landing: bool = false
 var _air_peak_y: float = 0.0
 
 
+@export_group("Lauf-Stopp")
+
+# Nutzer-Wunsch: beim Übergang Laufen -> Stehen einmal "laufen in idle"
+# abspielen, damit der Übergang sauberer aussieht. Laufen, Springen,
+# Rollen, Angriffe und Fallen brechen sie ab.
+@export var use_run_stop_animation: bool = true
+@export var anim_run_stop: StringName = &"laufen in idle"
+
+# Erst wenn mindestens so lange (Sekunden) gelaufen wurde - sonst
+# flackert sie bei kurzem Antippen.
+@export var min_run_time_for_stop: float = 0.15
+
+# Läuft gerade "laufen in idle".
+var _run_stopping: bool = false
+# Wie lange schon am Stück gelaufen wird.
+var _run_time: float = 0.0
+
+
 @export_group("Rolle")
 
 # Nutzer-Wunsch: nach einer Rolle (bzw. Double-Roll-Kette) erst nach
@@ -676,12 +694,30 @@ func _physics_process(delta: float) -> void:
 			sprite.flip_h = not facing_right
 
 			if is_on_floor() and not _landing:
+				# Erneutes Laufen bricht "laufen in idle" sofort ab.
+				_run_stopping = false
 				sprite.play("run")
+				_run_time += get_physics_process_delta_time()
 	else:
 		velocity.x = 0
 
+		# "laufen in idle" läuft nur, solange sie wirklich noch
+		# sichtbar spielt (fertig oder von etwas anderem überschrieben
+		# -> vorbei).
+		if _run_stopping and (
+			sprite == null
+			or sprite.animation != anim_run_stop
+			or not sprite.is_playing()
+		):
+			_run_stopping = false
+
 		if sprite != null and is_on_floor() and not _landing:
-			sprite.play("idle")
+			# Nutzer-Wunsch: Übergang Laufen -> Stehen über
+			# "laufen in idle" (siehe _try_start_run_stop_animation()).
+			if not _run_stopping and not _try_start_run_stop_animation():
+				sprite.play("idle")
+
+		_run_time = 0.0
 
 	if (
 		Input.is_action_just_pressed("jump")
@@ -708,6 +744,36 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	_try_start_land_animation(was_in_air)
+
+
+# Nutzer-Wunsch: lief der Spieler gerade ("run") und lässt die
+# Richtung los, spielt einmal "laufen in idle", danach "idle". Gibt
+# true zurück, wenn die Animation gestartet wurde.
+func _try_start_run_stop_animation() -> bool:
+	if not use_run_stop_animation:
+		return false
+
+	if sprite == null or sprite.sprite_frames == null:
+		return false
+
+	# Nur direkt aus dem Laufen heraus (nicht nach Landen, Angriff,
+	# Rolle usw.) und nicht nach kurzem Antippen.
+	if sprite.animation != "run":
+		return false
+
+	if _run_time < min_run_time_for_stop:
+		return false
+
+	if not sprite.sprite_frames.has_animation(anim_run_stop):
+		return false
+
+	# Darf nicht loopen, sonst würde sie nie fertig.
+	sprite.sprite_frames.set_animation_loop(anim_run_stop, false)
+
+	_run_stopping = true
+	sprite.play(anim_run_stop)
+
+	return true
 
 
 # Nutzer-Wunsch: Luft -> Boden nach einem längeren Fall (siehe
