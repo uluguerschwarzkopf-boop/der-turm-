@@ -11,7 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://cmbesegwbfn3x" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/backgroundmockupVordergrund2.png" id="11_2fiap"]
 [ext_resource type="Texture2D" uid="uid://dh34yj2h17e2m" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Background1.png" id="11_rnd2m"]
 [ext_resource type="Texture2D" uid="uid://nfvsax5jihww" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/backgroundmockupFlaggenew.png" id="11_wekvi"]
-[ext_resource type="Texture2D" uid="uid://dwwt62yfh370k" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/background säulen layer .png" id="12_lavoi"]
 [ext_resource type="PackedScene" uid="uid://2np58bgpmc5s" path="res://Mobs/Gebiet 2/Spinne gros/spinne_gros.tscn" id="12_wufts"]
 [ext_resource type="Shader" uid="uid://djjj52214706k" path="res://Ebenen/Gebiet 2/shader/ebene_look.gdshader" id="14_ebene"]
 [ext_resource type="Shader" uid="uid://ctga0tyr5fnff" path="res://Ebenen/Gebiet 2/shader/flagge_wehen.gdshader" id="15_flagge"]
@@ -35,7 +34,6 @@
 [ext_resource type="Script" uid="uid://cs1ct8vyie0k6" path="res://Ebenen/Gebiet 2/Objekte/nebelwolke_wandern.gd" id="44_wolke"]
 [ext_resource type="Shader" uid="uid://dnjyjrp27fl68" path="res://Ebenen/Gebiet 2/shader/dunkel_verlauf.gdshader" id="45_dunkel"]
 [ext_resource type="Texture2D" uid="uid://hrqkaw5ioxa5" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/Säulen.png" id="50_saeule"]
-[ext_resource type="Texture2D" uid="uid://c3y0si46rnjef" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/Zaun2.png" id="52_zaun2"]
 [ext_resource type="Texture2D" uid="uid://cx8hgqyxurjvp" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/torbogen vordergrund.png" id="53_torbogen"]
 [ext_resource type="Texture2D" uid="uid://b4qy0abpet2ob" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/backgroundmockupGitteruntenRechtsschwarz.png" id="54_gitter"]
 [ext_resource type="Texture2D" uid="uid://sayjlq8n2ns2" path="res://Ebenen/Gebiet 2/Hintergründe/Hintergründe 2/Hintergründe2.2/backgroundmockupVordergrund-rework.png" id="55_truemmer"]
@@ -49,7 +47,6 @@
 [ext_resource type="Texture2D" uid="uid://d2w3agpfdw80a" path="res://raw Assets (dropdown)/Backgrounds/f5fcbe16-5b19-46ab-844e-252208379f34.png" id="80_wand_hoehle"]
 [ext_resource type="Script" uid="uid://cnxd7hbjwdry7" path="res://Ebenen/Gebiet 2/Objekte/Fledermaeuse/fledermaus_schwarm.gd" id="81_fledermaeuse"]
 [ext_resource type="Texture2D" uid="uid://c81pxvg12rxvx" path="res://Mobs/Gebiet 2/Hintergrund/Fliegen-Sheet.png" id="82_fledermaus_flug"]
-[ext_resource type="Texture2D" uid="uid://qwa5n2oowwqw" path="res://raw Assets (dropdown)/Backgrounds/6f682216-b6f5-4fb0-9847-bd0fa8803617.png" id="90_ferne"]
 [ext_resource type="Shader" uid="uid://cq1oacmovyoa0" path="res://Ebenen/Gebiet 2/shader/boden_schwarz.gdshader" id="96_boden_schwarz"]
 [ext_resource type="Script" uid="uid://x631q53ee2oq" path="res://Ebenen/Gebiet 2/shader/plattform_kruemel.gd" id="97_kruemel"]
 
@@ -1107,16 +1104,6 @@ shader_parameter/wave_amount = 0.12
 shader_parameter/wave_width = 40.0
 shader_parameter/rect_width = 3200.0
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ferne_wand"]
-shader = ExtResource("14_ebene")
-shader_parameter/brightness = 7.0
-shader_parameter/saturation = 0.6
-shader_parameter/tint = Color(0.72, 0.84, 1, 1)
-shader_parameter/tint_amount = 0.3
-shader_parameter/blur_radius = 1.0
-shader_parameter/blur_mix = 0.8
-shader_parameter/blur_lod = 1.0
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_zwischen"]
 shader = ExtResource("14_ebene")
 shader_parameter/brightness = 2.6
@@ -1161,16 +1148,6 @@ shader_parameter/bottom_bias = 1.0
 shader_parameter/edge_fade = 0.1
 shader_parameter/breath_amount = 0.0
 shader_parameter/breath_period = 9.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_saeulen"]
-shader = ExtResource("14_ebene")
-shader_parameter/brightness = 1.15
-shader_parameter/saturation = 0.7
-shader_parameter/tint = Color(0.72, 0.84, 1, 1)
-shader_parameter/tint_amount = 0.2
-shader_parameter/blur_radius = 0.6
-shader_parameter/blur_mix = 0.3
-shader_parameter/blur_lod = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dunkel_saeulenfuss"]
 shader = ExtResource("45_dunkel")
@@ -1462,13 +1439,6 @@ anchor_marker = NodePath("../Parallax-Bezugspunkt")
 texture_filter = 1
 scroll_scale = Vector2(0.5, 0.5)
 
-[node name="Ferne Wand" type="Sprite2D" parent="Background/Ebene Ferne" unique_id=1876422575]
-texture_filter = 4
-material = SubResource("ShaderMaterial_ferne_wand")
-position = Vector2(1730.0001, -224)
-scale = Vector2(0.40325397, 0.22147149)
-texture = ExtResource("90_ferne")
-
 [node name="Ebene Zwischen" type="Parallax2D" parent="Background" unique_id=1670127102]
 texture_filter = 1
 scroll_scale = Vector2(0.7, 0.7)
@@ -1476,8 +1446,8 @@ scroll_offset = Vector2(0, -14)
 
 [node name="Säule fern 1" type="Sprite2D" parent="Background/Ebene Zwischen" unique_id=1283684098]
 material = SubResource("ShaderMaterial_zwischen")
-position = Vector2(60, -236)
-scale = Vector2(0.8, 0.8)
+position = Vector2(88, -284.40002)
+scale = Vector2(0.8, 1.1765623)
 texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
@@ -1575,12 +1545,6 @@ mouse_filter = 2
 texture_filter = 1
 scroll_scale = Vector2(0.93, 0.93)
 scroll_offset = Vector2(0, -14)
-
-[node name="Säulen 1" type="Sprite2D" parent="Background/Ebene Säulen" unique_id=656177402]
-material = SubResource("ShaderMaterial_saeulen")
-position = Vector2(91, -222)
-scale = Vector2(1, 1.1884767)
-texture = ExtResource("12_lavoi")
 
 [node name="Dunkel Säulenfuß" type="ColorRect" parent="Background/Ebene Säulen" unique_id=1566350634]
 material = SubResource("ShaderMaterial_dunkel_saeulenfuss")
@@ -1687,10 +1651,10 @@ copy_mode = 2
 [node name="Nebel vorne" type="ColorRect" parent="Background" unique_id=754097823]
 z_index = -1
 material = SubResource("ShaderMaterial_wgq0a")
-offset_left = -367.0
-offset_top = -362.0
-offset_right = 821.0
-offset_bottom = -149.0
+offset_left = -307.0
+offset_top = -352.0
+offset_right = 881.0
+offset_bottom = -139.0
 mouse_filter = 2
 
 [node name="Ebene Säulen 3" type="Parallax2D" parent="Background" unique_id=1443892082]
@@ -1701,7 +1665,8 @@ scroll_offset = Vector2(0, -14)
 
 [node name="Säule 1" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=752842839]
 material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(-121, -264)
+position = Vector2(-129, -280)
+scale = Vector2(1, 1.1484375)
 texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
@@ -1720,16 +1685,9 @@ texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
 
-[node name="Zaun 2" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=448226268]
-material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(1239, -618)
-texture = ExtResource("52_zaun2")
-region_enabled = true
-region_rect = Rect2(640, 139, 343, 101)
-
 [node name="Torbogen" type="Sprite2D" parent="Background/Ebene Säulen 3" unique_id=1416593554]
 material = SubResource("ShaderMaterial_ebene3")
-position = Vector2(700, -191)
+position = Vector2(686, -204)
 texture = ExtResource("53_torbogen")
 region_enabled = true
 region_rect = Rect2(688, 86, 111, 154)
@@ -1892,10 +1850,10 @@ copy_mode = 2
 [node name="Nebel Spieler-Ebene" type="ColorRect" parent="Effekte" unique_id=181216948]
 z_index = 3
 material = SubResource("ShaderMaterial_nebelwolke")
-offset_left = -603.0
-offset_top = -180.0
-offset_right = 1599.0
-offset_bottom = -115.0
+offset_left = -435.0
+offset_top = -176.0
+offset_right = 1597.0
+offset_bottom = -111.0
 mouse_filter = 2
 
 [node name="Nebelwolke Kopie" type="BackBufferCopy" parent="Effekte" unique_id=1833168195]
@@ -1928,7 +1886,7 @@ scroll_scale = Vector2(1.08, 1.08)
 z_index = 10
 texture_filter = 2
 material = SubResource("ShaderMaterial_kaefige_blur")
-position = Vector2(357, -228.99998)
+position = Vector2(387, -263)
 scale = Vector2(1.7246094, 1.3886719)
 texture = ExtResource("11_2fiap")
 region_enabled = true
@@ -1958,8 +1916,8 @@ scroll_scale = Vector2(1.12, 1.12)
 [node name="Säule vorne 1" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=1695774239]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(6, -254)
-scale = Vector2(1, 1.0859375)
+position = Vector2(6, -296.5)
+scale = Vector2(1, 1.4179688)
 texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
@@ -1967,7 +1925,8 @@ region_rect = Rect2(451, 0, 85, 256)
 [node name="Säule vorne 2" type="Sprite2D" parent="Vordergrund/Ebene Säulen vorne" unique_id=391736703]
 z_index = 10
 material = SubResource("ShaderMaterial_vorne_blur")
-position = Vector2(1380, -240)
+position = Vector2(1380, -271)
+scale = Vector2(1, 1.2421875)
 texture = ExtResource("50_saeule")
 region_enabled = true
 region_rect = Rect2(451, 0, 85, 256)
@@ -2006,7 +1965,6 @@ script = ExtResource("40_musik")
 position = Vector2(1160, -161)
 
 [node name="Käfig Falle" parent="." unique_id=1076404002 instance=ExtResource("60_kaefigfalle")]
-visible = false
 position = Vector2(478, -160)
 idle_swing_period = 2.0
 shake_swing_deg = 2.0

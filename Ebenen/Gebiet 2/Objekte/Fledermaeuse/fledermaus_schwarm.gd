@@ -73,6 +73,10 @@ var _swarm_timer: float = 0.0
 
 
 func _ready() -> void:
+	# Die Tiere werden in _process() bewegt, nicht im Physik-Takt. Mit
+	# eingeschalteter Physik-Interpolation (Projekteinstellungen) würden sie
+	# sonst leicht zittern - deshalb für diesen Node (und alle Tiere) aus.
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_frames = _build_frames()
 	_single_timer = randf_range(0.5, single_interval_min)
 	_swarm_timer = randf_range(swarm_interval_min * 0.3, swarm_interval_min)

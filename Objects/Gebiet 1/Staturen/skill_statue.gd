@@ -399,6 +399,9 @@ func _maybe_show_skill_tree_open_hint(player: Node) -> void:
 func _move_player_to_spot(player: Node) -> void:
 	if "global_position" in player:
 		player.global_position = global_position + player_spot_offset
+		# Physik-Interpolation ist an: ohne Reset gleitet der Spieler
+		# sichtbar zur neuen Stelle statt direkt dort zu stehen.
+		player.reset_physics_interpolation()
 
 	if "facing_right" in player:
 		player.facing_right = true

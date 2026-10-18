@@ -416,6 +416,7 @@ func _enter_at_return_spawn() -> void:
 
 	RoomManager.return_to_spawn_name = ""
 
+	_reset_player_interpolation()
 	_reset_player_camera()
 
 	player.visible = true
@@ -528,6 +529,8 @@ func _enter_at_normal_spawn() -> void:
 			"_enter_at_normal_spawn() | WARNUNG: weder spawn_door noch player_spawn gefunden - Spieler bleibt an Position ",
 			player.global_position
 		)
+
+	_reset_player_interpolation()
 
 	# Hat der Raum eine eigene Kamerafahrt (siehe room_cutscene_
 	# animation_name oben), gleich auf deren Kamera umschalten statt
@@ -929,6 +932,16 @@ func _play_area_title_card() -> void:
 	get_tree().current_scene.add_child(title_card)
 
 	await title_card.play_intro()
+
+
+# Nutzer-Wunsch (Laufen smooth wie Hollow Knight): Physik-Interpolation ist
+# an (Projekteinstellungen -> Physik -> Allgemein). Godot gleitet dann weich
+# von der alten zur neuen Position. Nach einem Teleport (Spawn, Raumwechsel)
+# wuerde man so fuer ein Bild einen Wisch-Effekt sehen - deshalb hier die
+# alte Position "vergessen". Gilt auch fuer die Kamera (Kind des Spielers).
+func _reset_player_interpolation() -> void:
+	if player != null and player.is_inside_tree():
+		player.reset_physics_interpolation()
 
 
 func _reset_player_camera() -> void:
