@@ -96,6 +96,52 @@ var _attack_3_dash_left: float = 0.0
 var _in_attack_3: bool = false
 var attack_3_hitbox: Area2D = null
 
+@export_group("Attack up")
+
+# Nutzer-Wunsch: Aufwärts-Schlag. W gedrückt halten + Schlag-Taste ->
+# "Attack up" statt attack 1. Gehört NICHT zur 1-2-3-Combo und setzt
+# die Combo zurück. Aus = W+Schlag macht ganz normal attack 1.
+@export var use_attack_up: bool = true
+
+# Achtung: großes A und Leerzeichen, genau wie in den SpriteFrames.
+@export var attack_up_name: StringName = &"Attack up"
+
+# Input-Action für "nach oben" (Projekteinstellungen -> Eingabe-
+# belegung). Gibt es die Action (noch) nicht, wird stattdessen direkt
+# die Taste attack_up_fallback_key geprüft - deshalb funktioniert W
+# auch ohne Änderung an project.godot. W ist bisher keiner Action
+# zugeordnet (Springen = Leertaste), also kein Konflikt.
+@export var attack_up_action: StringName = &"attack_up"
+@export var attack_up_fallback_key: Key = KEY_W
+
+# An = Aufwärts-Schlag auch in der Luft (wie attack 1 bleibt man dabei
+# waagrecht stehen und fällt normal weiter).
+@export var attack_up_in_air: bool = true
+
+@export var attack_up_damage: int = 1
+
+# Treffer-Frame (erster Frame = 0, wie im SpriteFrames-Editor) - Frame,
+# auf dem der Bogen über dem Kopf beginnt. Aus = Zeit-Verzögerung
+# attack_up_hit_delay statt Frame.
+@export var attack_up_use_hit_frame: bool = true
+@export var attack_up_hit_frame: int = 1
+@export var attack_up_hit_delay: float = 0.1
+
+# Wie attack 1: standardmäßig NICHT abbrechbar (kein Laufen/Springen/
+# Bogen). An = abbrechbar bis zum Treffer-Frame.
+@export var attack_up_cancelable: bool = false
+
+# Eigene Hitbox (Nutzer-Wunsch) - Pfad relativ zum Player.
+@export var attack_up_hitbox_path: NodePath = ^"Hitboxes/Attack up Hitbox"
+
+# Sound-ID aus der Sound-Bank (Player -> Scripts -> SoundManager), wie
+# attack 1. Eigenen Sound in der Bank anlegen und hier eintragen.
+@export var attack_up_sound: StringName = &"sword_hit_1"
+
+# Läuft gerade der Aufwärts-Schlag.
+var _in_attack_up: bool = false
+var attack_up_hitbox: Area2D = null
+
 @export_group("Passiver Skill - Execution")
 
 # Nutzer-Wunsch: sobald der passive Skill "execution" im Skill-Baum
@@ -229,6 +275,22 @@ func _ready() -> void:
 	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(attack_3_name):
 		sprite.sprite_frames.set_animation_loop(attack_3_name, false)
 
+	# Attack-up-Hitbox (Nutzer-Wunsch) - gleich eingerichtet wie Attack 3.
+	attack_up_hitbox = player.get_node_or_null(attack_up_hitbox_path) as Area2D
+
+	if attack_up_hitbox != null:
+		attack_up_hitbox.monitoring = false
+		attack_up_hitbox.monitorable = true
+		attack_up_hitbox.add_to_group("player_attack")
+		attack_up_hitbox.set_meta("active", false)
+		attack_up_hitbox.set_meta("damage", attack_up_damage)
+	elif use_attack_up:
+		push_warning("PlayerCombat: Attack up Hitbox nicht gefunden: %s" % attack_up_hitbox_path)
+
+	# Non-looping erzwingen, sonst kommt nie animation_finished.
+	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(attack_up_name):
+		sprite.sprite_frames.set_animation_loop(attack_up_name, false)
+
 
 func attack() -> void:
 	if player.is_rolling:
@@ -242,6 +304,11 @@ func attack() -> void:
 			or (sprite.animation == attack_2_name and _can_do_attack_3())
 		):
 			combo_requested = true
+		return
+
+	# Nutzer-Wunsch: W halten + Schlag -> Aufwärts-Schlag statt attack 1.
+	if _wants_attack_up():
+		await _attack_up()
 		return
 
 	attacking = true
@@ -434,6 +501,104 @@ func get_attack_dash_velocity(delta: float) -> float:
 	return direction * step / delta
 
 
+# ============================================================
+# ATTACK UP (AUFWÄRTS-SCHLAG)
+# ============================================================
+
+func _wants_attack_up() -> bool:
+	if not use_attack_up or attack_up_hitbox == null:
+		return false
+
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation(attack_up_name):
+		return false
+
+	if not attack_up_in_air and not player.is_on_floor():
+		return false
+
+	# Über die InputMap, damit eine spätere Tastenbelegung wirkt; ohne
+	# Action direkt die Taste (Standard W).
+	if InputMap.has_action(attack_up_action):
+		return Input.is_action_pressed(attack_up_action)
+
+	return Input.is_physical_key_pressed(attack_up_fallback_key)
+
+
+func _attack_up() -> void:
+	attacking = true
+	_in_attack_up = true
+	combo_requested = false
+	cancel_requested = false
+
+	# Nicht Teil der Combo: Treffer-Merker zurücksetzen, damit danach
+	# wieder ganz normal mit attack 1 begonnen wird.
+	_attack_1_landed = false
+	_attack_2_landed = false
+
+	second_hit_cancel_window_open = attack_up_cancelable
+
+	sprite.play(attack_up_name)
+	_play_sound(attack_up_sound)
+
+	if attack_up_use_hit_frame:
+		# Auf den letzten Frame begrenzen - ein zu großer Wert würde
+		# sonst ewig warten (Animation bleibt auf dem letzten Frame
+		# stehen) und der Spieler könnte nie wieder angreifen.
+		var last_frame: int = sprite.sprite_frames.get_frame_count(attack_up_name) - 1
+		await _wait_for_sprite_frame(attack_up_name, clampi(attack_up_hit_frame, 0, max(last_frame, 0)))
+	else:
+		await get_tree().create_timer(attack_up_hit_delay).timeout
+
+	second_hit_cancel_window_open = false
+
+	# Abgebrochen, gestorben oder Animation von außen überschrieben ->
+	# Hitbox gar nicht erst einschalten.
+	if (
+		cancel_requested
+		or bool(player.get("dead"))
+		or sprite.animation != attack_up_name
+	):
+		_end_attack()
+		return
+
+	# _activate_hitbox() spiegelt die Hitbox in Blickrichtung, macht die
+	# gleiche Echter-Schaden-Erkennung wie die anderen Schläge und
+	# schaltet sie nach hitbox_active_time sicher wieder aus.
+	await _activate_hitbox(attack_up_damage, attack_up_hitbox)
+
+	await _wait_for_animation_end(attack_up_name)
+
+	_end_attack()
+
+
+# Robustheit (siehe CLAUDE.md): nicht nur auf animation_finished
+# warten, sondern zusätzlich mit einer Zeitgrenze aus Frameanzahl/FPS
+# absichern, sonst kann "attacking" für immer hängen bleiben (z.B. wenn
+# Tod/Treffer die Animation überschreibt).
+func _wait_for_animation_end(anim: StringName) -> void:
+	if sprite == null or sprite.sprite_frames == null:
+		return
+
+	var frames: SpriteFrames = sprite.sprite_frames
+	var fps: float = frames.get_animation_speed(anim) * absf(sprite.speed_scale)
+	var total: float = 0.0
+
+	for i in frames.get_frame_count(anim):
+		total += frames.get_frame_duration(anim, i)
+
+	var max_time: float = (total / fps if fps > 0.0 else 1.0) + 0.2
+	var elapsed: float = 0.0
+
+	while (
+		is_instance_valid(sprite)
+		and sprite.animation == anim
+		and sprite.is_playing()
+		and elapsed < max_time
+		and not bool(player.get("dead"))
+	):
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+
+
 func _can_do_attack_3() -> bool:
 	return (
 		use_attack_3
@@ -469,6 +634,10 @@ func cancel_attack() -> void:
 		attack_3_hitbox.monitoring = false
 		attack_3_hitbox.set_meta("active", false)
 
+	if attack_up_hitbox != null:
+		attack_up_hitbox.monitoring = false
+		attack_up_hitbox.set_meta("active", false)
+
 
 # Läuft gerade Attack 2 oder 3 und darf (Nutzer-Wunsch) nicht
 # abgebrochen werden? Wird von player.gd abgefragt, z.B. damit der
@@ -480,12 +649,16 @@ func is_uncancelable_attack() -> bool:
 	if _in_attack_2 and not attack_2_cancelable:
 		return true
 
+	if _in_attack_up and not attack_up_cancelable:
+		return true
+
 	return _in_attack_3 and not attack_3_cancelable
 
 
 func _end_attack() -> void:
 	_in_attack_2 = false
 	_in_attack_3 = false
+	_in_attack_up = false
 	_attack_3_dash_left = 0.0
 	attacking = false
 	combo_requested = false

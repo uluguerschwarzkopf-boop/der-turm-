@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b128ty61ib2g7" path="res://Player/Sheets/Eintrittsaniamtion-Sheet.png" id="3_pisgm"]
 [ext_resource type="Texture2D" uid="uid://sufwi3ss06js" path="res://Player/Sheets/Echo der flamme-Sheet.png" id="3_qs4pp"]
 [ext_resource type="Texture2D" uid="uid://qn8fkbukiwd3" path="res://Player/Skills/Krieger Skill Tree/Dash Slash-Sheet.png" id="4_6pogt"]
+[ext_resource type="Texture2D" uid="uid://moq6id25g5hk" path="res://NEW PLAYER/Animation/classic animation/Schlag nach oben-Sheet.png" id="4_8hx1r"]
 [ext_resource type="Texture2D" uid="uid://br8yw8q6tn2fv" path="res://Player/Sheets/death-Sheet.png" id="4_gu6f8"]
 [ext_resource type="Texture2D" uid="uid://c58akrccwenb0" path="res://Player/Sheets/Heiltrank drinken-Sheet.png" id="5_gu6f8"]
 [ext_resource type="Texture2D" uid="uid://d02b7fwti07it" path="res://Player/Sheets/Bow Shoot-Sheet.png" id="6_b1ygp"]
@@ -14,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://dussbxeqarifq" path="res://Player/Skills/Krieger Skill Tree/Parry-Sheet.png" id="8_ie76m"]
 [ext_resource type="Texture2D" uid="uid://6q3xxr2fmnju" path="res://Mobs/Gebiet 2/Spinne gros/spieler eingespinnt.png" id="9_c4i3b"]
 [ext_resource type="Texture2D" uid="uid://cejvfxa66sahg" path="res://Player/Skills/Krieger Skill Tree/Warlord-Sheet.png" id="9_gvnt1"]
+[ext_resource type="Texture2D" uid="uid://b3andcup0ufkq" path="res://NEW PLAYER/Animation/classic animation/Übergang fall idle-Sheet.png" id="10_qas3k"]
 [ext_resource type="Script" uid="uid://cxmyrrxjyp2ak" path="res://Player/player_health.gd" id="11_5htga"]
 [ext_resource type="Texture2D" uid="uid://d37if0snrgewg" path="res://Player/Skills/Krieger Skill Tree/Backstep-Sheet.png" id="11_wvbyc"]
 [ext_resource type="Texture2D" uid="uid://b0007ug7ggtdu" path="res://NEW PLAYER/Animation/classic animation/Attack 1-Sheet.png" id="12_7v2uk"]
@@ -34,8 +36,8 @@
 [ext_resource type="Texture2D" uid="uid://pl7g25khxph7" path="res://Player/Sheets/Spells/Summon Animations/Ranken-Sheet.png" id="20_bbimk"]
 [ext_resource type="Script" uid="uid://bq3nwbgqcl2yk" path="res://Player/playerspells.gd" id="20_n471f"]
 [ext_resource type="Script" uid="uid://vq0lv76q2lpt" path="res://Player/spell_manager.gd" id="21_7emwf"]
-[ext_resource type="Texture2D" uid="uid://b3c87kd602s7f" path="res://NEW PLAYER/Animation/classic animation/Idle.png" id="21_c4i3b"]
 [ext_resource type="Texture2D" uid="uid://igi7hswfuro4" path="res://NEW PLAYER/Animation/classic animation/Springen-Sheet.png" id="22_c4i3b"]
+[ext_resource type="Texture2D" uid="uid://dqbja36km1o6y" path="res://NEW PLAYER/Animation/classic animation/Idle-Sheet.png" id="24_8hx1r"]
 [ext_resource type="Texture2D" uid="uid://8qnxb1l55dp2" path="res://NEW PLAYER/Animation/classic animation/Land-Sheet.png" id="24_uvbbp"]
 [ext_resource type="Texture2D" uid="uid://bu0cxqgdtr7fg" path="res://NEW PLAYER/Animation/classic animation/Lauf in Idle-Sheet.png" id="25_7v2uk"]
 [ext_resource type="Texture2D" uid="uid://boargdrt30yl8" path="res://NEW PLAYER/Animation/classic animation/Laufen-Sheet.png" id="25_c4i3b"]
@@ -99,6 +101,38 @@ region = Rect2(1056, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sntsj"]
 atlas = ExtResource("3_m6nl3")
+region = Rect2(1232, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_svc64"]
+atlas = ExtResource("4_8hx1r")
+region = Rect2(0, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4iad6"]
+atlas = ExtResource("4_8hx1r")
+region = Rect2(176, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dxuwl"]
+atlas = ExtResource("4_8hx1r")
+region = Rect2(352, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gy7ux"]
+atlas = ExtResource("4_8hx1r")
+region = Rect2(528, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tfrym"]
+atlas = ExtResource("4_8hx1r")
+region = Rect2(704, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_to4gg"]
+atlas = ExtResource("4_8hx1r")
+region = Rect2(880, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dx0bk"]
+atlas = ExtResource("4_8hx1r")
+region = Rect2(1056, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8vjdr"]
+atlas = ExtResource("4_8hx1r")
 region = Rect2(1232, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_32uw3"]
@@ -504,6 +538,14 @@ region = Rect2(1500, 0, 150, 100)
 [sub_resource type="AtlasTexture" id="AtlasTexture_pfstq"]
 atlas = ExtResource("3_pisgm")
 region = Rect2(1650, 0, 150, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oup31"]
+atlas = ExtResource("10_qas3k")
+region = Rect2(0, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wd6j0"]
+atlas = ExtResource("10_qas3k")
+region = Rect2(176, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_eu7nd"]
 atlas = ExtResource("6_d30e8")
@@ -1054,24 +1096,28 @@ atlas = ExtResource("13_8ynux")
 region = Rect2(1200, 0, 150, 100)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_b01lj"]
-atlas = ExtResource("21_c4i3b")
+atlas = ExtResource("24_8hx1r")
 region = Rect2(0, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kb5u1"]
-atlas = ExtResource("21_c4i3b")
+atlas = ExtResource("24_8hx1r")
 region = Rect2(176, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_rjt0e"]
-atlas = ExtResource("21_c4i3b")
+atlas = ExtResource("24_8hx1r")
 region = Rect2(352, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kriwi"]
-atlas = ExtResource("21_c4i3b")
+atlas = ExtResource("24_8hx1r")
 region = Rect2(528, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_j6cib"]
-atlas = ExtResource("21_c4i3b")
+atlas = ExtResource("24_8hx1r")
 region = Rect2(704, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r06bg"]
+atlas = ExtResource("24_8hx1r")
+region = Rect2(880, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hx1r"]
 atlas = ExtResource("22_c4i3b")
@@ -1554,6 +1600,35 @@ animations = [{
 }],
 "loop": 0,
 "name": &"Attack 3",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_svc64")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4iad6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dxuwl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gy7ux")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tfrym")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_to4gg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dx0bk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8vjdr")
+}],
+"loop": 0,
+"name": &"Attack up",
 "speed": 11.0
 }, {
 "frames": [{
@@ -1886,6 +1961,17 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_oup31")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wd6j0")
+}],
+"loop": 0,
+"name": &"Fall in Idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_eu7nd")
 }, {
 "duration": 1.0,
@@ -2024,7 +2110,7 @@ animations = [{
 }],
 "loop": 0,
 "name": &"attack 1",
-"speed": 13.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2053,7 +2139,7 @@ animations = [{
 }],
 "loop": 0,
 "name": &"attack 2",
-"speed": 16.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2380,10 +2466,13 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_j6cib")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r06bg")
 }],
 "loop": 1,
 "name": &"idle",
-"speed": 6.0
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2510,7 +2599,7 @@ animations = [{
 }],
 "loop": 1,
 "name": &"run",
-"speed": 12.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2846,8 +2935,8 @@ position_smoothing_enabled = true
 material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"Attack 3"
-frame = 2
+animation = &"attack 1"
+frame = 1
 offset = Vector2(1, 0)
 
 [node name="Hitboxes" type="Node2D" parent="." unique_id=174370340]
@@ -2855,12 +2944,17 @@ offset = Vector2(1, 0)
 [node name="AttackHitbox" type="Area2D" parent="Hitboxes" unique_id=18032787]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Hitboxes/AttackHitbox" unique_id=1546187489]
-polygon = PackedVector2Array(-18, -8, 7, -3, 29, 1, 29, -18, 31, -27, 24, -24, 15, -17, 9, -12, 0, -10, -12, -9, -20, -9)
+polygon = PackedVector2Array(-4, -4, 7, -3, 29, 1, 29, -18, 31, -27, 24, -24, 15, -17, 9, -12, 0, -10, -4, -9, -7, -7)
 
 [node name="Attack 3 Hitbox" type="Area2D" parent="Hitboxes" unique_id=79178333]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Hitboxes/Attack 3 Hitbox" unique_id=652235319]
 polygon = PackedVector2Array(-20, -13, 12, -7, 42, -6, 48, -9, 24, -11, 3, -14, -15, -15)
+
+[node name="Attack up Hitbox" type="Area2D" parent="Hitboxes" unique_id=153254253]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Hitboxes/Attack up Hitbox" unique_id=1859932876]
+polygon = PackedVector2Array(-17, -18, -1, -29, 5, -29, 28, -10, 27, -27, 22, -36, 12, -42, -1, -44, -12, -41, -21, -27, -23, -11)
 
 [node name="Ground slam Hitbox" type="Area2D" parent="Hitboxes" unique_id=81897757]
 
