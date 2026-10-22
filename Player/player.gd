@@ -686,9 +686,32 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.x = 0
 
+			# Nutzer-Wunsch: Attack up in der Luft schränkt die Bewegung
+			# nicht ein (PlayerCombat, Gruppe "Attack up"). Nur velocity.x
+			# wie bei der normalen Luftsteuerung unten - velocity.y bleibt
+			# unangetastet, Sprungbogen/Schwerkraft laufen normal weiter.
+			# Nach dem Landen ist is_on_floor() true -> wieder stehen wie
+			# am Boden, bis die Animation fertig ist.
+			if (
+				combat.has_method("is_attack_up_air_movement")
+				and combat.is_attack_up_air_movement()
+			):
+				var air_dir: float = Input.get_axis(
+					"move_left",
+					"move_right"
+				)
+
+				velocity.x = air_dir * speed
+
+				if air_dir != 0.0 and combat.attack_up_air_can_turn:
+					facing_right = air_dir > 0
+
+					if sprite != null:
+						sprite.flip_h = not facing_right
+
 			# Nutzer-Wunsch: kleiner Dash nach vorne bei Attack 3 (Weite/
 			# Tempo in PlayerCombat, Gruppe "Attack 3").
-			if combat.has_method("get_attack_dash_velocity"):
+			elif combat.has_method("get_attack_dash_velocity"):
 				velocity.x = combat.get_attack_dash_velocity(delta)
 
 			move_and_slide()

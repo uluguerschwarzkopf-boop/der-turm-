@@ -114,9 +114,22 @@ var attack_3_hitbox: Area2D = null
 @export var attack_up_action: StringName = &"attack_up"
 @export var attack_up_fallback_key: Key = KEY_W
 
-# An = Aufwärts-Schlag auch in der Luft (wie attack 1 bleibt man dabei
-# waagrecht stehen und fällt normal weiter).
+# An = Aufwärts-Schlag auch in der Luft.
 @export var attack_up_in_air: bool = true
+
+# Nutzer-Wunsch: in der Luft schränkt Attack up die Bewegung nicht ein -
+# man fliegt mit normaler Luftsteuerung (Links/Rechts, gleiche
+# Geschwindigkeit wie sonst) weiter, Sprungbogen und Schwerkraft bleiben
+# unverändert. Aus = wie attack 1 waagrecht stehen bleiben und nur fallen.
+# Am Boden bleibt Attack up immer stehen (auch nach dem Landen mitten in
+# der Attacke).
+@export var attack_up_air_keep_movement: bool = true
+
+# Nur mit attack_up_air_keep_movement: darf man sich während der Attacke
+# in der Luft umdrehen? Standard aus, damit Animation und Hitbox nicht
+# umklappen (die Hitbox wird beim Treffer-Frame in Blickrichtung
+# gespiegelt und dreht danach nicht mehr mit).
+@export var attack_up_air_can_turn: bool = false
 
 @export var attack_up_damage: int = 1
 
@@ -521,6 +534,18 @@ func _wants_attack_up() -> bool:
 		return Input.is_action_pressed(attack_up_action)
 
 	return Input.is_physical_key_pressed(attack_up_fallback_key)
+
+
+# Wird von player.gd jeden Physik-Frame während eines Angriffs
+# abgefragt: true = Attack up läuft in der Luft und die normale
+# Luftsteuerung soll aktiv bleiben (siehe attack_up_air_keep_movement).
+func is_attack_up_air_movement() -> bool:
+	return (
+		attacking
+		and _in_attack_up
+		and attack_up_air_keep_movement
+		and not player.is_on_floor()
+	)
 
 
 func _attack_up() -> void:
