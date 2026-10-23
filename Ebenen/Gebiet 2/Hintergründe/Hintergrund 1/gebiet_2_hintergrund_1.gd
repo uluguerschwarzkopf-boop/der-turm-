@@ -56,6 +56,14 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	# Container selbst auf 0, die Platzierung steckt jetzt in _base.
 	position = Vector2.ZERO
+	# Nutzer-Korrektur ("Hintergrund switcht beim Loslaufen"): Seit die
+	# Physik-Interpolation an ist, rechnet Parallax2D seine eigene Position
+	# NACH diesem Skript aus und hat gewonnen (Ebenen sprangen nach oben).
+	# Deshalb die eingebaute Kamera-Verschiebung abschalten - die Position
+	# kommt nur noch von hier. Und Interpolation aus, weil in _process bewegt.
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	for layer in _layers:
+		layer.ignore_camera_scroll = true
 	# Eine Frame warten, damit die Kamera ihre Limits gesetzt hat.
 	await get_tree().process_frame
 	if anchor_at_camera_start:
