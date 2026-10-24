@@ -131,6 +131,18 @@ var attack_3_hitbox: Area2D = null
 # gespiegelt und dreht danach nicht mehr mit).
 @export var attack_up_air_can_turn: bool = false
 
+# Nutzer-Wunsch: wurde Attack up in der LUFT gestartet und man landet,
+# während sie noch läuft, bricht Laufen (Links/Rechts) die Attacke ab
+# dem Aufsetzen sofort ab -> normal weiter in run. Auch wenn man die
+# Richtung beim Aufsetzen schon hält. Ohne Eingabe spielt die Animation
+# wie bisher im Stehen zu Ende. Kam der Treffer-Frame noch nicht, gibt
+# es einfach keinen Treffer. Attack up vom Boden aus ist davon nicht
+# betroffen (bleibt durch Laufen nicht abbrechbar).
+@export var attack_up_land_cancel_on_move: bool = true
+
+# Wie oben, nur für Springen nach dem Aufsetzen.
+@export var attack_up_land_cancel_on_jump: bool = true
+
 @export var attack_up_damage: int = 1
 
 # Treffer-Frame (erster Frame = 0, wie im SpriteFrames-Editor) - Frame,
@@ -153,6 +165,13 @@ var attack_3_hitbox: Area2D = null
 
 # Läuft gerade der Aufwärts-Schlag.
 var _in_attack_up: bool = false
+# Wurde der laufende Attack up in der Luft gestartet (für den
+# Lande-Abbruch, siehe attack_up_land_cancel_on_move).
+var _attack_up_started_in_air: bool = false
+# Zähler pro Attack up: ein abgebrochener Durchlauf (Coroutine wartet
+# evtl. noch auf Frames) erkennt daran, dass er veraltet ist, und
+# fasst danach nichts mehr an (keine Hitbox, kein _end_attack()).
+var _attack_up_run_id: int = 0
 var attack_up_hitbox: Area2D = null
 
 @export_group("Passiver Skill - Execution")
@@ -548,9 +567,38 @@ func is_attack_up_air_movement() -> bool:
 	)
 
 
+# Wird von player.gd abgefragt: läuft ein in der Luft gestarteter
+# Attack up, steht man jetzt am Boden und ist ein Lande-Abbruch
+# überhaupt eingeschaltet? Die Eingabe (Laufen/Springen) prüft player.gd.
+func can_land_cancel_attack_up() -> bool:
+	return (
+		attacking
+		and _in_attack_up
+		and _attack_up_started_in_air
+		and player.is_on_floor()
+		and (attack_up_land_cancel_on_move or attack_up_land_cancel_on_jump)
+	)
+
+
+# Bricht den Attack up sofort ab: Hitbox sicher aus, Angriff beendet.
+# Die noch wartende _attack_up()-Coroutine merkt über _attack_up_run_id,
+# dass sie veraltet ist, und schaltet die Hitbox nicht mehr ein.
+func land_cancel_attack_up() -> void:
+	_attack_up_run_id += 1
+
+	if attack_up_hitbox != null:
+		attack_up_hitbox.monitoring = false
+		attack_up_hitbox.set_meta("active", false)
+
+	_end_attack()
+
+
 func _attack_up() -> void:
 	attacking = true
 	_in_attack_up = true
+	_attack_up_started_in_air = not player.is_on_floor()
+	_attack_up_run_id += 1
+	var run_id: int = _attack_up_run_id
 	combo_requested = false
 	cancel_requested = false
 
@@ -573,6 +621,10 @@ func _attack_up() -> void:
 	else:
 		await get_tree().create_timer(attack_up_hit_delay).timeout
 
+	# Inzwischen per Lande-Abbruch beendet -> nichts mehr anfassen.
+	if run_id != _attack_up_run_id:
+		return
+
 	second_hit_cancel_window_open = false
 
 	# Abgebrochen, gestorben oder Animation von außen überschrieben ->
@@ -590,7 +642,13 @@ func _attack_up() -> void:
 	# schaltet sie nach hitbox_active_time sicher wieder aus.
 	await _activate_hitbox(attack_up_damage, attack_up_hitbox)
 
+	if run_id != _attack_up_run_id:
+		return
+
 	await _wait_for_animation_end(attack_up_name)
+
+	if run_id != _attack_up_run_id:
+		return
 
 	_end_attack()
 
@@ -684,6 +742,7 @@ func _end_attack() -> void:
 	_in_attack_2 = false
 	_in_attack_3 = false
 	_in_attack_up = false
+	_attack_up_started_in_air = false
 	_attack_3_dash_left = 0.0
 	attacking = false
 	combo_requested = false
