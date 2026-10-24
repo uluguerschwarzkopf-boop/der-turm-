@@ -1968,7 +1968,7 @@ animations = [{
 }],
 "loop": 0,
 "name": &"Fall in Idle",
-"speed": 8.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -2935,8 +2935,9 @@ position_smoothing_enabled = true
 material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"attack 1"
+animation = &"Fall in Idle"
 frame = 1
+frame_progress = 1.0
 offset = Vector2(1, 0)
 
 [node name="Hitboxes" type="Node2D" parent="." unique_id=174370340]

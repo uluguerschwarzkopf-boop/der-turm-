@@ -65,8 +65,26 @@ var _footstep_timer: float = 0.0
 @export var land_blocks_movement: bool = true
 @export var land_allow_jump: bool = false
 
+# Nutzer-Wunsch: "Fall in Idle" ist die Vorstufe von "land" - nach einem
+# kürzeren Fall (Fallhöhe >= min_fall_height_for_fall_idle, aber noch
+# unter min_fall_height_for_land) spielt sie einmal, danach idle. Ab
+# min_fall_height_for_land kommt wie bisher "land" (hat Vorrang). Ein
+# normaler Sprung auf flachem Boden (~60 px) löst sie also aus.
+# Anders als "land" sperrt sie die Bewegung NICHT: Laufen, Springen,
+# Rollen und Angriffe brechen sie sofort ab. Hält man beim Aufkommen
+# schon eine Richtung, startet sie gar nicht (direkt run).
+@export var use_fall_idle_animation: bool = true
+# Achtung: großes F und I, Leerzeichen - genau wie in den SpriteFrames.
+@export var anim_fall_idle: StringName = &"Fall in Idle"
+# Untergrenze, damit kleine Stufen nichts auslösen (16 px = 1 Tile).
+@export var min_fall_height_for_fall_idle: float = 16.0
+
 # Läuft gerade die "land"-Animation (siehe _physics_process()).
 var _landing: bool = false
+# Läuft gerade "Fall in Idle" + Restzeit als Sicherheitsnetz (siehe
+# _try_start_fall_idle_animation()).
+var _fall_idling: bool = false
+var _fall_idle_time_left: float = 0.0
 
 # Höchster Punkt (kleinstes Y) seit dem letzten Bodenkontakt.
 var _air_peak_y: float = 0.0
@@ -675,6 +693,20 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
+	# Nutzer-Wunsch: in der Luft gestarteter Attack up wird nach dem
+	# Landen durch Laufen/Springen sofort abgebrochen (Schalter in
+	# PlayerCombat, Gruppe "Attack up"). Danach ist attacking false ->
+	# der Zweig unten wird übersprungen und die normale Bewegungs-/
+	# Sprunglogik übernimmt im selben Frame (run bzw. jump).
+	if (
+		combat != null
+		and combat.attacking
+		and combat.has_method("can_land_cancel_attack_up")
+		and combat.can_land_cancel_attack_up()
+		and _wants_to_land_cancel_attack_up()
+	):
+		combat.land_cancel_attack_up()
+
 	if combat != null and combat.attacking:
 		if (
 			combat.can_cancel_second_hit()
@@ -740,7 +772,23 @@ func _physics_process(delta: float) -> void:
 	if _landing and land_blocks_movement:
 		dir = 0.0
 
+	# "Fall in Idle" läuft nur, solange sie wirklich noch sichtbar
+	# spielt (Laufen/Springen/Rollen/Angriff haben sie überschrieben ->
+	# vorbei). Zusätzlich Zeitgrenze, damit nie etwas hängen bleibt.
+	if _fall_idling:
+		_fall_idle_time_left -= delta
+
+		if (
+			sprite == null
+			or sprite.animation != anim_fall_idle
+			or not sprite.is_playing()
+			or _fall_idle_time_left <= 0.0
+		):
+			_fall_idling = false
+
 	if dir != 0:
+		# Laufen bricht "Fall in Idle" sofort ab.
+		_fall_idling = false
 		velocity.x = dir * speed
 		facing_right = dir > 0
 
@@ -765,7 +813,7 @@ func _physics_process(delta: float) -> void:
 		):
 			_run_stopping = false
 
-		if sprite != null and is_on_floor() and not _landing:
+		if sprite != null and is_on_floor() and not _landing and not _fall_idling:
 			# Nutzer-Wunsch: Übergang Laufen -> Stehen über
 			# "laufen in idle" (siehe _try_start_run_stop_animation()).
 			if not _run_stopping and not _try_start_run_stop_animation():
@@ -846,6 +894,9 @@ func _try_start_land_animation(was_in_air: bool) -> void:
 	_air_peak_y = global_position.y
 
 	if fall_height < min_fall_height_for_land:
+		if fall_height >= min_fall_height_for_fall_idle:
+			_try_start_fall_idle_animation()
+
 		return
 
 	if sprite == null or sprite.sprite_frames == null:
@@ -862,7 +913,49 @@ func _try_start_land_animation(was_in_air: bool) -> void:
 	sprite.sprite_frames.set_animation_loop(anim_land, false)
 
 	_landing = true
+	_fall_idling = false
 	sprite.play(anim_land)
+
+
+# Nutzer-Wunsch: kürzerer Fall -> einmal "Fall in Idle" (Vorstufe von
+# "land", siehe Gruppe "Landen"). Keine Bewegungssperre.
+func _try_start_fall_idle_animation() -> void:
+	if not use_fall_idle_animation:
+		return
+
+	if sprite == null or sprite.sprite_frames == null:
+		return
+
+	if not sprite.sprite_frames.has_animation(anim_fall_idle):
+		return
+
+	# Hält man beim Aufkommen schon eine Richtung, gar nicht erst
+	# starten - sonst flackert sie einen Frame, bevor run übernimmt.
+	if Input.get_axis("move_left", "move_right") != 0.0:
+		return
+
+	# Nur direkt aus jump/fall heraus. Hat in diesem Frame schon etwas
+	# anderes (Angriff, Skill, Rolle) die Animation gesetzt, nichts
+	# überschreiben.
+	if sprite.animation != &"fall" and sprite.animation != &"jump":
+		return
+
+	var frames: SpriteFrames = sprite.sprite_frames
+
+	# Darf nicht loopen, sonst würde sie nie fertig.
+	frames.set_animation_loop(anim_fall_idle, false)
+
+	# Sicherheitsnetz aus Frameanzahl/FPS (siehe CLAUDE.md: State-Ende
+	# nicht nur über die Animation absichern).
+	var fps: float = frames.get_animation_speed(anim_fall_idle) * absf(sprite.speed_scale)
+	var total: float = 0.0
+
+	for i in frames.get_frame_count(anim_fall_idle):
+		total += frames.get_frame_duration(anim_fall_idle, i)
+
+	_fall_idle_time_left = (total / fps if fps > 0.0 else 1.0) + 0.2
+	_fall_idling = true
+	sprite.play(anim_fall_idle)
 
 
 func _apply_gravity(delta: float) -> void:
@@ -876,6 +969,23 @@ func _apply_gravity(delta: float) -> void:
 # Wird während combat.attacking geprüft, um zu entscheiden,
 # ob der Spieler den zweiten Schlag (Doppelschlag) durch
 # Bewegen oder Springen unterbrechen möchte.
+# Eingabe-Teil für den Lande-Abbruch von Attack up (siehe
+# PlayerCombat.can_land_cancel_attack_up()). Laufen über die gehaltene
+# Richtung (nicht nur "just pressed"), damit auch eine schon beim
+# Aufsetzen gehaltene Richtung sofort abbricht.
+func _wants_to_land_cancel_attack_up() -> bool:
+	if (
+		combat.attack_up_land_cancel_on_move
+		and Input.get_axis("move_left", "move_right") != 0.0
+	):
+		return true
+
+	return (
+		combat.attack_up_land_cancel_on_jump
+		and Input.is_action_just_pressed("jump")
+	)
+
+
 func _wants_to_interrupt_attack() -> bool:
 	var dir: float = Input.get_axis(
 		"move_left",
