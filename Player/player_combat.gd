@@ -174,6 +174,65 @@ var _attack_up_started_in_air: bool = false
 var _attack_up_run_id: int = 0
 var attack_up_hitbox: Area2D = null
 
+@export_group("Air Attack")
+
+# Nutzer-Wunsch: Schlag in der Luft. Linksklick (ohne W) in der Luft ->
+# "Air Attack" statt attack 1. Einzelschlag, KEINE Combo, setzt die
+# Boden-Combo zurück. W + Klick in der Luft bleibt Attack up. Am Boden
+# gibt es die Air Attack nie. Kein Limit pro Sprung: ist die Animation
+# fertig, kann man in der Luft sofort wieder schlagen.
+# Aus = in der Luft wie bisher attack 1.
+@export var use_air_attack: bool = true
+
+# Achtung: großes A und Leerzeichen, genau wie in den SpriteFrames.
+@export var air_attack_name: StringName = &"Air Attack"
+
+@export var air_attack_damage: int = 1
+
+# Nutzer-Wunsch: Hitbox ist über ein FENSTER aus Frames aktiv (erster
+# Frame = 0): an beim Beginn von air_attack_hit_start_frame, aus beim
+# Beginn des Frames NACH air_attack_hit_end_frame (Standard: an bei
+# Frame 1, aus bei Frame 3). Jeder Gegner nimmt pro Schlag höchstens
+# einmal Schaden, auch wenn er beide Frames in der Hitbox steht.
+@export var air_attack_hit_start_frame: int = 1
+@export var air_attack_hit_end_frame: int = 2
+
+# Wie Attack up: standardmäßig NICHT abbrechbar (kein Laufen/Springen/
+# Bogen in der Luft). An = abbrechbar bis zum Treffer-Frame.
+@export var air_attack_cancelable: bool = false
+
+# Eigene Hitbox (Nutzer-Wunsch) - Pfad relativ zum Player.
+@export var air_attack_hitbox_path: NodePath = ^"Hitboxes/Air Attack Hitbox"
+
+# Sound-ID aus der Sound-Bank (Player -> Scripts -> SoundManager), wie
+# attack 1. Eigenen Sound in der Bank anlegen und hier eintragen.
+@export var air_attack_sound: StringName = &"sword_hit_1"
+
+# Wie attack_up_air_keep_movement: in der Luft mit normaler
+# Luftsteuerung weiterfliegen, Sprungbogen und Schwerkraft bleiben
+# unverändert. Aus = waagrecht stehen bleiben und nur fallen.
+@export var air_attack_keep_movement: bool = true
+
+# Darf man sich während der Air Attack umdrehen? Standard aus, damit
+# Animation und Hitbox nicht umklappen. An = die Hitbox dreht während
+# des Treffer-Fensters mit.
+@export var air_attack_can_turn: bool = false
+
+# Wie bei Attack up: landet man, während die Air Attack noch läuft,
+# bricht Laufen (Links/Rechts) sie sofort ab (Hitbox aus). Ohne Eingabe
+# spielt die Animation im Stehen zu Ende.
+@export var air_attack_land_cancel_on_move: bool = true
+
+# Wie oben, nur für Springen nach dem Aufsetzen.
+@export var air_attack_land_cancel_on_jump: bool = true
+
+# Läuft gerade die Air Attack.
+var _in_air_attack: bool = false
+# Zähler pro Air Attack, wie _attack_up_run_id: ein abgebrochener
+# Durchlauf fasst danach nichts mehr an.
+var _air_attack_run_id: int = 0
+var air_attack_hitbox: Area2D = null
+
 @export_group("Passiver Skill - Execution")
 
 # Nutzer-Wunsch: sobald der passive Skill "execution" im Skill-Baum
@@ -323,6 +382,21 @@ func _ready() -> void:
 	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(attack_up_name):
 		sprite.sprite_frames.set_animation_loop(attack_up_name, false)
 
+	# Air-Attack-Hitbox (Nutzer-Wunsch) - gleich eingerichtet wie Attack up.
+	air_attack_hitbox = player.get_node_or_null(air_attack_hitbox_path) as Area2D
+
+	if air_attack_hitbox != null:
+		air_attack_hitbox.monitoring = false
+		air_attack_hitbox.monitorable = true
+		air_attack_hitbox.add_to_group("player_attack")
+		air_attack_hitbox.set_meta("active", false)
+		air_attack_hitbox.set_meta("damage", air_attack_damage)
+	elif use_air_attack:
+		push_warning("PlayerCombat: Air Attack Hitbox nicht gefunden: %s" % air_attack_hitbox_path)
+
+	if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(air_attack_name):
+		sprite.sprite_frames.set_animation_loop(air_attack_name, false)
+
 
 func attack() -> void:
 	if player.is_rolling:
@@ -341,6 +415,11 @@ func attack() -> void:
 	# Nutzer-Wunsch: W halten + Schlag -> Aufwärts-Schlag statt attack 1.
 	if _wants_attack_up():
 		await _attack_up()
+		return
+
+	# Nutzer-Wunsch: in der Luft (ohne W) -> Air Attack statt attack 1.
+	if _wants_air_attack():
+		await _air_attack()
 		return
 
 	attacking = true
@@ -653,6 +732,235 @@ func _attack_up() -> void:
 	_end_attack()
 
 
+# ============================================================
+# AIR ATTACK (SCHLAG IN DER LUFT)
+# ============================================================
+
+func _wants_air_attack() -> bool:
+	if not use_air_attack or air_attack_hitbox == null:
+		return false
+
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation(air_attack_name):
+		return false
+
+	# Nutzer-Wunsch: nur in der Luft möglich.
+	return not player.is_on_floor()
+
+
+# Wird von player.gd jeden Physik-Frame während eines Angriffs
+# abgefragt: true = Air Attack läuft in der Luft und die normale
+# Luftsteuerung soll aktiv bleiben (siehe air_attack_keep_movement).
+func is_air_attack_air_movement() -> bool:
+	return (
+		attacking
+		and _in_air_attack
+		and air_attack_keep_movement
+		and not player.is_on_floor()
+	)
+
+
+# Wie can_land_cancel_attack_up(): läuft eine Air Attack, steht man
+# jetzt am Boden und ist ein Lande-Abbruch eingeschaltet? Die Eingabe
+# (Laufen/Springen) prüft player.gd. Die Air Attack startet immer in der
+# Luft, deshalb braucht es hier keinen "in der Luft gestartet"-Merker.
+func can_land_cancel_air_attack() -> bool:
+	return (
+		attacking
+		and _in_air_attack
+		and player.is_on_floor()
+		and (air_attack_land_cancel_on_move or air_attack_land_cancel_on_jump)
+	)
+
+
+# Bricht die Air Attack sofort ab: Hitbox sicher aus, Angriff beendet.
+# Die noch wartende _air_attack()-Coroutine merkt über
+# _air_attack_run_id, dass sie veraltet ist.
+func land_cancel_air_attack() -> void:
+	_air_attack_run_id += 1
+
+	if air_attack_hitbox != null:
+		air_attack_hitbox.monitoring = false
+		air_attack_hitbox.set_meta("active", false)
+
+	_end_attack()
+
+
+func _air_attack() -> void:
+	attacking = true
+	_in_air_attack = true
+	_air_attack_run_id += 1
+	var run_id: int = _air_attack_run_id
+	combo_requested = false
+	cancel_requested = false
+
+	# Nicht Teil der Combo: Treffer-Merker zurücksetzen, damit am Boden
+	# wieder ganz normal mit attack 1 begonnen wird.
+	_attack_1_landed = false
+	_attack_2_landed = false
+
+	second_hit_cancel_window_open = air_attack_cancelable
+
+	sprite.play(air_attack_name)
+	_play_sound(air_attack_sound)
+
+	# Auf gültige Frames begrenzen - ein zu großer Wert würde sonst ewig
+	# warten (Animation bleibt auf dem letzten Frame stehen).
+	var last_frame: int = max(sprite.sprite_frames.get_frame_count(air_attack_name) - 1, 0)
+	var start_frame: int = clampi(air_attack_hit_start_frame, 0, last_frame)
+	var end_frame: int = clampi(air_attack_hit_end_frame, start_frame, last_frame)
+
+	await _wait_for_sprite_frame(air_attack_name, start_frame)
+
+	# Inzwischen per Lande-Abbruch beendet -> nichts mehr anfassen.
+	if run_id != _air_attack_run_id:
+		return
+
+	second_hit_cancel_window_open = false
+
+	# Abgebrochen, gestorben oder Animation von außen überschrieben ->
+	# Hitbox gar nicht erst einschalten.
+	if (
+		cancel_requested
+		or bool(player.get("dead"))
+		or sprite.animation != air_attack_name
+	):
+		_end_attack()
+		return
+
+	await _activate_air_attack_hitbox(run_id, end_frame)
+
+	if run_id != _air_attack_run_id:
+		return
+
+	await _wait_for_animation_end(air_attack_name)
+
+	if run_id != _air_attack_run_id:
+		return
+
+	_end_attack()
+
+
+# Wie _activate_hitbox(), aber die Hitbox bleibt nicht hitbox_active_time
+# lang an, sondern so lange, bis die Animation über end_frame hinaus ist
+# (Frame-Fenster, Nutzer-Wunsch). Gleiche Echter-Schaden-Erkennung.
+#
+# Pro Schlag höchstens ein Treffer je Gegner: die Gegner sperren sich
+# selbst nur kurz (damage_hit_locked bzw. hit_lock, meist 0.12 s), das
+# Fenster aus 2 Frames bei 11 FPS ist aber ~0.18 s lang. Deshalb wird die
+# Treffer-Sperre eines schon getroffenen Gegners bis zum Fensterende
+# gehalten und danach wieder freigegeben (nur wenn wir sie gesetzt haben).
+func _activate_air_attack_hitbox(run_id: int, end_frame: int) -> void:
+	var hitbox: Area2D = air_attack_hitbox
+
+	hit_targets.clear()
+	_last_hitbox_landed = false
+
+	_alive_at_activation.clear()
+	_hp_at_activation.clear()
+
+	for enemy: Node in get_tree().get_nodes_in_group(&"enemy"):
+		if not bool(enemy.get("dead")):
+			_alive_at_activation[enemy.get_instance_id()] = true
+
+		var enemy_hp: Variant = enemy.get("hp")
+
+		if enemy_hp is int or enemy_hp is float:
+			_hp_at_activation[enemy.get_instance_id()] = float(enemy_hp)
+
+	_update_hitbox_side(hitbox)
+
+	hitbox.set_meta("active", true)
+	hitbox.set_meta("damage", air_attack_damage)
+	hitbox.monitoring = true
+
+	var hit_enemies: Dictionary = {}
+	# Instanz-ID -> Liste der Sperr-Properties, die WIR gesetzt haben.
+	var held_locks: Dictionary = {}
+
+	# Robustheit: Zeitgrenze aus Frameanzahl/FPS, falls die Animation
+	# hängt oder speed_scale 0 ist.
+	var fps: float = sprite.sprite_frames.get_animation_speed(air_attack_name) * absf(sprite.speed_scale)
+	var max_time: float = (float(end_frame + 2) / fps if fps > 0.0 else 1.0) + 0.2
+	var elapsed: float = 0.0
+
+	await get_tree().physics_frame
+
+	while true:
+		if (
+			run_id != _air_attack_run_id
+			or cancel_requested
+			or not is_inside_tree()
+			or bool(player.get("dead"))
+			or not is_instance_valid(sprite)
+			or sprite.animation != air_attack_name
+			or sprite.frame > end_frame
+			or elapsed >= max_time
+		):
+			break
+
+		if air_attack_can_turn:
+			_update_hitbox_side(hitbox)
+
+		# Gegner ohne eigene Hurtbox bekommen den Schaden über ihren
+		# Körper - aber nicht nochmal, wenn sie schon über ihre Hurtbox
+		# getroffen wurden.
+		for body: Node in hitbox.get_overlapping_bodies():
+			if not hit_enemies.has(body.get_instance_id()):
+				_damage_body(body, air_attack_damage)
+
+		_collect_damaged_enemies(hitbox, hit_enemies)
+		_hold_hit_locks(hit_enemies, held_locks)
+
+		await get_tree().physics_frame
+		elapsed += get_physics_process_delta_time()
+
+	_last_hitbox_landed = not hit_enemies.is_empty()
+
+	hitbox.monitoring = false
+	hitbox.set_meta("active", false)
+
+	_release_held_hit_locks(held_locks)
+
+
+const _HIT_LOCK_PROPERTIES: Array[StringName] = [&"damage_hit_locked", &"hit_lock"]
+
+
+func _hold_hit_locks(hit_enemies: Dictionary, held_locks: Dictionary) -> void:
+	for id: int in hit_enemies.keys():
+		var obj: Variant = hit_enemies[id]
+
+		if not is_instance_valid(obj) or bool(obj.get("dead")):
+			continue
+
+		var node: Node = obj
+
+		for prop: StringName in _HIT_LOCK_PROPERTIES:
+			# Nur sperren, wenn der Gegner die Property hat und seine
+			# eigene Sperre schon wieder frei ist.
+			if node.get(prop) is bool and node.get(prop) == false:
+				node.set(prop, true)
+
+				if not held_locks.has(id):
+					held_locks[id] = {"node": node, "props": []}
+
+				if not held_locks[id]["props"].has(prop):
+					held_locks[id]["props"].append(prop)
+
+
+func _release_held_hit_locks(held_locks: Dictionary) -> void:
+	for id: int in held_locks.keys():
+		var obj: Variant = held_locks[id]["node"]
+
+		# Tote Gegner sperren sich in _die() selbst dauerhaft - so lassen.
+		if not is_instance_valid(obj) or bool(obj.get("dead")):
+			continue
+
+		var node: Node = obj
+
+		for prop: StringName in held_locks[id]["props"]:
+			node.set(prop, false)
+
+
 # Robustheit (siehe CLAUDE.md): nicht nur auf animation_finished
 # warten, sondern zusätzlich mit einer Zeitgrenze aus Frameanzahl/FPS
 # absichern, sonst kann "attacking" für immer hängen bleiben (z.B. wenn
@@ -721,6 +1029,10 @@ func cancel_attack() -> void:
 		attack_up_hitbox.monitoring = false
 		attack_up_hitbox.set_meta("active", false)
 
+	if air_attack_hitbox != null:
+		air_attack_hitbox.monitoring = false
+		air_attack_hitbox.set_meta("active", false)
+
 
 # Läuft gerade Attack 2 oder 3 und darf (Nutzer-Wunsch) nicht
 # abgebrochen werden? Wird von player.gd abgefragt, z.B. damit der
@@ -735,6 +1047,9 @@ func is_uncancelable_attack() -> bool:
 	if _in_attack_up and not attack_up_cancelable:
 		return true
 
+	if _in_air_attack and not air_attack_cancelable:
+		return true
+
 	return _in_attack_3 and not attack_3_cancelable
 
 
@@ -743,6 +1058,7 @@ func _end_attack() -> void:
 	_in_attack_3 = false
 	_in_attack_up = false
 	_attack_up_started_in_air = false
+	_in_air_attack = false
 	_attack_3_dash_left = 0.0
 	attacking = false
 	combo_requested = false

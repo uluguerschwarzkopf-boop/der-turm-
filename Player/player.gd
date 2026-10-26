@@ -707,6 +707,17 @@ func _physics_process(delta: float) -> void:
 	):
 		combat.land_cancel_attack_up()
 
+	# Nutzer-Wunsch: Air Attack genauso - nach dem Landen bricht Laufen/
+	# Springen sie sofort ab (Schalter in PlayerCombat, Gruppe "Air Attack").
+	if (
+		combat != null
+		and combat.attacking
+		and combat.has_method("can_land_cancel_air_attack")
+		and combat.can_land_cancel_air_attack()
+		and _wants_to_land_cancel_air_attack()
+	):
+		combat.land_cancel_air_attack()
+
 	if combat != null and combat.attacking:
 		if (
 			combat.can_cancel_second_hit()
@@ -737,6 +748,25 @@ func _physics_process(delta: float) -> void:
 
 				if air_dir != 0.0 and combat.attack_up_air_can_turn:
 					facing_right = air_dir > 0
+
+					if sprite != null:
+						sprite.flip_h = not facing_right
+
+			# Nutzer-Wunsch: Air Attack bewegt sich in der Luft genauso wie
+			# Attack up (PlayerCombat, Gruppe "Air Attack").
+			elif (
+				combat.has_method("is_air_attack_air_movement")
+				and combat.is_air_attack_air_movement()
+			):
+				var air_attack_dir: float = Input.get_axis(
+					"move_left",
+					"move_right"
+				)
+
+				velocity.x = air_attack_dir * speed
+
+				if air_attack_dir != 0.0 and combat.air_attack_can_turn:
+					facing_right = air_attack_dir > 0
 
 					if sprite != null:
 						sprite.flip_h = not facing_right
@@ -982,6 +1012,20 @@ func _wants_to_land_cancel_attack_up() -> bool:
 
 	return (
 		combat.attack_up_land_cancel_on_jump
+		and Input.is_action_just_pressed("jump")
+	)
+
+
+# Wie _wants_to_land_cancel_attack_up(), nur mit den Air-Attack-Schaltern.
+func _wants_to_land_cancel_air_attack() -> bool:
+	if (
+		combat.air_attack_land_cancel_on_move
+		and Input.get_axis("move_left", "move_right") != 0.0
+	):
+		return true
+
+	return (
+		combat.air_attack_land_cancel_on_jump
 		and Input.is_action_just_pressed("jump")
 	)
 

@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://c4ncag42h5fu4"]
+[gd_scene format=4 uid="uid://d1x2aqjnkh5ig"]
 
 [ext_resource type="PackedScene" uid="uid://dveuxdnhe6qss" path="res://Player/player.tscn" id="1_3c52g"]
 [ext_resource type="Script" uid="uid://rlx6ysdasv0v" path="res://Ebenen/Gebiet 1/camera_bounds.gd" id="2_h563k"]
