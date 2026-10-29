@@ -17,10 +17,25 @@ extends CharacterBody2D
 # Spieler klar unter der Plattform landet.
 @export var drop_through_disable_time: float = 0.35
 
-@export var heal_amount: int = 1
-@export var drink_heal_delay: float = 0.35
-@export var drink_total_time: float = 0.75
 @export var hurt_flash_time: float = 0.12
+
+
+@export_group("Trank (drink)")
+
+@export var heal_amount: int = 1
+# Zeitpunkt der Heilung ab Trink-Start (Sekunden) - unverändert.
+@export var drink_heal_delay: float = 0.35
+# Mindestdauer des Trinkens. Nutzer-Korrektur: früher war das die
+# EINZIGE Dauer (0.75 s), die "drink"-Animation (12 Frames / 7 FPS
+# = ca. 1.71 s) wurde dadurch nach der Hälfte von "idle" abgewürgt.
+@export var drink_total_time: float = 0.75
+# An = Trinken dauert mindestens so lange wie die Animation
+# (Dauer aus Frames/FPS, siehe _get_animation_length()).
+@export var drink_wait_for_animation: bool = true
+@export var drink_animation_name: StringName = &"drink"
+# Zeit-Sicherung: so lange wird nach der berechneten Dauer höchstens
+# noch auf animation_finished gewartet, damit Trinken nie hängt.
+@export var drink_animation_timeout_extra: float = 0.25
 
 
 @export_group("Footstep Timing (NICHT die Audiodatei!)")
@@ -256,6 +271,11 @@ var roll_direction: float = 1.0
 var _rolls_remaining_in_chain: int = 0
 
 var is_drinking: bool = false
+# Zählt jeden Trink-Start hoch. Wird ein Trinken abgebrochen (z.B.
+# eingesponnen) und danach neu gestartet, erkennt die alte Coroutine
+# daran, dass sie nicht mehr zuständig ist, und beendet/überschreibt
+# das neue Trinken bzw. die eingesponnen-Animation nicht mit "idle".
+var _drink_version: int = 0
 var dead: bool = false
 var control_locked: bool = false
 
@@ -2799,40 +2819,138 @@ func start_drink() -> void:
 		return
 
 	is_drinking = true
+	_drink_version += 1
+	var my_version: int = _drink_version
 	velocity.x = 0
+
+	var anim_length: float = 0.0
 
 	if (
 		sprite != null
 		and sprite.sprite_frames != null
-		and sprite.sprite_frames.has_animation("drink")
+		and sprite.sprite_frames.has_animation(drink_animation_name)
 	):
-		sprite.play("drink")
+		sprite.play(drink_animation_name)
+		anim_length = _get_animation_length(drink_animation_name)
 
 	if not await _wait_safely(drink_heal_delay):
-		is_drinking = false
+		_end_drink_if_current(my_version, false)
 		return
 
 	if scene_is_changing:
-		is_drinking = false
+		_end_drink_if_current(my_version, false)
 		return
 
 	if inventory != null and inventory.use_potion():
 		if health != null:
 			health.heal(heal_amount)
 
+	# Nutzer-Korrektur: Gesamtdauer = mindestens drink_total_time UND
+	# (falls drink_wait_for_animation an ist) mindestens die Animations-
+	# länge - vorher wurde die Animation nach 0.75 s abgewürgt.
+	var total_time: float = drink_total_time
+
+	if drink_wait_for_animation:
+		total_time = max(total_time, anim_length)
+
 	var remaining_time: float = max(
-		drink_total_time - drink_heal_delay,
+		total_time - drink_heal_delay,
 		0.05
 	)
 
 	if not await _wait_safely(remaining_time):
-		is_drinking = false
+		_end_drink_if_current(my_version, false)
 		return
 
+	# Abgebrochen (eingesponnen) oder schon ein neues Trinken gestartet -
+	# dann hier nichts mehr anfassen, sonst würde "idle" die neue
+	# Animation überschreiben.
+	if my_version != _drink_version or not is_drinking:
+		return
+
+	# Zeit-Sicherung: läuft die Animation wegen Frame-Ruckler noch den
+	# letzten Frame, kurz auf animation_finished warten - aber höchstens
+	# drink_animation_timeout_extra, damit Trinken nie hängen bleibt.
+	if (
+		drink_wait_for_animation
+		and sprite != null
+		and is_instance_valid(sprite)
+		and sprite.animation == drink_animation_name
+		and sprite.is_playing()
+	):
+		if not await _wait_for_animation_or_timeout(
+			drink_animation_timeout_extra
+		):
+			_end_drink_if_current(my_version, false)
+			return
+
+	_end_drink_if_current(my_version, true)
+
+
+# Beendet das Trinken nur, wenn diese Coroutine noch die aktuelle ist
+# (siehe _drink_version). play_idle = false bei Abbruch.
+func _end_drink_if_current(my_version: int, play_idle: bool) -> void:
+	if my_version != _drink_version:
+		return
+
+	var was_drinking: bool = is_drinking
 	is_drinking = false
 
-	if sprite != null and is_instance_valid(sprite):
+	if (
+		play_idle
+		and was_drinking
+		and sprite != null
+		and is_instance_valid(sprite)
+	):
 		sprite.play("idle")
+
+
+# Länge einer SpriteFrames-Animation in Sekunden: Summe der Frame-
+# Dauern / (FPS × speed_scale). 0.0, wenn sie fehlt oder FPS 0 ist.
+func _get_animation_length(anim_name: StringName) -> float:
+	if sprite == null or sprite.sprite_frames == null:
+		return 0.0
+
+	var frames: SpriteFrames = sprite.sprite_frames
+
+	if not frames.has_animation(anim_name):
+		return 0.0
+
+	var fps: float = frames.get_animation_speed(anim_name)
+	fps *= absf(sprite.speed_scale)
+
+	if fps <= 0.0:
+		return 0.0
+
+	var total_frame_units: float = 0.0
+
+	for i in frames.get_frame_count(anim_name):
+		total_frame_units += frames.get_frame_duration(anim_name, i)
+
+	return total_frame_units / fps
+
+
+# Wartet auf animation_finished ODER höchstens timeout Sekunden
+# (was zuerst kommt). false = Spieler tot/Szenenwechsel.
+func _wait_for_animation_or_timeout(timeout: float) -> bool:
+	var tree := get_tree()
+
+	if tree == null or sprite == null or not is_instance_valid(sprite):
+		return false
+
+	var timer := tree.create_timer(max(timeout, 0.001))
+
+	while (
+		timer.time_left > 0.0
+		and is_instance_valid(sprite)
+		and sprite.is_playing()
+	):
+		await tree.process_frame
+
+		if not _can_continue_async_action():
+			return false
+
+	return _can_continue_async_action()
 
 
 # ============================================================
