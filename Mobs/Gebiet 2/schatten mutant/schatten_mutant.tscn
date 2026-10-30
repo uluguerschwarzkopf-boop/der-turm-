@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bjnya2np4goa" path="res://Mobs/Gebiet 2/schatten mutant/Attack 1-Sheet.png" id="1_efxcc"]
 [ext_resource type="Texture2D" uid="uid://b8dlvp0cn0oap" path="res://Mobs/Gebiet 2/schatten mutant/Aufwachen-Sheet.png" id="3_c0afx"]
+[ext_resource type="Texture2D" uid="uid://cml6wcow22s8a" path="res://Mobs/Gebiet 2/schatten mutant/Attack 2 ranziehen-Sheet.png" id="3_igxon"]
 [ext_resource type="Texture2D" uid="uid://dnvqrvoqxngjw" path="res://Mobs/Gebiet 2/schatten mutant/hittet-Sheet.png" id="3_j1pvi"]
 [ext_resource type="Texture2D" uid="uid://b6ywrapqlk47c" path="res://Mobs/Gebiet 2/schatten mutant/laufen-Sheet.png" id="4_c0afx"]
 [ext_resource type="Texture2D" uid="uid://bed0iifppx736" path="res://Mobs/Gebiet 2/schatten mutant/DA liegend-Sheet.png" id="5_igxon"]
@@ -58,6 +59,74 @@ region = Rect2(1240, 0, 124, 124)
 [sub_resource type="AtlasTexture" id="AtlasTexture_e4wb1"]
 atlas = ExtResource("1_efxcc")
 region = Rect2(1364, 0, 124, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sxoh0"]
+atlas = ExtResource("3_igxon")
+region = Rect2(0, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_76w0w"]
+atlas = ExtResource("3_igxon")
+region = Rect2(224, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cm13r"]
+atlas = ExtResource("3_igxon")
+region = Rect2(448, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6r8wk"]
+atlas = ExtResource("3_igxon")
+region = Rect2(672, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_et5j1"]
+atlas = ExtResource("3_igxon")
+region = Rect2(896, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pnyy8"]
+atlas = ExtResource("3_igxon")
+region = Rect2(1120, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ac70w"]
+atlas = ExtResource("3_igxon")
+region = Rect2(1344, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_22tch"]
+atlas = ExtResource("3_igxon")
+region = Rect2(1568, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x1ulv"]
+atlas = ExtResource("3_igxon")
+region = Rect2(1792, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c6ltw"]
+atlas = ExtResource("3_igxon")
+region = Rect2(2016, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2adq2"]
+atlas = ExtResource("3_igxon")
+region = Rect2(2240, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ys0fi"]
+atlas = ExtResource("3_igxon")
+region = Rect2(2464, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_34j18"]
+atlas = ExtResource("3_igxon")
+region = Rect2(2688, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fljsa"]
+atlas = ExtResource("3_igxon")
+region = Rect2(2912, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rnnv1"]
+atlas = ExtResource("3_igxon")
+region = Rect2(3136, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wjhcq"]
+atlas = ExtResource("3_igxon")
+region = Rect2(3360, 0, 224, 124)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tjek1"]
+atlas = ExtResource("3_igxon")
+region = Rect2(3584, 0, 224, 124)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kvwdf"]
 atlas = ExtResource("3_c0afx")
@@ -276,6 +345,62 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_sxoh0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_76w0w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cm13r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6r8wk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_et5j1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pnyy8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ac70w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_22tch")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x1ulv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c6ltw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2adq2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ys0fi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_34j18")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fljsa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rnnv1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wjhcq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tjek1")
+}],
+"loop": 0,
+"name": &"Attack 2 ranziehen",
+"speed": 7.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_kvwdf")
 }, {
 "duration": 1.0,
@@ -446,6 +571,7 @@ size = Vector2(14, 29)
 [node name="Schatten mutant" type="CharacterBody2D" unique_id=1655272891]
 script = ExtResource("9_smscript")
 max_health = 12
+damage = 2
 move_speed = 20.0
 attack_cooldown = 1.5
 attack_damage_frame = 6
@@ -453,9 +579,8 @@ attack_damage_frame = 6
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1583790580]
 position = Vector2(1, -18)
 sprite_frames = SubResource("SpriteFrames_yjykm")
-animation = &"tot"
-frame = 8
-frame_progress = 1.0
+animation = &"Attack 2 ranziehen"
+frame_progress = 0.71557015
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1333911879]
 position = Vector2(0, -14.5)

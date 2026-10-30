@@ -2635,7 +2635,7 @@ animations = [{
 }],
 "loop": 0,
 "name": &"laufen in idle",
-"speed": 9.0
+"speed": 11.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -3032,8 +3032,8 @@ position_smoothing_enabled = true
 material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"drink"
-frame = 12
+animation = &"laufen in idle"
+frame = 3
 frame_progress = 1.0
 offset = Vector2(1, 0)
 
