@@ -84,6 +84,14 @@ func _ready() -> void:
 		add_child(voice)
 		_players.append(voice)
 
+	# Nutzer-Wunsch: Gegner laufen durcheinander hindurch (siehe dort,
+	# warum das hier hängt und kein eigener Autoload ist).
+	var collision_ignore: Node = preload(
+		"res://Game/enemy_collision_ignore.gd"
+	).new()
+	collision_ignore.name = "EnemyCollisionIgnore"
+	add_child(collision_ignore)
+
 
 # Spielt den Sound "id" aus der Kategorie "category" an der
 # übergebenen Position ab - tut bewusst nichts (kein Fehler, kein

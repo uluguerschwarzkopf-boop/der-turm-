@@ -786,7 +786,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_87xyo")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Attack_1",
 "speed": 6.0
 }, {
@@ -872,7 +872,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ngxea")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Attack_2",
 "speed": 6.0
 }, {
@@ -907,7 +907,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_vmr6r")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Awake",
 "speed": 5.0
 }, {
@@ -921,7 +921,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ylkb1")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Beam_end",
 "speed": 5.0
 }, {
@@ -935,7 +935,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_jq6dx")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Beam_loop",
 "speed": 5.0
 }, {
@@ -979,7 +979,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ghyr8")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Beam_start",
 "speed": 5.0
 }, {
@@ -1146,7 +1146,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_of8m6")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Death_P2",
 "speed": 6.0
 }, {
@@ -1160,7 +1160,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_vslb2")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Hittet_1",
 "speed": 10.0
 }, {
@@ -1174,7 +1174,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_3kge4")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Hittet_2",
 "speed": 10.0
 }, {
@@ -1188,7 +1188,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_eoldl")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Hittet_3",
 "speed": 10.0
 }, {
@@ -1214,7 +1214,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_kk3nl")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Summon_End",
 "speed": 5.0
 }, {
@@ -1231,7 +1231,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_46bhj")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Summon_Loop",
 "speed": 5.0
 }, {
@@ -1257,7 +1257,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gbn10")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Summon_Start",
 "speed": 5.0
 }, {
@@ -1286,7 +1286,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_78ocx")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Walk",
 "speed": 4.0
 }]
@@ -1307,7 +1307,7 @@ size = Vector2(79, 358.5)
 
 [node name="FireKnightP2" type="CharacterBody2D" unique_id=1019719102]
 script = ExtResource("1_ndd4v")
-max_health = 1
+max_health = 20
 move_speed = 8.0
 attack_1_range = 30.0
 attack_2_range = 35.0
@@ -1319,7 +1319,6 @@ attack_2_hitbox_3_end = 18
 meteor_scene = ExtResource("2_5n4dm")
 lava_shard_scene = ExtResource("3_77mco")
 orbit_fireball_scene = ExtResource("4_b66p3")
-meteor_damage = 3
 orbit_fireball_speed = 100.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=319104593]

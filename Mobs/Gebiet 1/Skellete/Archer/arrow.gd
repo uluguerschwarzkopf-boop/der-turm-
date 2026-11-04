@@ -7,11 +7,18 @@ extends Area2D
 
 @export var enemy_hurtbox_group: StringName = &"enemy_hurtbox"
 @export var summon_group: StringName = &"player_summon"
+@export var enemy_group: StringName = &"enemy"
 
 var direction: float = 1.0
 var shooter: Node = null
 
 var has_hit: bool = false
+
+# Nutzer-Wunsch: Gegner schaden sich nicht gegenseitig. Dieser Pfeil wird
+# aber auch vom Spielerbogen und den Pfeilfallen benutzt, die weiter
+# Gegner treffen sollen - deshalb zählt der Schütze. Wird beim Abschuss
+# gemerkt, damit es auch gilt, wenn der Schütze vor dem Einschlag stirbt.
+var _shot_by_enemy: bool = false
 
 # Wird von der Lichtkugel-Aura gesetzt, solange der Pfeil sie
 # durchfliegt (1.0 = normale Geschwindigkeit).
@@ -50,6 +57,9 @@ func setup(
 ) -> void:
 	direction = new_direction
 	shooter = new_shooter
+	_shot_by_enemy = (
+		new_shooter != null and new_shooter.is_in_group(enemy_group)
+	)
 
 	if direction > 0.0:
 		scale.x = -abs(scale.x)
@@ -80,6 +90,9 @@ func _on_body_entered(body: Node) -> void:
 	if _is_shooter_or_child(body):
 		return
 
+	if _is_ignored_enemy(body):
+		return
+
 	var target: Node = _find_damage_target(body)
 
 	if target != null:
@@ -97,6 +110,9 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 
 	if _is_shooter_or_child(area):
+		return
+
+	if _is_ignored_enemy(area):
 		return
 
 	# Beschworenes Skelett:
@@ -175,6 +191,23 @@ func _destroy_arrow() -> void:
 	monitorable = false
 
 	queue_free()
+
+
+# Gegner-Pfeile fliegen durch alle anderen Gegner hindurch (Körper und
+# Hurtbox), ohne Schaden und ohne zu zerbrechen.
+func _is_ignored_enemy(node: Node) -> bool:
+	if not _shot_by_enemy:
+		return false
+
+	var current: Node = node
+
+	while current != null:
+		if current.is_in_group(enemy_group):
+			return true
+
+		current = current.get_parent()
+
+	return false
 
 
 func _find_damage_target(node: Node) -> Node:

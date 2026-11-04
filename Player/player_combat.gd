@@ -94,6 +94,11 @@ var _attack_3_dash_left: float = 0.0
 
 # Läuft gerade der 3. Schlag.
 var _in_attack_3: bool = false
+var _treffer_gemeldet: bool = false
+var _rueckstoss_gegner: Dictionary = {}
+var _combo_nummer: int = 0
+var _boden_combo_laeuft: bool = false
+var _puffer_rest: float = 0.0
 var attack_3_hitbox: Area2D = null
 
 @export_group("Attack up")
@@ -400,6 +405,7 @@ func _ready() -> void:
 
 func attack() -> void:
 	if player.is_rolling:
+		merke_angriff_im_puffer()
 		return
 
 	if attacking:
@@ -410,6 +416,8 @@ func attack() -> void:
 			or (sprite.animation == attack_2_name and _can_do_attack_3())
 		):
 			combo_requested = true
+		else:
+			merke_angriff_im_puffer()
 		return
 
 	# Nutzer-Wunsch: W halten + Schlag -> Aufwärts-Schlag statt attack 1.
@@ -426,6 +434,12 @@ func attack() -> void:
 	combo_requested = false
 	cancel_requested = false
 	second_hit_cancel_window_open = false
+
+	# Bricht die Rolle diese Combo ab, läuft diese Coroutine nach dem nächsten
+	# await nicht weiter (siehe breche_combo_fuer_rolle_ab()).
+	_combo_nummer += 1
+	var nummer: int = _combo_nummer
+	_boden_combo_laeuft = true
 
 	# Nutzer-Wunsch (Execution, passiver Skill - siehe Game/skill_tree_
 	# data.gd id &"execution"): steht beim Zuschlagen ein freigeschal-
@@ -498,11 +512,17 @@ func attack() -> void:
 	else:
 		await get_tree().create_timer(attack_1_hit_delay).timeout
 
+	if nummer != _combo_nummer:
+		return
+
 	# target_hitbox bleibt null -> _activate_hitbox() benutzt die ganz
 	# normale AttackHitbox (siehe Kommentar dort), execution_mode=true
 	# sorgt nur dafür, dass _damage_body() weiter unten den Execution-
 	# Schaden statt des normalen Schadens berechnet.
 	await _activate_hitbox(-1, null, is_execution)
+
+	if nummer != _combo_nummer:
+		return
 
 	# Neue Combo: Treffer-Merker neu setzen (Execution zählt wie
 	# attack 1).
@@ -510,6 +530,9 @@ func attack() -> void:
 	_attack_2_landed = false
 
 	await sprite.animation_finished
+
+	if nummer != _combo_nummer:
+		return
 
 	if combo_requested:
 		combo_requested = false
@@ -532,6 +555,9 @@ func attack() -> void:
 		else:
 			await get_tree().create_timer(attack_2_hit_delay).timeout
 
+		if nummer != _combo_nummer:
+			return
+
 		second_hit_cancel_window_open = false
 
 		if cancel_requested:
@@ -540,9 +566,15 @@ func attack() -> void:
 
 		await _activate_hitbox()
 
+		if nummer != _combo_nummer:
+			return
+
 		_attack_2_landed = _last_hitbox_landed
 
 		await sprite.animation_finished
+
+		if nummer != _combo_nummer:
+			return
 
 		# Nutzer-Wunsch: dritter Schlag, wenn während Attack 2
 		# nochmal geklickt wurde.
@@ -573,17 +605,79 @@ func attack() -> void:
 			else:
 				await get_tree().create_timer(attack_3_hit_delay).timeout
 
+			if nummer != _combo_nummer:
+				return
+
 			second_hit_cancel_window_open = false
 
 			if cancel_requested:
 				_end_attack()
 				return
 
+			if _combat_settings() != null:
+				_combat_settings().on_schlag_3()
+
 			await _activate_hitbox(attack_3_damage, attack_3_hitbox)
+
+			if nummer != _combo_nummer:
+				return
 
 			await sprite.animation_finished
 
+			if nummer != _combo_nummer:
+				return
+
 	_end_attack()
+
+
+# Nutzer-Wunsch: Rollen bricht die Boden-Combo ab. Gibt false zurück, wenn
+# gerade etwas anderes läuft (Schlag nach oben, Air Attack, Skill): die
+# haben eigene Abläufe und werden hier nicht unterbrochen.
+func breche_combo_fuer_rolle_ab() -> bool:
+	if not _boden_combo_laeuft:
+		return false
+
+	_combo_nummer += 1
+	_alle_hitboxen_aus()
+	_end_attack()
+
+	return true
+
+
+func _alle_hitboxen_aus() -> void:
+	for hitbox: Area2D in [attack_hitbox, attack_3_hitbox, attack_up_hitbox, air_attack_hitbox]:
+		if hitbox != null:
+			hitbox.monitoring = false
+			hitbox.set_meta("active", false)
+
+
+# Nutzer-Wunsch: zu früher Klick wird kurz gemerkt und nachgeholt, sobald ein
+# Schlag wieder möglich ist (Dauer und An/Aus in CombatSettings).
+func merke_angriff_im_puffer() -> void:
+	var einstellungen := _combat_settings()
+
+	if einstellungen != null and einstellungen.puffer_an:
+		_puffer_rest = einstellungen.puffer_zeit
+
+
+# Wird von player.gd jeden Physik-Frame aufgerufen.
+func pruefe_angriffs_puffer(delta: float) -> void:
+	if _puffer_rest <= 0.0:
+		return
+
+	_puffer_rest -= delta
+
+	if (
+		attacking
+		or player.is_rolling
+		or player.is_drinking
+		or player.control_locked
+		or player._is_active_skill_busy()
+	):
+		return
+
+	_puffer_rest = 0.0
+	attack()
 
 
 # Wird von player.gd jeden Physik-Frame während eines Angriffs
@@ -874,6 +968,8 @@ func _activate_air_attack_hitbox(run_id: int, end_frame: int) -> void:
 	hitbox.monitoring = true
 
 	var hit_enemies: Dictionary = {}
+	_treffer_gemeldet = false
+	_rueckstoss_gegner.clear()
 	# Instanz-ID -> Liste der Sperr-Properties, die WIR gesetzt haben.
 	var held_locks: Dictionary = {}
 
@@ -909,6 +1005,7 @@ func _activate_air_attack_hitbox(run_id: int, end_frame: int) -> void:
 				_damage_body(body, air_attack_damage)
 
 		_collect_damaged_enemies(hitbox, hit_enemies)
+		_melde_treffer(hit_enemies, false, true)
 		_hold_hit_locks(hit_enemies, held_locks)
 
 		await get_tree().physics_frame
@@ -1060,6 +1157,7 @@ func _end_attack() -> void:
 	_attack_up_started_in_air = false
 	_in_air_attack = false
 	_attack_3_dash_left = 0.0
+	_boden_combo_laeuft = false
 	attacking = false
 	combo_requested = false
 	cancel_requested = false
@@ -1147,6 +1245,8 @@ func _activate_hitbox(
 	var hit_enemies: Dictionary = {}
 	# Gegner, für die der Attack-3-Hit-Effekt schon kam.
 	var effect_shown: Dictionary = {}
+	_treffer_gemeldet = false
+	_rueckstoss_gegner.clear()
 
 	# Jeden Physik-Frame der aktiven Zeit prüfen, wer Schaden bekommen
 	# hat - Gebiet-2-Mobs nehmen den Schaden selbst über ihre Hurtbox,
@@ -1155,6 +1255,7 @@ func _activate_hitbox(
 
 	while true:
 		_collect_damaged_enemies(hitbox, hit_enemies)
+		_melde_treffer(hit_enemies, hitbox == attack_3_hitbox)
 
 		# Nutzer-Wunsch: Attack-3-Hit-Effekt sofort beim Treffer, in der
 		# Mitte des getroffenen Gegners (siehe Player
@@ -1516,6 +1617,30 @@ func _damage_body(
 			vigor_gain += RunState.VIGOR_BLOODLUST_BONUS
 
 		RunState.add_vigor(vigor_gain)
+
+
+# Trefferfeedback (Zeitlupe, Ruckler) steht im Node "CombatSettings" am Player.
+func _combat_settings() -> Node:
+	return player.get_node_or_null("CombatSettings") if player != null else null
+
+
+# Meldet den ersten echten Treffer eines Schlags genau einmal, auch wenn der
+# Schlag mehrere Gegner erwischt - sonst würde sich die Zeitlupe aufsummieren.
+func _melde_treffer(hit_enemies: Dictionary, ist_schlag_3: bool, ist_air_attack: bool = false) -> void:
+	var einstellungen := _combat_settings()
+
+	if einstellungen == null or hit_enemies.is_empty():
+		return
+
+	if not _treffer_gemeldet:
+		_treffer_gemeldet = true
+		einstellungen.on_treffer(ist_schlag_3, ist_air_attack)
+
+	# Rückstoß aber pro Gegner: jeder getroffene wird einmal weggeschoben.
+	for id: int in hit_enemies.keys():
+		if not _rueckstoss_gegner.has(id):
+			_rueckstoss_gegner[id] = true
+			einstellungen.on_gegner_getroffen(hit_enemies[id], ist_schlag_3)
 
 
 func _do_hitstop() -> void:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dg5yxci5p7djs"
-path="res://.godot/imported/laufen.png-840a5e397b76f99702d9ce703238ef99.ctex"
+uid="uid://dv6anhemjlupx"
+path="res://.godot/imported/bg_nah.png-6abcd46e08f99ea5c06a187bf8b8fd65.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Mobs/Gebiet 2/Skellete/Bardiche_Skellet/laufen.png"
-dest_files=["res://.godot/imported/laufen.png-840a5e397b76f99702d9ce703238ef99.ctex"]
+source_file="res://Ebenen/Gebiet 2/Raum2 Stil/bg_nah.png"
+dest_files=["res://.godot/imported/bg_nah.png-6abcd46e08f99ea5c06a187bf8b8fd65.ctex"]
 
 [params]
 

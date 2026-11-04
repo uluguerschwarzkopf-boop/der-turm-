@@ -1944,6 +1944,14 @@ func _get_dev_room_list() -> Array:
 		"path": "res://Levels/Gebiet 2/Räume/Raum1.tscn"
 	})
 
+	# Nutzer-Wunsch: Test Raum 3 (neues Tileset/neuer Hintergrund, zwei
+	# Kampfteile und ein Plattform-Teil) direkt aus dem Spiel anwählbar.
+	# Ebenfalls kein Teil von room_order.
+	rooms.append({
+		"label": "Test Raum 3",
+		"path": "res://Ebenen/Gebiet 2/Räume/test_raum_3.tscn"
+	})
+
 	return rooms
 
 

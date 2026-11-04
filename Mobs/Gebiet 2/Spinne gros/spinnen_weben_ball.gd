@@ -14,6 +14,7 @@ extends Area2D
 @export var enemy_hurtbox_group: StringName = &"enemy_hurtbox"
 @export var summon_group: StringName = &"player_summon"
 @export var player_group: StringName = &"player"
+@export var enemy_group: StringName = &"enemy"
 
 # Nutzer-Wunsch: trifft der Ball den SPIELER (nicht ein beschworenes
 # Skelett o.ä.), wird er zusätzlich für diese Zeit (Sekunden)
@@ -94,6 +95,21 @@ func _physics_process(delta: float) -> void:
 	global_position.x += direction * speed * delta
 
 
+# Nutzer-Wunsch: Gegner schaden sich nicht gegenseitig. Der Ball fliegt
+# durch alle anderen Gegner hindurch (Körper und Hurtbox), ohne Schaden
+# und ohne einzuschlagen.
+func _is_enemy(node: Node) -> bool:
+	var current: Node = node
+
+	while current != null:
+		if current.is_in_group(enemy_group):
+			return true
+
+		current = current.get_parent()
+
+	return false
+
+
 func _on_body_entered(body: Node) -> void:
 	if has_hit:
 		return
@@ -102,6 +118,9 @@ func _on_body_entered(body: Node) -> void:
 		return
 
 	if _is_shooter_or_child(body):
+		return
+
+	if _is_enemy(body):
 		return
 
 	var target: Node = _find_damage_target(body)
@@ -121,6 +140,9 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 
 	if _is_shooter_or_child(area):
+		return
+
+	if _is_enemy(area):
 		return
 
 	# Beschworenes Skelett:

@@ -59,6 +59,7 @@
 [ext_resource type="Script" uid="uid://fh0gst67jxm8" path="res://Player/Sounds/sound_bank_entry.gd" id="47_entry"]
 [ext_resource type="AudioStream" uid="uid://c3465wdg5fgev" path="res://Player/Sounds/Test/Door open und close/clsoe.mp3" id="48_7x5p2"]
 [ext_resource type="Shader" uid="uid://b3bwgj35b76s0" path="res://Player/spieler_kantenlicht.gdshader" id="90_kantenlicht"]
+[ext_resource type="Script" uid="uid://cq2wt6h8j5e4a" path="res://Player/combat_settings.gd" id="combat_settings_skript"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j2n6q"]
 size = Vector2(11, 22)
@@ -3016,6 +3017,7 @@ gravity = 800.0
 roll_speed = 150.0
 roll_time = 0.45
 roll_cooldown = 2.0
+blood_drip_enabled = false
 dash_slash_speed = 70.0
 backstep_speed = 90.0
 
@@ -3032,8 +3034,8 @@ position_smoothing_enabled = true
 material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"laufen in idle"
-frame = 3
+animation = &"death"
+frame = 12
 frame_progress = 1.0
 offset = Vector2(1, 0)
 
@@ -3142,3 +3144,13 @@ position = Vector2(24, -2)
 
 [node name="Attack 3 hit effekt" type="Marker2D" parent="." unique_id=1433176183]
 position = Vector2(30, -11)
+
+[node name="CombatSettings" type="Node2D" parent="." unique_id=471788032]
+script = ExtResource("combat_settings_skript")
+zeitlupe_tempo = 0.04
+ruckler_staerke = 1.3
+ruckler_dauer = 0.1
+gegner_rueckstoss_px = 2.7
+gegner_rueckstoss_px_schlag_3 = 8.0
+abprall_an = false
+warnung_an = false

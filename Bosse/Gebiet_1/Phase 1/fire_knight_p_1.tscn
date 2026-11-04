@@ -495,7 +495,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_p142x")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Attack_1",
 "speed": 8.0
 }, {
@@ -569,7 +569,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_uyruc")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Attack_2",
 "speed": 6.0
 }, {
@@ -586,7 +586,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_fh6l8")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Awake",
 "speed": 4.0
 }, {
@@ -621,7 +621,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_lk7is")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Death_P1",
 "speed": 7.0
 }, {
@@ -635,7 +635,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_36rqk")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Hittet_1",
 "speed": 10.0
 }, {
@@ -649,7 +649,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_s1inb")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Hittet_2",
 "speed": 10.0
 }, {
@@ -663,7 +663,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ravan")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Hittet_3",
 "speed": 10.0
 }, {
@@ -692,7 +692,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_2i3iw")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Summon_End",
 "speed": 5.0
 }, {
@@ -706,7 +706,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_3uh8u")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Summon_Loop",
 "speed": 5.0
 }, {
@@ -741,7 +741,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_5boqu")
 }],
-"loop": false,
+"loop": 0,
 "name": &"Summon_Start",
 "speed": 5.0
 }, {
@@ -770,7 +770,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_b17sp")
 }],
-"loop": true,
+"loop": 1,
 "name": &"Walk",
 "speed": 4.0
 }]
@@ -788,7 +788,7 @@ height = 42.0
 
 [node name="FireKnightP1" type="CharacterBody2D" unique_id=290336739]
 script = ExtResource("1_vj6el")
-max_health = 1
+max_health = 15
 move_speed = 10.0
 attack_1_range = 30.0
 attack_2_range = 50.0

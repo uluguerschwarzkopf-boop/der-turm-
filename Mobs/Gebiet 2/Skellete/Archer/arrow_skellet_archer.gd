@@ -152,6 +152,14 @@ func _on_area_entered(area: Area2D) -> void:
 	if _is_shooter_or_child(area):
 		return
 
+	# Nutzer-Wunsch: Gegner schaden sich nicht gegenseitig, auch nicht
+	# über die Hurtbox (z.B. Skelett-Tank, Feuerritter). Dieser Pfeil
+	# wird nur vom Skellet Archer verschossen.
+	var parent: Node = area.get_parent()
+
+	if parent != null and parent.is_in_group(enemy_group):
+		return
+
 	# Beschworenes Skelett: hat collision_layer = 0 am Körper,
 	# deshalb nur über seine echte Hurtbox treffbar.
 	if _is_summon_hurtbox(area):

@@ -179,6 +179,8 @@ var _roll_cooldown_left: float = 0.0
 @export var attack_3_hit_effect_on_enemy: bool = true
 # An = ein Effekt pro getroffenem Gegner, aus = nur einer pro Schlag.
 @export var attack_3_hit_effect_per_enemy: bool = true
+# Nutzer-Korrektur: Effekt läuft mit dem getroffenen Gegner mit.
+@export var attack_3_hit_effect_follow_enemy: bool = true
 # Zusätzliche Verschiebung (bei Blick nach links in X gespiegelt).
 @export var attack_3_hit_effect_offset: Vector2 = Vector2.ZERO
 # 1 = vor dem Spieler (Treffer-Blitz soll sichtbar sein), -1 = dahinter.
@@ -205,6 +207,58 @@ var _roll_cooldown_left: float = 0.0
 # im Player-Sprite angelegt, siehe Nutzer-Screenshot).
 @export var anim_web_wrapped: StringName = &"Spieler eingespinnt"
 @export var anim_web_wrap_break: StringName = &"spieler eingespinnt brechen"
+
+
+@export_group("Gepackt (Schatten Mutant Attacke 2)")
+
+# Nutzer-Wunsch: stirbt der Spieler im Griff, startet die "death"-
+# Animation beim Absetzen erst ab diesem Frame - Frame 0 ist ein
+# Treffer-Frame, getroffen wurde er aber schon vorher im Mob.
+@export var grab_death_start_frame: int = 1
+
+
+@export_group("Tod - Blutlache")
+
+# Nutzer-Wunsch: die Blutlache ist aus der "death"-Animation raus und
+# eine eigene Grafik, damit sie an Plattformkanten nicht in der Luft
+# hängt. Sie wird 1:1 deckungsgleich über den Spieler gelegt und Frame
+# für Frame mit "death" mitgeschaltet (siehe _start_death_blood_pool()).
+# Dort, wo unter der Lache kein Boden ist, wird sie weich abgeschnitten,
+# und an der Kante tropft Blut runter.
+@export var blood_pool_enabled: bool = true
+@export var blood_pool_texture: Texture2D = preload(
+	"res://NEW PLAYER/Animation/Effekte/Blut lache bei death-Sheet.png"
+)
+# Breite eines Frames im Sheet (gleich wie bei "death").
+@export var blood_pool_frame_width: int = 176
+# Ab diesem Frame von "death" ist die Lache da (Sheet-Frame 0 = dieser
+# death-Frame).
+@export var blood_pool_start_frame: int = 6
+# Weichheit der abgeschnittenen Kante in Pixeln (0 = harte Kante).
+@export var blood_pool_edge_softness: float = 2.0
+# So tief unter den Füßen wird nach Boden gesucht (Pixel).
+@export var blood_pool_ground_probe_depth: float = 4.0
+
+@export var blood_drip_enabled: bool = true
+@export var blood_drip_color: Color = Color(0.32, 0.02, 0.04)
+@export var blood_drip_amount: int = 10
+@export var blood_drip_lifetime: float = 0.9
+@export var blood_drip_gravity: float = 380.0
+# So lange (Sekunden) tropft es an der Kante.
+@export var blood_drip_duration: float = 2.5
+
+# Nutzer-Wunsch (Test, an/aus): die Pixel der Lache, die über die
+# Kante ragen, werden nicht nur ausgeblendet, sondern fallen 1:1 als
+# einzelne Blut-Pixel runter (siehe BloodPixelFall unten).
+@export var blood_pixel_fall_enabled: bool = true
+@export var blood_pixel_gravity: float = 320.0
+# Zufällige Startverzögerung pro Pixel (Sekunden) - so rinnt es eher
+# von der Kante, statt als ganzer Block abzufallen. 0 = alle zugleich.
+@export var blood_pixel_max_delay: float = 0.35
+# Pixel bleiben auf Boden liegen, auf den sie fallen (als Flecken).
+@export var blood_pixel_land_on_ground: bool = true
+# Pixel, die nichts treffen, verschwinden nach dieser Zeit (Sekunden).
+@export var blood_pixel_lifetime: float = 2.5
 
 
 # ============================================================
@@ -333,6 +387,15 @@ var _parry_active: bool = false
 # Vorrang vor JEDER anderen laufenden Aktion.
 var _web_wrapped_active: bool = false
 
+# Gepackt / reingezogen (Nutzer-Wunsch, Attacke 2 vom Schatten Mutant,
+# siehe Mobs/Gebiet 2/schatten mutant/schatten_mutant.gd und
+# start_grab()/end_grab() weiter unten). Wie Eingesponnen von AUSSEN
+# ausgelöst, aber noch strenger: Spieler ist unsichtbar, hat keine
+# Schwerkraft, wird jeden Frame an die Position des packenden Mobs
+# (_grab_holder) gesetzt und nimmt keinen anderen Schaden.
+var _grabbed_active: bool = false
+var _grab_holder: Node2D = null
+
 # Schutz gegen sich überlappende Bildschirm-Ruckler (siehe
 # _shake_camera() weiter unten) - z.B. wenn kurz hintereinander zwei
 # Treffer geparried werden.
@@ -363,6 +426,7 @@ func _is_active_skill_busy() -> bool:
 		or _parry_active
 		or _backstep_active
 		or _web_wrapped_active
+		or _grabbed_active
 	)
 
 var scene_is_changing: bool = false
@@ -454,6 +518,10 @@ func _input(event: InputEvent) -> void:
 			and not _is_active_skill_busy()
 		):
 			combat.attack()
+		elif combat != null:
+			# Nutzer-Wunsch: zu früher Klick (noch in der Rolle, im Skill, ...)
+			# wird kurz gemerkt und danach nachgeholt.
+			combat.merke_angriff_im_puffer()
 
 	if event.is_action_pressed(&"shoot_bow"):
 		if (
@@ -517,11 +585,35 @@ func _physics_process(delta: float) -> void:
 			_charge_attack_cooldown_remaining - delta, 0.0
 		)
 
+	# Gepackt (Attacke 2 Schatten Mutant): noch VOR dead und
+	# control_locked - auch ein im Griff gestorbener Spieler bleibt bis
+	# zum Absetzen im Mob, und eine Cutscene-/Tod-Sperre lässt ihn
+	# nicht aus der Hand des Mobs fallen. Keine Schwerkraft, kein
+	# move_and_slide() - der Spieler klebt an der Mob-Position. Ist der
+	# Mob plötzlich weg (gelöscht, ohne end_grab() aufzurufen), gibt
+	# sich der Spieler hier zur Sicherheit selbst frei.
+	if _grabbed_active:
+		velocity = Vector2.ZERO
+
+		if _grab_holder != null and is_instance_valid(_grab_holder):
+			global_position = _grab_holder.global_position
+		else:
+			end_grab(global_position)
+
+		return
+
 	if dead:
 		velocity.x = 0
 		_apply_gravity(delta)
 		move_and_slide()
+
+		# Fällt die Leiche noch (z.B. über eine Kante), Blutlache-
+		# Abschnitt mitziehen (macht nur etwas, wenn sie sich bewegt).
+		_update_death_blood_pool_clip()
 		return
+
+	if combat != null:
+		combat.pruefe_angriffs_puffer(delta)
 
 	# Fußschritt-Sounds (Nutzer-Wunsch) - läuft JEDEN Physik-Frame,
 	# unabhängig von Rollen/Trinken/Skills weiter unten: die Funktion
@@ -1080,7 +1172,19 @@ func start_roll() -> void:
 		return
 
 	if combat != null and combat.attacking:
-		return
+		# Nutzer-Wunsch: Rollen darf die Boden-Combo abbrechen (siehe
+		# CombatSettings). Erst prüfen, ob die Rolle überhaupt starten
+		# kann, sonst wäre der Schlag abgebrochen und es passiert nichts.
+		var einstellungen := get_node_or_null("CombatSettings")
+
+		if (
+			einstellungen == null
+			or not einstellungen.rolle_bricht_schlag_ab
+			or not is_on_floor()
+			or _roll_cooldown_left > 0.0
+			or not combat.breche_combo_fuer_rolle_ab()
+		):
+			return
 
 	if is_rolling:
 		# Mitten in einer laufenden Rolle nochmal rollen geht NUR mit
@@ -1354,7 +1458,8 @@ func spawn_attack_3_hit_effect(target: Node = null) -> void:
 		attack_3_hit_effect_marker_name,
 		attack_3_hit_effect_offset,
 		attack_3_hit_effect_z_index,
-		world_pos
+		world_pos,
+		target if attack_3_hit_effect_follow_enemy and world_pos != null else null
 	)
 
 
@@ -1449,7 +1554,10 @@ func _shapes_center(owner_node: Node2D) -> Variant:
 #
 # world_pos (optional): feste Welt-Position statt Marker (z.B. Mitte
 # eines getroffenen Gegners).
-func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset: Vector2, z_offset: int = -1, world_pos: Variant = null) -> void:
+#
+# follow_target (optional): der Effekt bleibt auf der Mitte dieses Gegners,
+# statt an der Trefferstelle stehen zu bleiben.
+func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset: Vector2, z_offset: int = -1, world_pos: Variant = null, follow_target: Node = null) -> void:
 	if roll_effect_scene == null:
 		return
 
@@ -1501,6 +1609,14 @@ func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset
 
 	effect.animation_finished.connect(effect.queue_free)
 
+	# Das Projekt nutzt Physik-Interpolation: ohne das würde der gerade
+	# erzeugte Effekt für einen Frame vom Welt-Nullpunkt her einfliegen,
+	# und beim Mitlaufen mit dem Gegner (in _process) leicht zittern.
+	effect.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+	if follow_target != null:
+		_follow_effect_target(effect, follow_target, effect.global_position - get_enemy_center(follow_target))
+
 	# Sicherheitsnetz, falls animation_finished nicht kommt.
 	var fps: float = effect.sprite_frames.get_animation_speed(anim_name)
 	var frames: int = effect.sprite_frames.get_frame_count(anim_name)
@@ -1512,6 +1628,20 @@ func _spawn_player_effect(anim_name: StringName, marker_name: StringName, offset
 
 	if is_instance_valid(effect):
 		effect.queue_free()
+
+
+# Nutzer-Korrektur: der Effekt lag zwar beim Treffer auf der Gegner-Mitte,
+# blieb dann aber stehen, während der Gegner weiterlief - sah verschoben aus.
+func _follow_effect_target(effect: Node2D, target: Node, world_offset: Vector2) -> void:
+	while is_instance_valid(effect) and is_instance_valid(target):
+		effect.global_position = get_enemy_center(target) + world_offset
+
+		var tree := get_tree()
+
+		if tree == null:
+			return
+
+		await tree.process_frame
 
 
 var _roll_dust_texture: Texture2D = null
@@ -2975,8 +3105,141 @@ func take_damage(
 		_trigger_parry(from_position)
 		return
 
+	# Nutzer-Wunsch: solange der Schatten Mutant den Spieler gepackt
+	# hat, nimmt er KEINEN anderen Schaden (Pfeile, andere Mobs, ...).
+	# Den Schaden des Griffs selbst macht der Mob über
+	# take_grab_damage() weiter unten.
+	if _grabbed_active:
+		return
+
+	# Nutzer-Wunsch: unverwundbar auf den ersten Frames der Rolle (Anzahl und
+	# An/Aus in CombatSettings).
+	if _rolle_schuetzt():
+		return
+
 	if health != null:
 		health.take_damage(amount)
+
+
+func _rolle_schuetzt() -> bool:
+	var einstellungen := get_node_or_null("CombatSettings")
+
+	return einstellungen != null and einstellungen.rolle_schuetzt(self)
+
+
+# ============================================================
+# GEPACKT (ATTACKE 2 SCHATTEN MUTANT)
+# ============================================================
+
+# Nutzer-Wunsch: Attacke 2 vom Schatten Mutant zieht den Spieler zu
+# sich rein. Der Mob ruft start_grab(self) auf, sobald seine
+# "Attack2 Hitbox" den Spieler trifft, und end_grab(absetzposition),
+# wenn seine "hittet"-Animation fertig ist (oder er stirbt/entfernt
+# wird). Gibt false zurück, wenn der Spieler gerade nicht gepackt
+# werden kann (tot, Szenenwechsel, schon gepackt).
+func start_grab(holder: Node2D) -> bool:
+	if dead or scene_is_changing:
+		return false
+
+	if _grabbed_active:
+		return false
+
+	if holder == null or not is_instance_valid(holder):
+		return false
+
+	if _rolle_schuetzt():
+		return false
+
+	_grabbed_active = true
+	_grab_holder = holder
+
+	# Wie bei start_web_wrap(): alle laufenden Aktionen abbrechen.
+	# Eingesponnen wird ebenfalls beendet - _finish_web_wrap() bricht
+	# ab, sobald _web_wrapped_active false ist, spielt also nicht
+	# mitten im Griff die Befreien-Animation auf dem unsichtbaren
+	# Sprite.
+	is_rolling = false
+	is_drinking = false
+	_charge_attack_active = false
+	_ground_slam_falling = false
+	_ground_slam_hitting = false
+	_iron_skin_active = false
+	_dash_slash_active = false
+	_backstep_active = false
+	_parry_active = false
+	_web_wrapped_active = false
+
+	velocity = Vector2.ZERO
+	global_position = holder.global_position
+
+	if sprite != null:
+		sprite.visible = false
+
+	return true
+
+
+# Gibt den Spieler wieder frei: sichtbar, Steuerung zurück, an die
+# vom Mob berechnete Absetzposition (der Mob prüft vorher selbst, dass
+# die nicht in einer Wand liegt).
+func end_grab(release_position: Vector2) -> void:
+	if not _grabbed_active:
+		return
+
+	_grabbed_active = false
+	_grab_holder = null
+
+	global_position = release_position
+	velocity = Vector2.ZERO
+
+	if sprite != null and is_instance_valid(sprite):
+		sprite.visible = true
+
+		if scene_is_changing:
+			return
+
+		# Nutzer-Korrektur: im Griff gestorben -> Tod-Animation erst
+		# hier am Absetzpunkt (siehe _on_died()).
+		if dead:
+			_play_death_animation()
+
+			# Nutzer-Wunsch: Treffer-Frame 0 überspringen (siehe
+			# grab_death_start_frame).
+			if (
+				sprite.sprite_frames != null
+				and sprite.sprite_frames.has_animation("death")
+			):
+				var frame_count: int = sprite.sprite_frames.get_frame_count(
+					"death"
+				)
+
+				sprite.frame = clampi(
+					grab_death_start_frame, 0, max(frame_count - 1, 0)
+				)
+		else:
+			sprite.play("idle")
+
+
+func is_grabbed() -> bool:
+	return _grabbed_active
+
+
+# Schaden durch den Griff selbst (umgeht die Sperre in take_damage()).
+# Die Unverwundbarkeit nach einem vorherigen Treffer wird dafür
+# bewusst aufgehoben - sonst würde der Griff oft gar keinen Schaden
+# machen, wenn der Spieler kurz vorher getroffen wurde. Rüstung
+# (Schild/Iron Skin) blockt weiterhin normal (health.take_damage()).
+func take_grab_damage(amount: int) -> void:
+	if dead or scene_is_changing:
+		return
+
+	if not _grabbed_active:
+		return
+
+	if health == null:
+		return
+
+	health.invincible = false
+	health.take_damage(amount)
 
 
 # ============================================================
@@ -3003,6 +3266,13 @@ func start_web_wrap(duration: float = -1.0) -> void:
 	# Schon eingesponnen - kein erneutes Auslösen/Verlängern durch
 	# einen zweiten Treffer mitten in der aktuellen Wirkzeit.
 	if _web_wrapped_active:
+		return
+
+	# Gepackt vom Schatten Mutant hat Vorrang (siehe start_grab()).
+	if _grabbed_active:
+		return
+
+	if _rolle_schuetzt():
 		return
 
 	if (
@@ -3288,6 +3558,14 @@ func revive_for_room() -> void:
 	control_locked = false
 	velocity = Vector2.ZERO
 
+	# Raumwechsel mitten im Griff: Griff vergessen (sprite.visible wird
+	# weiter unten ohnehin wieder auf true gesetzt).
+	_grabbed_active = false
+	_grab_holder = null
+
+	# Blutlache vom letzten Tod entfernen.
+	_remove_death_blood_pool()
+
 	# Siehe HINWEIS bei roll_timer <= 0.0 in _physics_process() -
 	# falls hier mitten in einer angepassten 2. Rolle unterbrochen
 	# wurde, muss die Geschwindigkeit zurückgesetzt werden.
@@ -3374,6 +3652,13 @@ func _on_died() -> void:
 	# Await-Check also sauber ab, das hier verhindert nur, dass
 	# _web_wrapped_active bis dahin fälschlich true bleibt.
 	_web_wrapped_active = false
+
+	# Nutzer-Korrektur: stirbt der Spieler durch den Griff (Attacke 2
+	# Schatten Mutant), bleibt er unsichtbar im Mob, bis dessen
+	# "hittet"-Animation fertig ist - erst beim Absetzen (end_grab())
+	# wird er sichtbar und spielt dort die Tod-Animation. Deshalb wird
+	# der Griff hier NICHT gelöst und "death" weiter unten übersprungen.
+	var died_while_grabbed: bool = _grabbed_active
 
 	# Sicherheitsnetz: falls der Tod mitten in einer Charge-Attack-
 	# Ladung passiert (Skill ist nicht gegen Treffer abgesichert),
@@ -3482,12 +3767,477 @@ func _on_died() -> void:
 	if sprite != null:
 		sprite.speed_scale = 1.0
 
+	# Tod-Animation kommt erst beim Absetzen (siehe end_grab()).
+	if died_while_grabbed:
+		return
+
+	_play_death_animation()
+
+
+func _play_death_animation() -> void:
 	if (
 		sprite != null
 		and sprite.sprite_frames != null
 		and sprite.sprite_frames.has_animation("death")
 	):
 		sprite.play("death")
+		_start_death_blood_pool()
+
+
+# ============================================================
+# TOD - BLUTLACHE
+# ============================================================
+
+var _blood_pool: Sprite2D = null
+var _blood_pool_material: ShaderMaterial = null
+# Pro Sheet-Frame: linker/rechter Rand der Lache in Bild-Pixeln
+# (relativ zur Frame-Mitte), einmalig aus der Grafik gelesen.
+var _blood_pool_extents: Array[Vector2] = []
+var _blood_pool_last_position: Vector2 = Vector2.INF
+var _blood_drips: Dictionary = {}
+
+# Fallende Lachen-Pixel (Test, siehe blood_pixel_fall_enabled).
+var _blood_pixel_fall: BloodPixelFall = null
+var _blood_pool_image: Image = null
+# Schon abgefallene Pixel (Bild-Koordinate im Frame), damit beim
+# nächsten Frame nicht dieselben Pixel nochmal fallen.
+var _blood_pixels_dropped: Dictionary = {}
+
+
+# Zeichnet und bewegt einzelne fallende Blut-Pixel. Hängt in der
+# Raum-Szene (nicht am Spieler), wird beim Raum-Neustart entfernt.
+class BloodPixelFall extends Node2D:
+	var gravity: float = 320.0
+	var lifetime: float = 2.5
+	var land_on_ground: bool = true
+	var collision_mask: int = 1
+	var exclude: Array[RID] = []
+
+	# Pro Pixel: Position, Fallgeschwindigkeit, Farbe, Wartezeit, Alter,
+	# gelandet.
+	var _pos: PackedVector2Array = []
+	var _vel: PackedFloat32Array = []
+	var _col: PackedColorArray = []
+	var _delay: PackedFloat32Array = []
+	var _age: PackedFloat32Array = []
+	var _landed: PackedByteArray = []
+
+	func add_pixel(global_pos: Vector2, color: Color, delay: float) -> void:
+		_pos.append(global_pos)
+		_vel.append(0.0)
+		_col.append(color)
+		_delay.append(delay)
+		_age.append(0.0)
+		_landed.append(0)
+
+	func _physics_process(delta: float) -> void:
+		var space := get_world_2d().direct_space_state
+		var query := PhysicsPointQueryParameters2D.new()
+		query.collision_mask = collision_mask
+		query.exclude = exclude
+
+		for i in _pos.size():
+			if _landed[i] == 1:
+				continue
+
+			if _delay[i] > 0.0:
+				_delay[i] -= delta
+				continue
+
+			_age[i] += delta
+			_vel[i] += gravity * delta
+
+			var next: Vector2 = _pos[i] + Vector2(0, _vel[i] * delta)
+
+			if land_on_ground:
+				query.position = next
+
+				if not space.intersect_point(query, 1).is_empty():
+					_landed[i] = 1
+					continue
+
+			_pos[i] = next
+
+			# Ausblenden am Ende der Lebenszeit.
+			if _age[i] > lifetime:
+				_col[i].a = 0.0
+
+		queue_redraw()
+
+	func _draw() -> void:
+		for i in _pos.size():
+			if _col[i].a <= 0.0:
+				continue
+
+			var local: Vector2 = to_local(_pos[i])
+			draw_rect(
+				Rect2(local.floor(), Vector2.ONE),
+				_col[i]
+			)
+
+const BLOOD_POOL_SHADER_CODE := """
+shader_type canvas_item;
+
+// Bereich (lokale x-Koordinate), in dem Boden unter der Lache ist.
+uniform float clip_left = -1000.0;
+uniform float clip_right = 1000.0;
+uniform float softness = 2.0;
+
+varying float local_x;
+
+void vertex() {
+	local_x = VERTEX.x;
+}
+
+void fragment() {
+	vec4 c = texture(TEXTURE, UV);
+	float s = max(softness, 0.001);
+	float mask = smoothstep(clip_left - s, clip_left, local_x)
+		* (1.0 - smoothstep(clip_right, clip_right + s, local_x));
+	COLOR = vec4(c.rgb, c.a * mask) * COLOR;
+}
+"""
+
+
+# Legt die Lache als zweites Sprite deckungsgleich hinter das
+# Spieler-Sprite (gleiche Position/Offset/Spiegelung) und schaltet sie
+# über sprite.frame_changed mit "death" mit.
+func _start_death_blood_pool() -> void:
+	_remove_death_blood_pool()
+
+	if not blood_pool_enabled or blood_pool_texture == null:
+		return
+
+	if sprite == null or blood_pool_frame_width <= 0:
+		return
+
+	var hframes: int = int(
+		blood_pool_texture.get_width() / blood_pool_frame_width
+	)
+
+	if hframes <= 0:
+		return
+
+	_blood_pool = Sprite2D.new()
+	_blood_pool.name = "Blutlache (Tod)"
+	_blood_pool.texture = blood_pool_texture
+	_blood_pool.hframes = hframes
+	_blood_pool.centered = sprite.centered
+	_blood_pool.offset = sprite.offset
+	_blood_pool.position = sprite.position
+	_blood_pool.flip_h = sprite.flip_h
+	_blood_pool.z_index = sprite.z_index
+	_blood_pool.light_mask = sprite.light_mask
+	_blood_pool.texture_filter = sprite.texture_filter
+	_blood_pool.visible = false
+
+	var shader := Shader.new()
+	shader.code = BLOOD_POOL_SHADER_CODE
+	_blood_pool_material = ShaderMaterial.new()
+	_blood_pool_material.shader = shader
+	_blood_pool_material.set_shader_parameter(
+		"softness", blood_pool_edge_softness
+	)
+	_blood_pool.material = _blood_pool_material
+
+	add_child(_blood_pool)
+
+	# Nutzer-Korrektur: VOR dem Spieler-Sprite zeichnen (gleicher
+	# z_index, Baum-Reihenfolge entscheidet) - in "death" sind dort,
+	# wo vorher die Lache war, Ersatz-Pixel, die sie verdecken muss.
+	move_child(_blood_pool, sprite.get_index() + 1)
+
+	_read_blood_pool_extents(hframes)
+
+	_blood_pool_last_position = Vector2.INF
+
+	if not sprite.frame_changed.is_connected(_on_death_blood_frame_changed):
+		sprite.frame_changed.connect(_on_death_blood_frame_changed)
+
+	_on_death_blood_frame_changed()
+
+
+func _remove_death_blood_pool() -> void:
+	if sprite != null and sprite.frame_changed.is_connected(
+		_on_death_blood_frame_changed
+	):
+		sprite.frame_changed.disconnect(_on_death_blood_frame_changed)
+
+	if _blood_pool != null and is_instance_valid(_blood_pool):
+		_blood_pool.queue_free()
+
+	_blood_pool = null
+	_blood_pool_material = null
+	_blood_drips.clear()
+
+	if _blood_pixel_fall != null and is_instance_valid(_blood_pixel_fall):
+		_blood_pixel_fall.queue_free()
+
+	_blood_pixel_fall = null
+	_blood_pixels_dropped.clear()
+
+
+# Liest pro Frame, wie weit die Lache nach links/rechts reicht -
+# nötig, damit es nur dann tropft, wenn die Lache wirklich über die
+# Kante hinausragt.
+func _read_blood_pool_extents(hframes: int) -> void:
+	_blood_pool_extents.clear()
+
+	var image: Image = blood_pool_texture.get_image()
+
+	if image == null:
+		return
+
+	if image.is_compressed():
+		image.decompress()
+
+	# Für die fallenden Pixel (_drop_blood_pool_pixels()) merken.
+	_blood_pool_image = image
+
+	var fw: int = blood_pool_frame_width
+	var fh: int = image.get_height()
+
+	for f in hframes:
+		var min_x: int = fw
+		var max_x: int = -1
+
+		for x in fw:
+			for y in fh:
+				if image.get_pixel(f * fw + x, y).a > 0.05:
+					min_x = min(min_x, x)
+					max_x = max(max_x, x)
+					break
+
+		if max_x < 0:
+			_blood_pool_extents.append(Vector2(0, 0))
+		else:
+			_blood_pool_extents.append(Vector2(
+				min_x - fw * 0.5,
+				max_x + 1 - fw * 0.5
+			))
+
+
+func _on_death_blood_frame_changed() -> void:
+	if _blood_pool == null or not is_instance_valid(_blood_pool):
+		return
+
+	if sprite == null or sprite.animation != &"death":
+		_blood_pool.visible = false
+		return
+
+	var pool_frame: int = sprite.frame - blood_pool_start_frame
+
+	if pool_frame < 0 or pool_frame >= _blood_pool.hframes:
+		_blood_pool.visible = pool_frame >= _blood_pool.hframes
+		return
+
+	_blood_pool.frame = pool_frame
+	_blood_pool.visible = true
+	_blood_pool_last_position = Vector2.INF
+
+	_update_death_blood_pool_clip()
+
+
+# Sucht links und rechts von den Füßen, wie weit Boden reicht, und
+# schneidet die Lache dort ab. Wird bei jedem Frame-Wechsel und
+# (falls die Leiche noch fällt/rutscht) bei jeder Bewegung aufgerufen.
+func _update_death_blood_pool_clip() -> void:
+	if _blood_pool == null or not is_instance_valid(_blood_pool):
+		return
+
+	if not _blood_pool.visible:
+		return
+
+	if global_position.distance_to(_blood_pool_last_position) < 0.5:
+		return
+
+	_blood_pool_last_position = global_position
+
+	var max_dist: int = int(blood_pool_frame_width * 0.5) + 4
+	var feet: Vector2 = global_position
+
+	var left_dist: int = 0
+	var right_dist: int = 0
+
+	# Kein Boden unter der Leiche (noch in der Luft) -> Lache komplett
+	# ausblenden, bis sie liegt.
+	if _has_ground_at(feet.x, feet.y):
+		while left_dist < max_dist and _has_ground_at(
+			feet.x - left_dist - 1, feet.y
+		):
+			left_dist += 1
+
+		while right_dist < max_dist and _has_ground_at(
+			feet.x + right_dist + 1, feet.y
+		):
+			right_dist += 1
+
+	var left_local: float = _blood_pool.to_local(
+		Vector2(feet.x - left_dist, feet.y)
+	).x
+	var right_local: float = _blood_pool.to_local(
+		Vector2(feet.x + right_dist, feet.y)
+	).x
+
+	_blood_pool_material.set_shader_parameter("clip_left", left_local)
+	_blood_pool_material.set_shader_parameter("clip_right", right_local)
+
+	_update_blood_drips(left_local, right_local)
+	_drop_blood_pool_pixels(left_local, right_local)
+
+
+# Test (blood_pixel_fall_enabled): jeder sichtbare Pixel des aktuellen
+# Lachen-Frames, der außerhalb des Bodens liegt (also vom Shader
+# ausgeblendet wird), wird als einzelner fallender Pixel an genau
+# seiner Stelle neu erzeugt - die Lache "läuft" 1:1 über die Kante.
+func _drop_blood_pool_pixels(left_local: float, right_local: float) -> void:
+	if not blood_pixel_fall_enabled:
+		return
+
+	if _blood_pool_image == null:
+		return
+
+	var parent := get_parent()
+
+	if parent == null:
+		return
+
+	if _blood_pixel_fall == null or not is_instance_valid(_blood_pixel_fall):
+		_blood_pixel_fall = BloodPixelFall.new()
+		_blood_pixel_fall.name = "Blut Pixel (Tod)"
+		_blood_pixel_fall.z_index = z_index
+		_blood_pixel_fall.z_as_relative = z_as_relative
+		_blood_pixel_fall.light_mask = _blood_pool.light_mask
+		_blood_pixel_fall.collision_mask = collision_mask
+		_blood_pixel_fall.exclude = [get_rid()]
+		parent.add_child(_blood_pixel_fall)
+
+	_blood_pixel_fall.gravity = blood_pixel_gravity
+	_blood_pixel_fall.lifetime = blood_pixel_lifetime
+	_blood_pixel_fall.land_on_ground = blood_pixel_land_on_ground
+
+	var fw: int = blood_pool_frame_width
+	var fh: int = _blood_pool_image.get_height()
+	var frame_x: int = _blood_pool.frame * fw
+	var origin := Vector2(_blood_pool.offset.x, _blood_pool.offset.y)
+
+	if _blood_pool.centered:
+		origin -= Vector2(0, fh * 0.5)
+
+	for x in fw:
+		# Pixel-Mitte in lokaler x-Koordinate (Spiegelung beachten).
+		var local_x: float = origin.x + (x + 0.5 - fw * 0.5)
+
+		if _blood_pool.flip_h:
+			local_x = origin.x - (x + 0.5 - fw * 0.5)
+
+		if local_x >= left_local and local_x <= right_local:
+			continue
+
+		for y in fh:
+			var color: Color = _blood_pool_image.get_pixel(frame_x + x, y)
+
+			if color.a <= 0.05:
+				continue
+
+			var key := Vector2i(x, y)
+
+			if _blood_pixels_dropped.has(key):
+				continue
+
+			_blood_pixels_dropped[key] = true
+
+			var local := Vector2(local_x, origin.y + y + 0.5)
+
+			_blood_pixel_fall.add_pixel(
+				_blood_pool.to_global(local),
+				color,
+				randf() * max(blood_pixel_max_delay, 0.0)
+			)
+
+
+func _has_ground_at(x: float, feet_y: float) -> bool:
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = Vector2(x, feet_y + blood_pool_ground_probe_depth)
+	query.collision_mask = collision_mask
+	query.exclude = [get_rid()]
+
+	return not get_world_2d().direct_space_state.intersect_point(
+		query, 1
+	).is_empty()
+
+
+# Ragt die Lache im aktuellen Frame über eine Kante hinaus, tropft an
+# genau dieser Kante Blut runter.
+func _update_blood_drips(left_local: float, right_local: float) -> void:
+	if not blood_drip_enabled:
+		return
+
+	var pool_frame: int = _blood_pool.frame
+
+	if pool_frame >= _blood_pool_extents.size():
+		return
+
+	var extent: Vector2 = _blood_pool_extents[pool_frame]
+
+	# Bild-Pixel -> lokale x-Koordinate (Spiegelung beachten).
+	var a: float = _blood_pool.offset.x + extent.x
+	var b: float = _blood_pool.offset.x + extent.y
+
+	if _blood_pool.flip_h:
+		a = _blood_pool.offset.x - extent.y
+		b = _blood_pool.offset.x - extent.x
+
+	if extent.y <= extent.x:
+		return
+
+	if a < left_local - 1.0:
+		_ensure_blood_drip(&"links", left_local)
+
+	if b > right_local + 1.0:
+		_ensure_blood_drip(&"rechts", right_local)
+
+
+func _ensure_blood_drip(side: StringName, local_x: float) -> void:
+	var feet_local_y: float = _blood_pool.to_local(global_position).y
+
+	if _blood_drips.has(side) and is_instance_valid(_blood_drips[side]):
+		(_blood_drips[side] as Node2D).position = Vector2(
+			local_x, feet_local_y
+		)
+		return
+
+	var drip := CPUParticles2D.new()
+	drip.position = Vector2(local_x, feet_local_y)
+	drip.amount = max(blood_drip_amount, 1)
+	drip.lifetime = max(blood_drip_lifetime, 0.05)
+	drip.direction = Vector2.DOWN
+	drip.spread = 8.0
+	drip.gravity = Vector2(0, blood_drip_gravity)
+	drip.initial_velocity_min = 2.0
+	drip.initial_velocity_max = 12.0
+	drip.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	drip.emission_rect_extents = Vector2(1.5, 0.5)
+	drip.color = blood_drip_color
+	drip.light_mask = _blood_pool.light_mask
+	drip.emitting = true
+
+	_blood_pool.add_child(drip)
+	_blood_drips[side] = drip
+
+	_stop_blood_drip_later(drip)
+
+
+func _stop_blood_drip_later(drip: CPUParticles2D) -> void:
+	var tree := get_tree()
+
+	if tree == null:
+		return
+
+	await tree.create_timer(max(blood_drip_duration, 0.05)).timeout
+
+	if is_instance_valid(drip):
+		drip.emitting = false
 
 
 # ============================================================

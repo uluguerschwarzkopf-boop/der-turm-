@@ -1413,6 +1413,20 @@ func _on_player_died() -> void:
 	if tree == null:
 		return
 
+	# Nutzer-Korrektur: stirbt der Spieler im Griff vom Schatten Mutant
+	# (Attacke 2), wird er erst nach dessen "hittet"-Animation abgesetzt
+	# und spielt DANN die Tod-Animation. Deshalb die Neustart-Wartezeit
+	# erst ab dem Absetzen laufen lassen, sonst wäre der Raum schon neu
+	# geladen, bevor man den Tod sieht. Endet sicher: Mob und Spieler
+	# lösen den Griff bei Tod/Entfernen des Mobs selbst.
+	while (
+		player != null
+		and is_instance_valid(player)
+		and player.has_method("is_grabbed")
+		and player.is_grabbed()
+	):
+		await tree.process_frame
+
 	await tree.create_timer(
 		death_restart_delay
 	).timeout

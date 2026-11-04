@@ -92,7 +92,9 @@ func _ready() -> void:
 # bewusst nichts (kein Fehler), wenn es dafür keinen Eintrag oder
 # keine Audiodatei gibt, damit fehlende Sounds das Spiel nie zum
 # Absturz bringen.
-func play(id: StringName) -> void:
+#
+# tonhoehe_faktor: 1.0 = normal, kleiner = tiefer (z.B. schwerer Treffer).
+func play(id: StringName, tonhoehe_faktor: float = 1.0) -> void:
 	if id == &"":
 		return
 
@@ -116,6 +118,8 @@ func play(id: StringName) -> void:
 		))
 	else:
 		voice.pitch_scale = entry.speed
+
+	voice.pitch_scale *= max(tonhoehe_faktor, 0.01)
 
 	voice.play()
 
