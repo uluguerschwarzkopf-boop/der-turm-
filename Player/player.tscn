@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://b0007ug7ggtdu" path="res://NEW PLAYER/Animation/classic animation/Attack 1-Sheet.png" id="12_7v2uk"]
 [ext_resource type="Texture2D" uid="uid://dojlb7j5541t3" path="res://Player/Skills/Krieger Skill Tree/Ground slam Fall-Sheet.png" id="12_f4lon"]
 [ext_resource type="Script" uid="uid://doxgespooqvwh" path="res://Player/player_combat.gd" id="12_p5o4e"]
+[ext_resource type="Texture2D" uid="uid://d22p5fsoxjq15" path="res://NEW PLAYER/Animation/classic animation/Hinterfallen-Sheet.png" id="12_qpoj2"]
 [ext_resource type="Texture2D" uid="uid://50lmh0c2ivcj" path="res://NEW PLAYER/Animation/classic animation/Attack 2-Sheet.png" id="13_7v2uk"]
 [ext_resource type="Texture2D" uid="uid://cvmubu55ll8ek" path="res://Player/Skills/Krieger Skill Tree/ground slam Hit-Sheet.png" id="13_8ynux"]
 [ext_resource type="Script" uid="uid://nh3qnfkirigq" path="res://Player/player_inventory.gd" id="13_p5o4e"]
@@ -580,6 +581,46 @@ region = Rect2(0, 0, 176, 144)
 [sub_resource type="AtlasTexture" id="AtlasTexture_wd6j0"]
 atlas = ExtResource("10_qas3k")
 region = Rect2(176, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q60m1"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(0, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ov7iu"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(176, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ur7yn"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(352, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hm1y8"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(528, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g4aov"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(704, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lwiha"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(880, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b6jk6"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(1056, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hq2pw"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(1232, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fbg8x"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(1408, 0, 176, 144)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8xudp"]
+atlas = ExtResource("12_qpoj2")
+region = Rect2(1584, 0, 176, 144)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_eu7nd"]
 atlas = ExtResource("6_d30e8")
@@ -2055,6 +2096,41 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_q60m1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ov7iu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ur7yn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hm1y8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g4aov")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lwiha")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b6jk6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hq2pw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fbg8x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8xudp")
+}],
+"loop": 0,
+"name": &"Hinterfallen",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_eu7nd")
 }, {
 "duration": 1.0,
@@ -3034,8 +3110,8 @@ position_smoothing_enabled = true
 material = SubResource("ShaderMaterial_kantenlicht")
 position = Vector2(-1, -23)
 sprite_frames = SubResource("SpriteFrames_gwnis")
-animation = &"death"
-frame = 12
+animation = &"Hinterfallen"
+frame = 9
 frame_progress = 1.0
 offset = Vector2(1, 0)
 
