@@ -1952,6 +1952,14 @@ func _get_dev_room_list() -> Array:
 		"path": "res://Ebenen/Gebiet 2/Räume/test_raum_3.tscn"
 	})
 
+	# Nutzer-Wunsch: Test Raum 4 = gleiches Layout/gleiche Gegner wie Test
+	# Raum 3, aber neuer Stil (Kathedralen-Ruine, Richtung Mockup/INMOST).
+	# Grafiken in "Ebenen/Gebiet 2/Raum4 Stil/". Kein Teil von room_order.
+	rooms.append({
+		"label": "Test Raum 4",
+		"path": "res://Ebenen/Gebiet 2/Räume/test_raum_4.tscn"
+	})
+
 	return rooms
 
 
