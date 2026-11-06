@@ -156,6 +156,37 @@ const ATTACK_RANGED: int = 2
 @export var death_delete_time: float = 1.2
 
 
+@export_group("Tod - Zerfall")
+
+# Nutzer-Wunsch: In der Tot-Animation fallen Oberkörper und Beine auseinander.
+# An = ab tod_trenn_frame spielt jede Hälfte ihre Animation selbst weiter und fällt
+# kurz vor dem Boden wirklich runter, wenn dort keiner ist, und spielt die
+# Animation dann am Boden zu Ende (siehe Mobs/leiche_teil.gd).
+@export var tod_zerfall_an: bool = true
+# Ab diesem Frame von "tot" sind die Hälften getrennt.
+@export var tod_trenn_frame: int = 3
+# Bild-Spalte (0 = linker Rand des Frames), die Oberkörper und Beine trennt.
+@export var tod_trenn_x: float = 43.5
+# Auf diesen Frames ist die jeweilige Hälfte kurz vor dem Boden: hier wird geprüft,
+# ob wirklich Boden da ist. Sonst bleibt sie auf dem Frame stehen und fällt.
+@export var tod_halte_frame_oberkoerper: int = 5
+@export var tod_halte_frame_beine: int = 8
+
+var _tod_zerfallen: bool = false
+@export var tod_teil_schwerkraft: float = 320.0
+@export var tod_teil_max_fall_tempo: float = 400.0
+
+# Kleine Staubwolke beim Aufprall einer gefallenen Hälfte.
+@export var tod_staub_an: bool = true
+@export var tod_staub_farbe_1: Color = Color(0.62, 0.66, 0.72)
+@export var tod_staub_farbe_2: Color = Color(0.42, 0.46, 0.52)
+@export var tod_staub_anzahl: int = 8
+@export var tod_staub_tempo: float = 26.0
+@export var tod_staub_dauer: float = 0.35
+# Unter dieser Fallhöhe (Pixel) gibt es keinen Staub.
+@export var tod_staub_min_fallhoehe: float = 3.0
+
+
 # ============================================================
 # ZURÜCKSETZEN
 # ============================================================
@@ -870,6 +901,16 @@ func _end_attack_by_timer_fallback(generation: int) -> void:
 
 func _on_frame_changed() -> void:
 	if dead:
+		# Nutzer-Wunsch: ab hier spielen beide Hälften selbst weiter.
+		if (
+			tod_zerfall_an
+			and not _tod_zerfallen
+			and sprite.animation == anim_death
+			and sprite.frame >= tod_trenn_frame
+		):
+			_tod_zerfallen = true
+			_zerfalle_leiche()
+
 		return
 
 	if state != State.ATTACK:
@@ -1465,6 +1506,38 @@ func _die() -> void:
 		_play_animation_force(anim_death)
 	else:
 		queue_free()
+
+
+# Ersetzt das Sprite ab dem aktuellen Frame durch zwei Hälften mit eigener
+# Physik. Spieler und Gegner werden beim Bodentest ignoriert, die Stücke sollen
+# nur auf Tiles liegen bleiben.
+func _zerfalle_leiche() -> void:
+	var ausnahmen: Array[RID] = []
+
+	for gruppe: StringName in [player_group, &"enemy"]:
+		for koerper: Node in get_tree().get_nodes_in_group(gruppe):
+			if koerper is CollisionObject2D:
+				ausnahmen.append((koerper as CollisionObject2D).get_rid())
+
+	var geschafft: bool = load("res://Mobs/leiche_teil.gd").zerlege(sprite, self, {
+		"schwerkraft": tod_teil_schwerkraft,
+		"max_fall_tempo": tod_teil_max_fall_tempo,
+		"boden_maske": collision_mask,
+		"trenn_x": tod_trenn_x,
+		"halte_frame_links": tod_halte_frame_oberkoerper,
+		"halte_frame_rechts": tod_halte_frame_beine,
+		"ausnahmen": ausnahmen,
+		"staub_an": tod_staub_an,
+		"staub_farbe_1": tod_staub_farbe_1,
+		"staub_farbe_2": tod_staub_farbe_2,
+		"staub_anzahl": tod_staub_anzahl,
+		"staub_tempo": tod_staub_tempo,
+		"staub_dauer": tod_staub_dauer,
+		"staub_min_fallhoehe": tod_staub_min_fallhoehe,
+	})
+
+	if geschafft:
+		sprite.visible = false
 
 
 # Der letzte Frame der Tot-Animation zeigt die liegende Leiche -

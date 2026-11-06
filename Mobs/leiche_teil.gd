@@ -1,12 +1,14 @@
 extends Node2D
 
-# Nutzer-Wunsch: zerfällt ein Gegner beim Tod in Stücke, hat jedes Stück eigene
-# Physik: Liegt es in der Luft, fällt es, bis es auf Boden trifft, und macht
-# beim Aufprall eine kleine Staubwolke. Liegt es auf Boden, bleibt es einfach da.
+# Nutzer-Wunsch: Zerfällt ein Gegner beim Tod in zwei Hälften, spielt jede Hälfte
+# ihre Tot-Animation selbst weiter und hat eigene Physik: Kurz bevor sie in der
+# Animation den Boden erreicht (halte_frame), prüft sie, ob dort wirklich Boden
+# ist. Falls nicht, bleibt sie auf diesem Frame stehen und fällt. Beim Aufprall
+# macht sie eine kleine Staubwolke und spielt die Animation am Boden zu Ende.
 #
-# zerlege() schneidet die Stücke aus dem letzten Frame der Tot-Animation: alles,
-# was im Bild zusammenhängt, ist ein Stück. So braucht es keine neue Grafik.
-# Aufgerufen vom Gegner, alle Werte kommen aus dessen Inspektor.
+# zerlege() schneidet beide Hälften Frame für Frame aus der Tot-Animation: alles,
+# was im Bild zusammenhängt, kommt je nach Lage links oder rechts von trenn_x zur
+# einen oder anderen Hälfte. So braucht es keine neue Grafik.
 #
 # Eigene kleine Physik per Strahl statt RigidBody2D (wie beim Kopf des Kriegers):
 # Stücke prallen nur an Tiles ab und versperren niemandem den Weg.
@@ -16,7 +18,6 @@ var schwerkraft: float = 320.0
 var max_fall_tempo: float = 400.0
 var boden_maske: int = 1
 var ausnahmen: Array[RID] = []
-var unten_abstand: float = 0.0
 
 var staub_an: bool = true
 var staub_farbe_1: Color = Color.WHITE
@@ -26,90 +27,155 @@ var staub_tempo: float = 26.0
 var staub_dauer: float = 0.35
 var staub_min_fallhoehe: float = 3.0
 
+var frames: Array[Texture2D] = []
+var frame_dauer: float = 0.125
+# Index in frames, auf dem geprüft wird, ob Boden da ist.
+var halte_index: int = 0
+# Waagrechter Abstand der Hälfte zur Node-Mitte, dort wird nach Boden gesucht.
+var boden_x: float = 0.0
+var staub_breite: float = 16.0
+
+var _sprite: Sprite2D
+var _index: int = 0
+var _zeit: float = 0.0
+var _faellt: bool = false
+var _boden_geprueft: bool = false
 var _tempo_y: float = 0.0
 var _gefallen: float = 0.0
-var _fertig: bool = false
 
 
-# Erzeugt die Stücke. einstellungen enthält die Werte aus dem Inspektor.
-# Gibt false zurück, wenn es keine zwei Stücke gibt (dann bleibt das normale Bild).
-static func zerlege(sprite: AnimatedSprite2D, eltern: Node, einstellungen: Dictionary) -> bool:
-	var textur: Texture2D = sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame)
+# Ersetzt das Sprite ab dem aktuellen Frame durch zwei selbstständige Hälften.
+# Gibt false zurück, wenn das nicht geht (dann läuft die normale Animation weiter).
+static func zerlege(sprite: AnimatedSprite2D, eltern: Node2D, werte: Dictionary) -> bool:
+	var anim: StringName = sprite.animation
+	var alle: int = sprite.sprite_frames.get_frame_count(anim)
+	var start: int = sprite.frame
 
-	if textur == null:
+	if start >= alle:
 		return false
 
-	var bild: Image = textur.get_image()
+	var trenn_x: float = werte.get("trenn_x", 43.5)
+	var links: Array[Texture2D] = []
+	var rechts: Array[Texture2D] = []
+	var mitte_links: float = 0.0
+	var mitte_rechts: float = 0.0
+	var breite_links: float = 16.0
+	var breite_rechts: float = 16.0
+	var bild_breite: float = 0.0
 
-	if bild == null:
-		return false
+	for f in range(start, alle):
+		var textur: Texture2D = sprite.sprite_frames.get_frame_texture(anim, f)
 
-	if bild.is_compressed():
-		bild.decompress()
+		if textur == null:
+			return false
 
-	bild.convert(Image.FORMAT_RGBA8)
+		var bild: Image = textur.get_image()
 
-	var stuecke: Array = _finde_stuecke(bild, int(einstellungen.get("min_pixel", 12)))
+		if bild == null:
+			return false
 
-	if stuecke.size() < 2:
-		return false
+		if bild.is_compressed():
+			bild.decompress()
 
-	var groesse: Vector2 = bild.get_size()
+		bild.convert(Image.FORMAT_RGBA8)
+		bild_breite = bild.get_width()
 
-	for pixel: Array in stuecke:
-		var rahmen := Rect2i(pixel[0], Vector2i.ONE)
+		var b_links := Image.create(bild.get_width(), bild.get_height(), false, Image.FORMAT_RGBA8)
+		var b_rechts := Image.create(bild.get_width(), bild.get_height(), false, Image.FORMAT_RGBA8)
+		var r_links := Rect2i()
+		var r_rechts := Rect2i()
 
-		for p: Vector2i in pixel:
-			rahmen = rahmen.expand(p)
+		for gruppe: Array in _finde_stuecke(bild):
+			var summe: float = 0.0
 
-		rahmen.size += Vector2i.ONE
+			for p: Vector2i in gruppe:
+				summe += p.x
 
-		var teil_bild := Image.create(rahmen.size.x, rahmen.size.y, false, Image.FORMAT_RGBA8)
+			var ist_links: bool = summe / gruppe.size() < trenn_x
 
-		for p: Vector2i in pixel:
-			teil_bild.set_pixelv(p - rahmen.position, bild.get_pixelv(p))
+			for p: Vector2i in gruppe:
+				(b_links if ist_links else b_rechts).set_pixelv(p, bild.get_pixelv(p))
 
-		var mitte_im_bild: Vector2 = Vector2(rahmen.position) + Vector2(rahmen.size) * 0.5 - groesse * 0.5
+				if ist_links:
+					r_links = _erweitere(r_links, p)
+				else:
+					r_rechts = _erweitere(r_rechts, p)
 
-		# Gespiegelter Sprite: das Bild klappt um seine Mitte.
-		if sprite.flip_h:
-			mitte_im_bild.x = -mitte_im_bild.x
+		links.append(ImageTexture.create_from_image(b_links))
+		rechts.append(ImageTexture.create_from_image(b_rechts))
 
+		# Der letzte Frame zeigt, wo die Hälfte am Ende liegt: dort zählt der Boden.
+		if f == alle - 1:
+			mitte_links = r_links.get_center().x
+			mitte_rechts = r_rechts.get_center().x
+			breite_links = r_links.size.x
+			breite_rechts = r_rechts.size.x
+
+	var fps: float = sprite.sprite_frames.get_animation_speed(anim) * absf(sprite.speed_scale)
+	var dauer: float = 1.0 / maxf(fps, 0.1)
+
+	for seite in [
+		[links, int(werte.get("halte_frame_links", 5)), mitte_links, breite_links],
+		[rechts, int(werte.get("halte_frame_rechts", 8)), mitte_rechts, breite_rechts],
+	]:
 		var teil = load("res://Mobs/leiche_teil.gd").new()
+		teil.frames = seite[0]
+		teil.frame_dauer = dauer
+		teil.halte_index = clampi(int(seite[1]) - start, 0, alle - start - 1)
+		teil.staub_breite = float(seite[3]) + 4.0
+
+		var versatz: float = float(seite[2]) - bild_breite * 0.5
+
+		if sprite.flip_h:
+			versatz = -versatz
+
+		teil.boden_x = sprite.position.x + sprite.offset.x + versatz
+		teil.schwerkraft = werte.get("schwerkraft", 320.0)
+		teil.max_fall_tempo = werte.get("max_fall_tempo", 400.0)
+		teil.boden_maske = werte.get("boden_maske", 1)
+		teil.ausnahmen = werte.get("ausnahmen", [] as Array[RID])
+		teil.staub_an = werte.get("staub_an", true)
+		teil.staub_farbe_1 = werte.get("staub_farbe_1", Color.WHITE)
+		teil.staub_farbe_2 = werte.get("staub_farbe_2", Color.WHITE)
+		teil.staub_anzahl = werte.get("staub_anzahl", 8)
+		teil.staub_tempo = werte.get("staub_tempo", 26.0)
+		teil.staub_dauer = werte.get("staub_dauer", 0.35)
+		teil.staub_min_fallhoehe = werte.get("staub_min_fallhoehe", 3.0)
+
 		teil.top_level = true
 		teil.z_index = sprite.z_index
 		teil.z_as_relative = sprite.z_as_relative
-		# Stücke bewegen sich selbst: Interpolation aus, sonst zittern sie.
+		# Die Hälften bewegen sich selbst: Interpolation aus, sonst zittern sie.
 		teil.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-		teil.schwerkraft = einstellungen.get("schwerkraft", 320.0)
-		teil.max_fall_tempo = einstellungen.get("max_fall_tempo", 400.0)
-		teil.boden_maske = einstellungen.get("boden_maske", 1)
-		teil.ausnahmen = einstellungen.get("ausnahmen", [] as Array[RID])
-		teil.unten_abstand = rahmen.size.y * 0.5
-		teil.staub_an = einstellungen.get("staub_an", true)
-		teil.staub_farbe_1 = einstellungen.get("staub_farbe_1", Color.WHITE)
-		teil.staub_farbe_2 = einstellungen.get("staub_farbe_2", Color.WHITE)
-		teil.staub_anzahl = einstellungen.get("staub_anzahl", 8)
-		teil.staub_tempo = einstellungen.get("staub_tempo", 26.0)
-		teil.staub_dauer = einstellungen.get("staub_dauer", 0.35)
-		teil.staub_min_fallhoehe = einstellungen.get("staub_min_fallhoehe", 3.0)
 
 		var s := Sprite2D.new()
-		s.texture = ImageTexture.create_from_image(teil_bild)
+		s.position = sprite.position
+		s.offset = sprite.offset
+		s.centered = sprite.centered
 		s.flip_h = sprite.flip_h
 		s.texture_filter = sprite.texture_filter
 		s.material = sprite.material
 		s.light_mask = sprite.light_mask
+		s.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		teil.add_child(s)
+		teil._sprite = s
 
 		eltern.add_child(teil)
-		teil.global_position = sprite.to_global(sprite.offset + mitte_im_bild)
+		teil.global_position = eltern.global_position
+		teil._zeige_frame()
 
 	return true
 
 
-# Zusammenhängende Pixel-Gruppen ab min_pixel Größe (kleine Krümel entfallen).
-static func _finde_stuecke(bild: Image, min_pixel: int) -> Array:
+static func _erweitere(rahmen: Rect2i, p: Vector2i) -> Rect2i:
+	if rahmen.size == Vector2i.ZERO:
+		return Rect2i(p, Vector2i.ONE)
+
+	return rahmen.expand(p).expand(p + Vector2i.ONE)
+
+
+# Zusammenhängende Pixel-Gruppen eines Bildes.
+static func _finde_stuecke(bild: Image) -> Array:
 	var breite: int = bild.get_width()
 	var hoehe: int = bild.get_height()
 	var gesehen := {}
@@ -141,40 +207,74 @@ static func _finde_stuecke(bild: Image, min_pixel: int) -> Array:
 							gesehen[q] = true
 							stapel.append(q)
 
-			if gruppe.size() >= min_pixel:
-				ergebnis.append(gruppe)
+			ergebnis.append(gruppe)
 
 	return ergebnis
 
 
+func _zeige_frame() -> void:
+	_sprite.texture = frames[_index]
+
+
 func _physics_process(delta: float) -> void:
-	if _fertig:
+	if _faellt:
+		_falle(delta)
+		return
+
+	if _index >= frames.size() - 1:
 		set_physics_process(false)
 		return
 
+	if _index == halte_index and not _boden_geprueft:
+		_boden_geprueft = true
+
+		if not _ist_boden_unter_mir(2.0):
+			_faellt = true
+			return
+
+	_zeit += delta
+
+	if _zeit >= frame_dauer:
+		_zeit -= frame_dauer
+		_index += 1
+		_zeige_frame()
+
+
+func _falle(delta: float) -> void:
 	_tempo_y = minf(_tempo_y + schwerkraft * delta, max_fall_tempo)
 
 	var schritt: float = _tempo_y * delta
-	var unten: Vector2 = global_position + Vector2(0.0, unten_abstand)
-	# Etwas über der Unterkante starten: das Stück liegt anfangs direkt auf dem Boden.
-	var abfrage := PhysicsRayQueryParameters2D.create(
-		unten + Vector2(0.0, -2.0),
-		unten + Vector2(0.0, schritt + 1.0),
-		boden_maske,
-		ausnahmen
-	)
-	var treffer: Dictionary = get_world_2d().direct_space_state.intersect_ray(abfrage)
+	var treffer: Dictionary = _strahl_nach_unten(schritt + 1.0)
 
 	if treffer.is_empty():
 		global_position.y += schritt
 		_gefallen += schritt
 		return
 
-	_fertig = true
-	global_position.y = treffer["position"].y - unten_abstand
+	# Aufgekommen: Animation am Boden zu Ende spielen.
+	_faellt = false
+	global_position.y = treffer["position"].y
 
 	if staub_an and _gefallen >= staub_min_fallhoehe:
 		_mache_staub(treffer["position"])
+
+
+func _ist_boden_unter_mir(tiefe: float) -> bool:
+	return not _strahl_nach_unten(tiefe).is_empty()
+
+
+# Die Node sitzt auf Fußhöhe. Etwas darüber starten: die Hälfte steht anfangs
+# direkt auf dem Boden.
+func _strahl_nach_unten(tiefe: float) -> Dictionary:
+	var unten: Vector2 = global_position + Vector2(boden_x, 0.0)
+	var abfrage := PhysicsRayQueryParameters2D.create(
+		unten + Vector2(0.0, -2.0),
+		unten + Vector2(0.0, tiefe),
+		boden_maske,
+		ausnahmen
+	)
+
+	return get_world_2d().direct_space_state.intersect_ray(abfrage)
 
 
 func _mache_staub(punkt: Vector2) -> void:
@@ -184,7 +284,7 @@ func _mache_staub(punkt: Vector2) -> void:
 	wolke.anzahl = staub_anzahl
 	wolke.tempo = staub_tempo
 	wolke.dauer = staub_dauer
-	wolke.breite = unten_abstand * 2.0 + 8.0
+	wolke.breite = staub_breite
 	wolke.z_index = z_index + 1
 	wolke.z_as_relative = z_as_relative
 	wolke.top_level = true

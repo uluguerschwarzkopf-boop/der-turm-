@@ -1961,10 +1961,13 @@ position = Vector2(152, -392)
 position = Vector2(424, -208)
 
 [node name="Skellet_Archer" parent="." unique_id=370334480 instance=ExtResource("23_tt4dg")]
-position = Vector2(230, -112)
+position = Vector2(73, -192)
+
+[node name="Skellet_Archer2" parent="." unique_id=1532933105 instance=ExtResource("23_tt4dg")]
+position = Vector2(-143, -159)
 
 [node name="Ratte" parent="." unique_id=142996783 instance=ExtResource("24_lsnnc")]
 position = Vector2(305, -240)
 
 [node name="Schatten mutant" parent="." unique_id=1655272891 instance=ExtResource("25_bct05")]
-position = Vector2(60, -192)
+position = Vector2(39, -114)
