@@ -157,6 +157,21 @@ enum State {
 # dieselbe Abgrundprüfung wie beim normalen Laufen.
 @export var wegspring_respect_edges: bool = true
 
+# Nutzer-Wunsch: ein Treffer bricht Spucken/Biss NICHT mehr ab. Sie
+# nimmt Schaden und blitzt, macht den Angriff aber fertig (Super
+# Armor). Aus = altes Verhalten (Angriff abbrechen, sofort wegspringen).
+@export var angriff_nicht_unterbrechen: bool = true
+
+# Nur wenn angriff_nicht_unterbrechen an ist: nach dem fertigen Angriff
+# den gemerkten Wegsprung nachholen. Aus = nach dem Angriff gar nicht
+# wegspringen, einfach normal weiterkämpfen.
+@export var nach_angriff_wegspringen: bool = true
+
+# Sicherheitsnetz: so viele Sekunden nach dem rechnerischen Ende der
+# Angriffs-Animation wird der Angriff notfalls von Hand beendet, falls
+# das animation_finished-Signal ausbleibt (sonst bliebe sie hängen).
+@export var angriff_ende_puffer: float = 0.2
+
 
 # ============================================================
 # TREFFER
@@ -321,6 +336,16 @@ var _flash_tween: Tween = null
 # aktuellen Wegsprung schon gesetzt wurde (siehe _process_wegspringen()).
 var _wegspring_direction: float = 0.0
 var _wegspring_jump_applied: bool = false
+
+# Wurde sie während eines Angriffs getroffen (und der Angriff läuft
+# weiter, siehe angriff_nicht_unterbrechen), wird der Wegsprung hier
+# gemerkt und am Angriffsende nachgeholt.
+var _wegspring_nach_angriff: bool = false
+
+# Zählt jeden gestarteten Angriff hoch - damit der Sicherheits-Timer
+# in _sichere_angriffsende() nur DEN Angriff beendet, für den er
+# gestartet wurde, und keinen späteren.
+var _angriff_nummer: int = 0
 
 # Wird von _spawn_new_spider() VOR dem Hinzufügen zum Baum auf true
 # gesetzt, wenn diese Instanz die "neu geschlüpfte" Spinne ist - dann
@@ -919,6 +944,8 @@ func _start_attack() -> void:
 
 	can_attack = false
 	shot_done = false
+	_angriff_nummer += 1
+	_wegspring_nach_angriff = false
 
 	velocity.x = 0
 
@@ -1035,11 +1062,13 @@ func interrupt_current_action() -> void:
 		return
 
 	if state == State.ATTACK:
+		_wegspring_nach_angriff = false
 		_cancel_attack()
 		_decide_next_state()
 		return
 
 	if state == State.NAHKAMPF:
+		_wegspring_nach_angriff = false
 		_cancel_melee_attack()
 		_decide_next_state()
 		return
@@ -1063,7 +1092,8 @@ func _finish_attack() -> void:
 		shot_done = true
 		_shoot_web_ball()
 
-	_decide_next_state()
+	if not _hole_wegsprung_nach():
+		_decide_next_state()
 
 	var tree := get_tree()
 
@@ -1087,7 +1117,7 @@ func _finish_attack() -> void:
 	# can_attack aktualisiert lassen und nichts weiter tun, der
 	# Nahkampfangriff entscheidet über seinen eigenen
 	# _finish_melee_attack()-Zyklus selbst weiter.
-	if state != State.NAHKAMPF:
+	if state != State.NAHKAMPF and state != State.WEGSPRINGEN:
 		_decide_next_state()
 
 
@@ -1112,6 +1142,8 @@ func _start_melee_attack() -> void:
 
 	can_melee_attack = false
 	melee_damage_done = false
+	_angriff_nummer += 1
+	_wegspring_nach_angriff = false
 
 	velocity.x = 0
 
@@ -1182,7 +1214,8 @@ func _finish_melee_attack() -> void:
 
 	melee_damage_done = true
 
-	_decide_next_state()
+	if not _hole_wegsprung_nach():
+		_decide_next_state()
 
 	var tree := get_tree()
 
@@ -1202,7 +1235,7 @@ func _finish_melee_attack() -> void:
 	# Siehe Kommentar in _finish_attack() oben - genau dasselbe,
 	# umgekehrt: ist inzwischen schon wieder ein Spuck-Angriff aktiv
 	# geworden, nicht mitten drin unterbrechen.
-	if state != State.ATTACK:
+	if state != State.ATTACK and state != State.WEGSPRINGEN:
 		_decide_next_state()
 
 
@@ -1256,6 +1289,52 @@ func _cancel_current_attack_if_any() -> void:
 # ============================================================
 # WEGSPRINGEN (TREFFER-REAKTION)
 # ============================================================
+
+# Holt einen während des Angriffs gemerkten Wegsprung nach.
+# Gibt true zurück, wenn gesprungen wird (dann KEIN _decide_next_state).
+func _hole_wegsprung_nach() -> bool:
+	if not _wegspring_nach_angriff:
+		return false
+
+	_wegspring_nach_angriff = false
+
+	if dead or not nach_angriff_wegspringen:
+		return false
+
+	_start_wegspring()
+	return true
+
+
+# Sicherheitsnetz (Projektregel: State-Ende nie nur über
+# animation_finished): wartet die Restlänge der laufenden Angriffs-
+# Animation + angriff_ende_puffer ab. Steckt sie dann immer noch in
+# GENAU diesem Angriff, wird er von Hand beendet.
+func _sichere_angriffsende(nummer: int) -> void:
+	var rest: float = 0.5
+
+	if sprite != null and sprite.sprite_frames != null:
+		var anim: StringName = sprite.animation
+		if sprite.sprite_frames.has_animation(anim):
+			var fps: float = sprite.sprite_frames.get_animation_speed(anim)
+			var frames: int = sprite.sprite_frames.get_frame_count(anim)
+			if fps > 0.0:
+				rest = float(max(frames - sprite.frame, 0)) / fps
+
+	var tree := get_tree()
+
+	if tree == null:
+		return
+
+	await tree.create_timer(max(rest + angriff_ende_puffer, 0.05)).timeout
+
+	if dead or nummer != _angriff_nummer:
+		return
+
+	if state == State.ATTACK:
+		_finish_attack()
+	elif state == State.NAHKAMPF:
+		_finish_melee_attack()
+
 
 func _start_wegspring() -> void:
 	if dead:
@@ -1724,6 +1803,18 @@ func take_damage(
 	# bei jedem Treffer weg - auch mitten im Spucken oder im Nahkampf-
 	# Biss (der jeweilige Angriff wird dann sauber abgebrochen, siehe
 	# _cancel_current_attack_if_any() bei "ZU NAH DRAN" weiter unten).
+	# Nutzer-Wunsch: Angriff NICHT abbrechen (angriff_nicht_unterbrechen).
+	# Schaden + Blitz gibt es trotzdem, der Wegsprung wird gemerkt und
+	# in _finish_attack()/_finish_melee_attack() nachgeholt.
+	if (
+		angriff_nicht_unterbrechen
+		and (state == State.ATTACK or state == State.NAHKAMPF)
+	):
+		if nach_angriff_wegspringen and not _wegspring_nach_angriff:
+			_wegspring_nach_angriff = true
+			_sichere_angriffsende(_angriff_nummer)
+		return
+
 	_cancel_current_attack_if_any()
 
 	_start_wegspring()

@@ -41,6 +41,54 @@ enum State {
 
 
 # ============================================================
+# FLUGVERHALTEN (natürliches Verfolgen)
+# ============================================================
+
+# Nutzer-Wunsch: nicht mehr stur in gerader Linie auf den Spieler
+# zufliegen, sondern natürlich: weich beschleunigen/bremsen, flattern,
+# auf Abstand kreisen und dann im Bogen herabstoßen (Sturzflug). Wände
+# und Boden erkennt sie über Sichtstrahlen (Raycasts) - dafür braucht
+# der Raum KEINE extra Node.
+
+@export_group("Flugverhalten")
+
+# Wie schnell sie ihre Geschwindigkeit an die Wunschrichtung angleicht
+# (Pixel/s²). Niedriger = träger, weitere Kurven.
+@export var beschleunigung: float = 220.0
+
+# Flattern: Auf-und-Ab-Bewegung beim Fliegen.
+@export var flatter_hoehe: float = 14.0
+@export var flatter_tempo: float = 6.0
+
+# Kreisen: Punkt schräg über dem Spieler, an dem sie lauert.
+@export var kreis_abstand_x: float = 46.0
+@export var kreis_hoehe: float = 38.0
+# So weit "eiert" der Lauerpunkt hin und her (wirkt lebendiger).
+@export var kreis_wackeln: float = 12.0
+# Zufällige Lauerzeit, bevor sie zustößt (Sekunden).
+@export var kreis_zeit_min: float = 1.2
+@export var kreis_zeit_max: float = 2.4
+
+# Sturzflug auf die Position, an der der Spieler beim Start stand.
+@export var sturz_tempo: float = 120.0
+@export var sturz_beschleunigung: float = 420.0
+# Zielt etwas vor den Spieler (in seine Laufrichtung). 0 = genau drauf.
+@export var sturz_vorhalt: float = 0.15
+# Sturzflug endet spätestens nach dieser Zeit (Sekunden).
+@export var sturz_max_zeit: float = 1.1
+# Nach dem Sturz kurz wieder hochziehen, bevor sie neu kreist.
+@export var hochziehen_zeit: float = 0.5
+
+# Hindernisse: Länge der Sichtstrahlen und wie stark sie ausweicht.
+@export var strahl_laenge: float = 28.0
+@export var ausweich_staerke: float = 1.6
+# Mindestabstand zum Boden (außer im Sturzflug).
+@export var boden_abstand: float = 22.0
+# Physik-Ebenen, die als Wand/Boden gelten (Standard: Ebene 1 = Tiles).
+@export_flags_2d_physics var hindernis_maske: int = 1
+
+
+# ============================================================
 # RÜCKZUG NACH TREFFER
 # ============================================================
 
@@ -168,6 +216,16 @@ var _flash_tween: Tween = null
 var _retreat_direction: Vector2 = Vector2.ZERO
 var _retreat_time_left: float = 0.0
 
+# Flugverhalten (siehe _process_chase()).
+enum Flug { KREISEN, STURZ, HOCHZIEHEN }
+var _flug: Flug = Flug.KREISEN
+var _flug_zeit: float = 0.0
+var _flug_zeit_ziel: float = 0.0
+var _flatter_t: float = 0.0
+var _kreis_seite: float = 1.0
+var _sturz_ziel: Vector2 = Vector2.ZERO
+var _letzte_ziel_pos: Vector2 = Vector2.ZERO
+
 
 # ============================================================
 # START
@@ -268,7 +326,7 @@ func _physics_process(delta: float) -> void:
 			velocity = Vector2.ZERO
 
 		State.CHASE:
-			_process_chase()
+			_process_chase(delta)
 
 		State.RETREAT:
 			_process_retreat(delta)
@@ -379,31 +437,158 @@ func _enter_chase() -> void:
 
 	state = State.CHASE
 
+	_starte_kreisen()
+	_flatter_t = randf() * TAU
+
 	_play_animation(anim_fly)
 
 
-func _process_chase() -> void:
+func _process_chase(delta: float) -> void:
 	if _is_rooted():
 		velocity = Vector2.ZERO
 		return
 
 	if not _target_is_available():
-		velocity = Vector2.ZERO
+		velocity = velocity.move_toward(Vector2.ZERO, beschleunigung * delta)
 		_play_animation(anim_fly)
 		return
 
-	var to_next: Vector2 = _next_chase_step()
+	_flug_zeit += delta
+	_flatter_t += delta * flatter_tempo
 
-	if to_next.length() > 0.5:
-		var direction: Vector2 = to_next.normalized()
+	var ziel_pos: Vector2 = current_target.global_position
+	# Laufrichtung des Ziels grob schätzen (für den Vorhalt im Sturzflug)
+	if _letzte_ziel_pos == Vector2.ZERO:
+		_letzte_ziel_pos = ziel_pos
+	var ziel_tempo: Vector2 = (ziel_pos - _letzte_ziel_pos) / max(delta, 0.001)
+	_letzte_ziel_pos = ziel_pos
 
-		velocity = direction * move_speed * _get_speed_multiplier()
+	var wunsch: Vector2 = Vector2.ZERO
+	var tempo: float = move_speed
+	var accel: float = beschleunigung
 
-		_update_facing(direction.x)
-	else:
-		velocity = Vector2.ZERO
+	match _flug:
+		Flug.KREISEN:
+			# Lauerpunkt schräg über dem Spieler, leicht eiernd
+			var punkt: Vector2 = ziel_pos + Vector2(
+				_kreis_seite * kreis_abstand_x + sin(_flug_zeit * 1.3) * kreis_wackeln,
+				-kreis_hoehe + cos(_flug_zeit * 0.9) * kreis_wackeln * 0.5
+			)
+			wunsch = _weg_zu(punkt)
+			# in der Nähe des Punktes langsamer werden (kein Zappeln)
+			tempo = move_speed * clamp(wunsch.length() / 24.0, 0.25, 1.0)
 
+			if _flug_zeit >= _flug_zeit_ziel and _sicht_frei(ziel_pos):
+				_flug = Flug.STURZ
+				_flug_zeit = 0.0
+				_sturz_ziel = ziel_pos + ziel_tempo * sturz_vorhalt
+
+		Flug.STURZ:
+			wunsch = _sturz_ziel - global_position
+			tempo = sturz_tempo
+			accel = sturz_beschleunigung
+			if wunsch.length() < 6.0 or _flug_zeit >= sturz_max_zeit:
+				_starte_hochziehen()
+
+		Flug.HOCHZIEHEN:
+			# im Bogen weg vom Ziel und nach oben
+			wunsch = Vector2(_kreis_seite, -1.2)
+			if _flug_zeit >= hochziehen_zeit:
+				_starte_kreisen()
+
+	var richtung: Vector2 = wunsch.normalized() if wunsch.length() > 0.5 else Vector2.ZERO
+	richtung = _mit_ausweichen(richtung, _flug != Flug.STURZ)
+
+	var soll: Vector2 = richtung * tempo * _get_speed_multiplier()
+	# Flattern nur beim Kreisen/Hochziehen, im Sturz fliegt sie straff
+	if _flug != Flug.STURZ:
+		soll.y += cos(_flatter_t) * flatter_hoehe * flatter_tempo * 0.5
+
+	velocity = velocity.move_toward(soll, accel * delta)
+
+	_update_facing(velocity.x)
 	_play_animation(anim_fly)
+
+
+func _starte_kreisen() -> void:
+	_flug = Flug.KREISEN
+	_flug_zeit = 0.0
+	_flug_zeit_ziel = randf_range(
+		min(kreis_zeit_min, kreis_zeit_max),
+		max(kreis_zeit_min, kreis_zeit_max)
+	)
+	# Seite wählen, auf der sie gerade ist (kein Durchqueren des Spielers)
+	if _target_is_available():
+		var dx: float = global_position.x - current_target.global_position.x
+		_kreis_seite = 1.0 if dx >= 0.0 else -1.0
+
+
+func _starte_hochziehen() -> void:
+	_flug = Flug.HOCHZIEHEN
+	_flug_zeit = 0.0
+	# zur anderen Seite weiterziehen -> fliegt im Bogen über den Spieler
+	_kreis_seite = 1.0 if velocity.x >= 0.0 else -1.0
+
+
+# Richtung zu einem Punkt - nutzt die Pfadsuche, falls im Raum eine
+# NavigationRegion2D gebacken ist und eine Wand im Weg ist (siehe
+# _next_chase_step()), sonst direkt. Die Sichtstrahlen in
+# _mit_ausweichen() kümmern sich dann um Wände.
+func _weg_zu(punkt: Vector2) -> Vector2:
+	if nav_agent != null and not _sicht_frei(punkt):
+		nav_agent.target_position = punkt
+		var naechster: Vector2 = nav_agent.get_next_path_position()
+		var weg: Vector2 = naechster - global_position
+		if weg.length() >= 1.0:
+			return weg
+	return punkt - global_position
+
+
+# Sichtstrahl von der Fledermaus zu einem Punkt: true = keine Wand dazwischen.
+func _sicht_frei(punkt: Vector2) -> bool:
+	return _strahl(global_position, punkt).is_empty()
+
+
+func _strahl(von: Vector2, nach: Vector2) -> Dictionary:
+	var space := get_world_2d().direct_space_state
+	var q := PhysicsRayQueryParameters2D.create(von, nach, hindernis_maske)
+	q.exclude = [get_rid()]
+	q.collide_with_areas = false
+	var hit: Dictionary = space.intersect_ray(q)
+	# Spieler/Summons sind keine Hindernisse
+	if not hit.is_empty() and _is_player_or_summon(hit.collider):
+		return {}
+	return hit
+
+
+# Hindernisvermeidung per Sichtstrahlen: geradeaus und schräg links/
+# rechts der Flugrichtung, dazu nach unten (Bodenabstand). Trifft ein
+# Strahl, wird die Richtung von der Wand weggedrückt (Wand-Normale).
+func _mit_ausweichen(richtung: Vector2, boden_halten: bool) -> Vector2:
+	var basis: Vector2 = richtung
+	if basis.length() < 0.1:
+		basis = velocity.normalized() if velocity.length() > 1.0 else Vector2.ZERO
+
+	var druck: Vector2 = Vector2.ZERO
+
+	if basis != Vector2.ZERO:
+		for winkel in [0.0, 0.6, -0.6]:
+			var d: Vector2 = basis.rotated(winkel)
+			var hit: Dictionary = _strahl(global_position, global_position + d * strahl_laenge)
+			if hit.is_empty():
+				continue
+			var abstand: float = global_position.distance_to(hit.position)
+			var naehe: float = 1.0 - clamp(abstand / strahl_laenge, 0.0, 1.0)
+			druck += (hit.normal as Vector2) * naehe * ausweich_staerke
+
+	if boden_halten:
+		var unten: Dictionary = _strahl(global_position, global_position + Vector2.DOWN * boden_abstand)
+		if not unten.is_empty():
+			var naehe_b: float = 1.0 - clamp(global_position.distance_to(unten.position) / boden_abstand, 0.0, 1.0)
+			druck += Vector2.UP * naehe_b * ausweich_staerke
+
+	var neu: Vector2 = richtung + druck
+	return neu.normalized() if neu.length() > 0.05 else richtung
 
 
 # Liefert den Vektor zum nächsten Schritt Richtung Ziel - über die
@@ -454,7 +639,8 @@ func _start_retreat_after_hit() -> void:
 	else:
 		away = away.normalized()
 
-	_retreat_direction = away
+	# leicht nach oben ziehen, wirkt wie Wegflattern statt Wegrutschen
+	_retreat_direction = (away + Vector2(0, -0.6)).normalized()
 	_retreat_time_left = max(retreat_time, 0.01)
 
 	_play_animation(anim_fly)
@@ -465,13 +651,17 @@ func _process_retreat(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	velocity = (
-		_retreat_direction * retreat_speed * _get_speed_multiplier()
+	# Nutzer-Wunsch "natürlich fliegen": auch der Rückzug lenkt weich
+	# und weicht Wänden/Boden aus, statt hart in eine Wand zu fliegen.
+	var richtung: Vector2 = _mit_ausweichen(_retreat_direction, true)
+	velocity = velocity.move_toward(
+		richtung * retreat_speed * _get_speed_multiplier(),
+		beschleunigung * 2.0 * delta
 	)
 
 	# Nutzer-Wunsch: sie soll sich beim Rückzug auch in die
 	# Flugrichtung drehen, nicht nur beim Verfolgen.
-	_update_facing(_retreat_direction.x)
+	_update_facing(velocity.x)
 
 	_retreat_time_left -= delta
 
